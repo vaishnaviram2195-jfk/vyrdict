@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Suggest a Viral Product — VYRDICT</title>
+<meta name="description" content="Tell VYRDICT what product is suddenly everywhere so we can investigate the hype.">
+<style>
+:root{--ink:#171511;--muted:#6d675f;--paper:#fffdf8;--bg:#f4ede5;--blush:#efe4dc;--line:#d8cec4;--soft:#f8f3ed;--good:#edf4ec}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif}.shell{width:min(980px,calc(100% - 40px));margin:auto}.top{padding:24px 0;border-bottom:1px solid var(--line)}.top .shell{display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-size:28px;font-weight:950;letter-spacing:-.06em}.back{color:var(--ink);text-decoration:none;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:10px 14px;font-size:11px;font-weight:900;letter-spacing:.06em}.hero{padding:72px 0 34px}.eyebrow{font-size:10px;font-weight:950;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}.hero h1{font-family:Georgia,'Times New Roman',serif;font-size:clamp(46px,7vw,80px);line-height:.95;letter-spacing:-.055em;margin:0 0 20px;max-width:850px}.hero p{font-size:17px;line-height:1.65;color:var(--muted);max-width:700px;margin:0}.wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:22px;padding:22px 0 70px}.aside{background:var(--blush);border:1px solid var(--line);border-radius:28px;padding:28px;height:max-content}.aside h2{font-family:Georgia,'Times New Roman',serif;font-size:31px;letter-spacing:-.035em;margin:0 0 14px}.aside p{font-size:13px;line-height:1.65;color:var(--muted);margin:0 0 18px}.aside ul{padding-left:18px;margin:0;color:var(--muted);font-size:12px;line-height:1.75}.formcard{background:var(--paper);border:1px solid var(--line);border-radius:28px;padding:30px}.field{margin-bottom:20px}.field label{display:block;font-size:10px;font-weight:950;letter-spacing:.11em;text-transform:uppercase;margin:0 0 8px}.field small{display:block;color:var(--muted);font-size:10px;margin-top:6px;line-height:1.45}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:#fff;border-radius:15px;padding:13px 14px;font:inherit;font-size:14px;color:var(--ink);outline:none}.field textarea{min-height:120px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:#8f867e;box-shadow:0 0 0 3px rgba(143,134,126,.12)}.req{color:#7d564b}.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.submit{width:100%;border:0;border-radius:999px;background:var(--ink);color:#fff;padding:15px 18px;font-size:11px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.submit:disabled{opacity:.55;cursor:default}.status{display:none;margin-top:15px;border-radius:16px;padding:14px;font-size:12px;line-height:1.55}.status.ok{display:block;background:var(--good);border:1px solid #ccd9c8}.status.err{display:block;background:#f7ece8;border:1px solid #e3cbc2}.privacy{font-size:10px;color:var(--muted);line-height:1.55;margin-top:13px}.hp{position:absolute;left:-9999px;opacity:0;pointer-events:none}.footer{border-top:1px solid var(--line);padding:24px 0 34px;color:var(--muted);font-size:11px}.footer .shell{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+@media(max-width:760px){.wrap{grid-template-columns:1fr}.row{grid-template-columns:1fr}.hero{padding-top:52px}.formcard,.aside{padding:24px}.top .shell{align-items:flex-start}.back{font-size:9px;padding:9px 11px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="shell"><div class="brand">VYRDICT.</div><a class="back" href="./">← Back to VYRDICT</a></div></header>
+<main>
+<section class="hero"><div class="shell"><div class="eyebrow">Help us spot the next thing</div><h1>What product is suddenly everywhere?</h1><p>If your feed keeps showing you the same product, send it our way. A suggestion does not automatically make the catalog — it gives VYRDICT something to investigate.</p></div></section>
+<section><div class="shell wrap">
+<aside class="aside"><h2>What happens next?</h2><p>Submissions go into VYRDICT’s private research queue. We check whether the product is genuinely trending, verify the exact item, review available evidence, and only then decide whether it belongs in the catalog.</p><ul><li>No login required.</li><li>No public comments or reviews.</li><li>No guaranteed placement.</li><li>Exact products beat vague category suggestions.</li></ul></aside>
+<div class="formcard">
+<form id="suggest-form" novalidate>
+<div class="field"><label for="product_name">Product name <span class="req">*</span></label><input id="product_name" name="product_name" maxlength="160" required placeholder="e.g. Rhode Pocket Blush"><small>Use the exact product name if you know it.</small></div>
+<div class="row"><div class="field"><label for="brand">Brand</label><input id="brand" name="brand" maxlength="120" placeholder="e.g. Rhode"></div><div class="field"><label for="source_platform">Where are you seeing it?</label><select id="source_platform" name="source_platform"><option value="">Choose one</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Pinterest</option><option>Reddit</option><option>In stores</option><option>Friends / word of mouth</option><option>Everywhere</option><option>Other</option></select></div></div>
+<div class="field"><label for="product_url">Product or post link</label><input id="product_url" name="product_url" maxlength="500" inputmode="url" placeholder="https://..."><small>Official product page or the viral post is ideal.</small></div>
+<div class="field"><label for="note">Why is it catching your attention?</label><textarea id="note" name="note" maxlength="800" placeholder="Optional — tell us what people are claiming, why it keeps showing up, or what you want VYRDICT to investigate."></textarea></div>
+<div class="hp" aria-hidden="true"><label for="website">Website</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
+<button class="submit" id="submit" type="submit">Send to VYRDICT</button>
+<div class="status" id="status" role="status" aria-live="polite"></div>
+<div class="privacy">Your suggestion is used only as research input for VYRDICT. This form does not create a public profile, review, or comment.</div>
+</form>
+</div>
+</div></section>
+</main>
+<footer class="footer"><div class="shell"><span>VYRDICT. The verdict on what’s trending.</span><span>Research intake</span></div></footer>
+<script>
+(()=>{
+const ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-suggest-product';
+const form=document.getElementById('suggest-form'),btn=document.getElementById('submit'),status=document.getElementById('status');
+form.addEventListener('submit',async e=>{
+ e.preventDefault();status.className='status';status.textContent='';
+ const data=Object.fromEntries(new FormData(form).entries());
+ if(!String(data.product_name||'').trim()){status.className='status err';status.textContent='Please add the product name first.';return}
+ if(data.product_url){try{const u=new URL(String(data.product_url));if(!/^https?:$/.test(u.protocol))throw 0}catch{status.className='status err';status.textContent='That link does not look valid. Use a full http:// or https:// URL.';return}}
+ btn.disabled=true;btn.textContent='Sending…';
+ try{
+  const r=await fetch(ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(data)});
+  const out=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(out.error||'failed');
+  form.reset();status.className='status ok';status.textContent='Got it. It’s now in the VYRDICT research queue for review.';
+ }catch{status.className='status err';status.textContent='We could not submit that right now. Please try again in a moment.'}
+ finally{btn.disabled=false;btn.textContent='Send to VYRDICT'}
+});
+})();
+</script>
+</body>
+</html>
