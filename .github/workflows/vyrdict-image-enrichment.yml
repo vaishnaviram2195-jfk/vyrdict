@@ -1,5 +1,6 @@
 name: VYRDICT Image Enrichment
 
+# Catalog cleanup trigger: 2026-08-18
 on:
   push:
     paths:
