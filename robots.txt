@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /review-suggestions.html
+Disallow: /research-candidates.html
+Disallow: /draft-products.html
+
+Sitemap: https://vyrdict.com/sitemap.xml
