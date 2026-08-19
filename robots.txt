@@ -4,5 +4,6 @@ Disallow: /review-suggestions.html
 Disallow: /research-candidates.html
 Disallow: /draft-products.html
 Disallow: /analytics.html
+Disallow: /evidence-admin.html
 
 Sitemap: https://vyrdict.com/sitemap.xml
