@@ -3,5 +3,6 @@ Allow: /
 Disallow: /review-suggestions.html
 Disallow: /research-candidates.html
 Disallow: /draft-products.html
+Disallow: /analytics.html
 
 Sitemap: https://vyrdict.com/sitemap.xml
