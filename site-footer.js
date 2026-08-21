@@ -25,7 +25,7 @@
 #${FOOTER_ID} .vf-links a:hover{opacity:.62;transform:translateX(2px)}
 #${FOOTER_ID} .vf-rule{height:1px;background:#cfc2b7;margin:46px 0 18px}
 #${FOOTER_ID} .vf-bottom{display:flex;justify-content:space-between;align-items:center;gap:20px;color:#746d66;font-size:9px;line-height:1.5;letter-spacing:.02em}
-#${FOOTER_ID} .vf-wordmark{margin:44px 0 -7px;font-size:clamp(78px,15.1vw,184px);font-weight:950;letter-spacing:-.082em;line-height:.74;white-space:nowrap;color:#171511;user-select:none;display:flex;align-items:flex-end}
+#${FOOTER_ID} .vf-wordmark{margin:34px 0 4px;font-size:clamp(54px,7vw,92px);font-weight:950;letter-spacing:-.075em;line-height:.88;white-space:nowrap;color:#171511;user-select:none;display:flex;align-items:flex-end}
 #${FOOTER_ID} .vf-wordmark .vf-logo-dot{transform:translateY(-.02em)}
 @media(max-width:860px){
   #${FOOTER_ID} .vf-grid{grid-template-columns:1.25fr repeat(3,1fr);gap:24px}
@@ -38,7 +38,7 @@
   #${FOOTER_ID} .vf-brand p{max-width:32ch}
   #${FOOTER_ID} .vf-bottom{align-items:flex-start;flex-direction:column;gap:5px}
   #${FOOTER_ID} .vf-rule{margin-top:38px}
-  #${FOOTER_ID} .vf-wordmark{font-size:clamp(64px,20.5vw,112px);margin-top:34px;letter-spacing:-.085em}
+  #${FOOTER_ID} .vf-wordmark{font-size:clamp(48px,14vw,68px);margin-top:28px;letter-spacing:-.075em}
 }
 @media(max-width:390px){
   #${FOOTER_ID} .vf-grid{grid-template-columns:1fr 1fr;gap:28px 18px}
