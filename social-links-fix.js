@@ -45,19 +45,19 @@
   let st=document.getElementById(STYLE_ID);
   if(!st){st=document.createElement('style');st.id=STYLE_ID;document.head.appendChild(st)}
   st.textContent=`
-#vyrdict-product-feedback{box-sizing:border-box;width:min(1040px,calc(100% - 56px));margin:28px auto 46px;background:#fffaf4;border:1px solid #d8cec4;border-radius:30px;padding:28px 30px 30px;color:#171511;font-family:Arial,Helvetica,sans-serif}
+#vyrdict-product-feedback{box-sizing:border-box!important;width:min(680px,calc(100% - 48px))!important;margin:24px auto 38px!important;background:#fffaf4!important;border:1px solid #d8cec4!important;border-radius:22px!important;padding:20px 22px 21px!important;color:#171511!important;font-family:Arial,Helvetica,sans-serif!important}
 #vyrdict-product-feedback *{box-sizing:border-box}
-#vyrdict-product-feedback .vpf-row{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap}
-#vyrdict-product-feedback .vpf-label{margin:0 0 8px;color:#171511;font:700 31px/1.03 Georgia,"Times New Roman",serif;letter-spacing:-.035em}
-#vyrdict-product-feedback .vpf-sub{margin:0;color:#746b64;font-size:13px;line-height:1.5}
-#vyrdict-product-feedback .vpf-actions{display:flex;align-items:center;gap:12px;flex:1 1 100%;width:100%;margin-top:14px}
-#vyrdict-product-feedback .vpf-vote{appearance:none;-webkit-appearance:none;flex:1 1 0;min-height:52px;border:1px solid #d8cec4;border-radius:999px;background:#fffdf9;color:#171511;padding:0 18px;font:800 13px/1 Arial,Helvetica,sans-serif;text-align:center;cursor:pointer;box-shadow:none}
-#vyrdict-product-feedback .vpf-vote:hover,#vyrdict-product-feedback .vpf-vote:focus-visible{border-color:#e65f72;outline:none}
-#vyrdict-product-feedback .vpf-vote:disabled{opacity:.55;cursor:default}
-#vyrdict-product-feedback .vpf-report{appearance:none;-webkit-appearance:none;display:inline-block;margin:20px 0 0;padding:0 0 3px;border:0;border-bottom:1px solid #5f5750;border-radius:0;background:transparent;color:#5f5750;font:800 11px/1.35 Arial,Helvetica,sans-serif;text-decoration:none;cursor:pointer;box-shadow:none}
-#vyrdict-product-feedback .vpf-thanks{color:#5f5750;font:800 12px/1.4 Arial,Helvetica,sans-serif}
-@media(max-width:600px){#vyrdict-product-feedback{width:calc(100% - 56px);margin:28px auto 46px;padding:28px 30px 29px;border-radius:30px}#vyrdict-product-feedback .vpf-label{font-size:30px;line-height:1.03}#vyrdict-product-feedback .vpf-sub{font-size:13px}#vyrdict-product-feedback .vpf-actions{gap:12px;margin-top:16px}#vyrdict-product-feedback .vpf-vote{min-height:52px;font-size:12px}#vyrdict-product-feedback .vpf-report{margin-top:20px;font-size:10.5px}}
-@media(max-width:390px){#vyrdict-product-feedback{width:calc(100% - 34px);padding:24px 22px}#vyrdict-product-feedback .vpf-label{font-size:27px}}
+#vyrdict-product-feedback .vpf-row{display:block!important}
+#vyrdict-product-feedback .vpf-label{margin:0 0 6px!important;color:#171511!important;font-family:Georgia,"Times New Roman",serif!important;font-size:clamp(32px,3.2vw,42px)!important;font-weight:400!important;font-style:normal!important;line-height:1.04!important;letter-spacing:-.035em!important}
+#vyrdict-product-feedback .vpf-sub{margin:0!important;color:#746b64!important;font-size:12px!important;line-height:1.5!important}
+#vyrdict-product-feedback .vpf-actions{display:flex!important;align-items:center!important;gap:10px!important;width:100%!important;margin-top:14px!important}
+#vyrdict-product-feedback .vpf-vote{appearance:none!important;-webkit-appearance:none!important;flex:1 1 0!important;min-height:42px!important;border:1px solid #d8cec4!important;border-radius:999px!important;background:#fffdf9!important;color:#171511!important;padding:0 16px!important;font:800 11px/1 Arial,Helvetica,sans-serif!important;text-align:center!important;cursor:pointer!important;box-shadow:none!important}
+#vyrdict-product-feedback .vpf-vote:hover,#vyrdict-product-feedback .vpf-vote:focus-visible{border-color:#e65f72!important;outline:none!important}
+#vyrdict-product-feedback .vpf-vote:disabled{opacity:.55!important;cursor:default!important}
+#vyrdict-product-feedback .vpf-report{appearance:none!important;-webkit-appearance:none!important;display:inline-block!important;margin:14px 0 0!important;padding:0 0 2px!important;border:0!important;border-bottom:1px solid #5f5750!important;border-radius:0!important;background:transparent!important;color:#5f5750!important;font:800 10px/1.35 Arial,Helvetica,sans-serif!important;text-decoration:none!important;cursor:pointer!important;box-shadow:none!important}
+#vyrdict-product-feedback .vpf-thanks{color:#5f5750!important;font:800 11px/1.4 Arial,Helvetica,sans-serif!important}
+@media(max-width:600px){#vyrdict-product-feedback{width:calc(100% - 36px)!important;margin:22px auto 34px!important;padding:18px 18px 19px!important;border-radius:20px!important}#vyrdict-product-feedback .vpf-label{font-size:30px!important;line-height:1.04!important}#vyrdict-product-feedback .vpf-sub{font-size:11.5px!important}#vyrdict-product-feedback .vpf-actions{gap:8px!important;margin-top:13px!important}#vyrdict-product-feedback .vpf-vote{min-height:40px!important;font-size:11px!important}#vyrdict-product-feedback .vpf-report{margin-top:13px!important;font-size:10px!important}}
+@media(max-width:390px){#vyrdict-product-feedback{width:calc(100% - 28px)!important;padding:17px 16px 18px!important}#vyrdict-product-feedback .vpf-label{font-size:28px!important}}
 `;
 
   if(document.getElementById('vyrdict-launch-feedback-loader'))return;
