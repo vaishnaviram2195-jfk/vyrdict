@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/product(?:/.*)?$", "dest": "/index.html" },
+    { "src": "/category(?:/.*)?$", "dest": "/index.html" },
+    { "src": "/collection(?:/.*)?$", "dest": "/index.html" },
+    { "src": "/saved$", "dest": "/index.html" },
+    { "src": "/search$", "dest": "/index.html" },
+    { "handle": "filesystem" }
+  ]
+}
