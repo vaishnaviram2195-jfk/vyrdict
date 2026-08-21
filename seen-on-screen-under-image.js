@@ -30,12 +30,30 @@
     });
   }
 
+  function normalizeSceneImage(img,media){
+    if(!img||!media)return;
+    img.style.setProperty('object-fit','contain','important');
+    img.style.setProperty('object-position','center center','important');
+    img.style.setProperty('width','100%','important');
+    img.style.setProperty('height','auto','important');
+    img.style.setProperty('max-width','100%','important');
+    img.style.setProperty('max-height','none','important');
+    img.style.setProperty('display','block','important');
+    img.style.setProperty('margin','0 auto','important');
+    media.style.setProperty('height','auto','important');
+    media.style.setProperty('min-height','0','important');
+    media.style.setProperty('overflow','visible','important');
+    media.style.setProperty('align-self','start','important');
+  }
+
   function patch(){
     const hero=document.querySelector('.productHero');
     const original=hero?.querySelector('[data-vyrdict-screen-detail]');
     const img=hero?.querySelector('.media img');
     const media=img?.closest('.media');
     if(!hero||!original||!media)return false;
+
+    normalizeSceneImage(img,media);
 
     const details=[...hero.children].find(el=>el!==media&&(el.querySelector?.('h1,h2')||norm(el.innerText).includes('viral score')||norm(el.innerText).includes('worth score')));
     const title=details?.querySelector('h1,h2');
@@ -92,7 +110,7 @@
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
-  new MutationObserver(queue).observe(document.documentElement,{childList:true,subtree:true});
+  new MutationObserver(queue).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['src','srcset','style']});
   addEventListener('popstate',schedule);
   addEventListener('hashchange',schedule);
   document.addEventListener('click',()=>setTimeout(patch,80),{passive:true});
