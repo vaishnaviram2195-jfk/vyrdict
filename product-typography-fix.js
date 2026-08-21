@@ -1,11 +1,21 @@
 (()=>{
-  if(window.__vyrdictProductTypographyFix)return;
-  window.__vyrdictProductTypographyFix=1;
+  if(window.__vyrdictProductTypographyFixV2)return;
+  window.__vyrdictProductTypographyFixV2=1;
 
   const STYLE_ID='vyrdict-product-typography-style';
   const CLASS='vyrdict-editorial-heading';
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const onProduct=()=>/^\/product\//i.test(location.pathname)||/#\/product\//i.test(decodeURIComponent(location.hash||''));
+  const TARGETS=new Set([
+    'worth the hype',
+    'mostly worth it',
+    'exceptional',
+    'mixed',
+    'overhyped',
+    'skip',
+    'what it does',
+    'why it s viral'
+  ]);
 
   function addStyle(){
     let s=document.getElementById(STYLE_ID);
@@ -16,24 +26,13 @@
 `;
   }
 
-  function findEditorialCard(){
-    const all=[...document.querySelectorAll('.story article,article,.story-card,.detail-card,.info-card,section,div')];
-    return all.filter(el=>{
-      const t=norm(el.innerText||'');
-      return t.includes('the vyrdict')&&t.includes('what it does')&&t.includes('why it s viral');
-    }).sort((a,b)=>a.querySelectorAll('*').length-b.querySelectorAll('*').length)[0]||null;
-  }
-
   function apply(){
     if(!onProduct())return;
     addStyle();
-    const card=findEditorialCard();
-    if(!card)return;
-    const heads=[...card.querySelectorAll('h1,h2,h3,h4,h5,h6')];
+    const heads=[...document.querySelectorAll('h1,h2,h3,h4,h5,h6')];
     for(const h of heads){
-      const t=norm(h.textContent);
-      if(!t||t==='the vyrdict')continue;
-      h.classList.add(CLASS);
+      const isTarget=TARGETS.has(norm(h.textContent));
+      h.classList.toggle(CLASS,isTarget);
     }
   }
 
