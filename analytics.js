@@ -4,3 +4,4 @@
 (()=>{if(document.querySelector('link[data-vyrdict-mobile-polish]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='/mobile-polish.css?v=1';link.dataset.vyrdictMobilePolish='1';document.head.appendChild(link)})();
 (()=>{if(document.getElementById('vyrdict-verdict-icon-motion'))return;const s=document.createElement('script');s.id='vyrdict-verdict-icon-motion';s.src='/verdict-icon-motion.js?v=3';s.defer=true;document.head.appendChild(s)})();
 (()=>{if(document.getElementById('vyrdict-company-footer-loader'))return;const s=document.createElement('script');s.id='vyrdict-company-footer-loader';s.src='/site-footer.js?v=1';s.defer=true;document.head.appendChild(s)})();
+(()=>{if(document.getElementById('vyrdict-image-fallback-loader'))return;const s=document.createElement('script');s.id='vyrdict-image-fallback-loader';s.src='/image-fallback.js?v=1';s.defer=true;document.head.appendChild(s)})();
