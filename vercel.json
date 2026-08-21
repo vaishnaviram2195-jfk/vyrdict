@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/product/:path*", "destination": "/index.html" },
+    { "source": "/category/:path*", "destination": "/index.html" },
+    { "source": "/collection/:path*", "destination": "/index.html" },
+    { "source": "/saved", "destination": "/index.html" },
+    { "source": "/search", "destination": "/index.html" }
+  ]
+}
