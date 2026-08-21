@@ -16,3 +16,4 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
   addEventListener('hashchange',()=>setTimeout(schedule,50));addEventListener('popstate',()=>setTimeout(schedule,50));
 })();
+(()=>{if(document.getElementById('vyrdict-male-balance-loader'))return;const s=document.createElement('script');s.id='vyrdict-male-balance-loader';s.src='/male-balance.js?v=1';s.defer=true;document.head.appendChild(s)})();
