@@ -15,7 +15,9 @@
 #${FOOTER_ID} *{box-sizing:border-box}
 #${FOOTER_ID} .vf-shell{width:min(1180px,calc(100% - 40px));margin:0 auto;padding:54px 0 20px}
 #${FOOTER_ID} .vf-grid{display:grid;grid-template-columns:1.45fr repeat(3,minmax(0,1fr));gap:46px;align-items:start}
-#${FOOTER_ID} .vf-brand-name{display:inline-block;color:#171511;text-decoration:none;font-size:28px;font-weight:950;letter-spacing:-.065em;line-height:1}
+#${FOOTER_ID} .vf-brand-name{display:inline-flex;align-items:baseline;color:#171511;text-decoration:none;font-size:28px;font-weight:950;letter-spacing:-.065em;line-height:1}
+#${FOOTER_ID} .vf-logo-dot{display:inline-block;width:.19em;height:.19em;margin-left:.055em;background:#ed5d78;flex:0 0 auto}
+#${FOOTER_ID} .vf-brand-name .vf-logo-dot{transform:translateY(-.02em)}
 #${FOOTER_ID} .vf-brand p{max-width:245px;margin:14px 0 0;color:#6d675f;font-size:13px;line-height:1.6}
 #${FOOTER_ID} .vf-col h2{margin:1px 0 17px;color:#6d675f;font-size:9px;font-weight:950;letter-spacing:.14em;text-transform:uppercase}
 #${FOOTER_ID} .vf-links{display:flex;flex-direction:column;align-items:flex-start;gap:11px}
@@ -23,7 +25,8 @@
 #${FOOTER_ID} .vf-links a:hover{opacity:.62;transform:translateX(2px)}
 #${FOOTER_ID} .vf-rule{height:1px;background:#cfc2b7;margin:46px 0 18px}
 #${FOOTER_ID} .vf-bottom{display:flex;justify-content:space-between;align-items:center;gap:20px;color:#746d66;font-size:9px;line-height:1.5;letter-spacing:.02em}
-#${FOOTER_ID} .vf-wordmark{margin:44px 0 -7px;font-size:clamp(78px,15.1vw,184px);font-weight:950;letter-spacing:-.082em;line-height:.74;white-space:nowrap;color:#171511;user-select:none}
+#${FOOTER_ID} .vf-wordmark{margin:44px 0 -7px;font-size:clamp(78px,15.1vw,184px);font-weight:950;letter-spacing:-.082em;line-height:.74;white-space:nowrap;color:#171511;user-select:none;display:flex;align-items:flex-end}
+#${FOOTER_ID} .vf-wordmark .vf-logo-dot{transform:translateY(-.02em)}
 @media(max-width:860px){
   #${FOOTER_ID} .vf-grid{grid-template-columns:1.25fr repeat(3,1fr);gap:24px}
   #${FOOTER_ID} .vf-shell{padding-top:44px}
@@ -54,7 +57,7 @@
       <div class="vf-shell">
         <div class="vf-grid">
           <div class="vf-brand">
-            <a class="vf-brand-name" href="/" aria-label="VYRDICT home">VYRDICT.</a>
+            <a class="vf-brand-name" href="/" aria-label="VYRDICT home">VYRDICT<span class="vf-logo-dot" aria-hidden="true"></span></a>
             <p>The verdict on what’s trending.</p>
           </div>
           <nav class="vf-col" aria-label="Discover">
@@ -92,7 +95,7 @@
           <span>© 2026 VYRDICT. All Rights Reserved.</span>
           <span>Independent viral-product discovery and editorial scoring.</span>
         </div>
-        <div class="vf-wordmark" aria-hidden="true">VYRDICT.</div>
+        <div class="vf-wordmark" aria-hidden="true">VYRDICT<span class="vf-logo-dot"></span></div>
       </div>`;
     document.body.appendChild(footer);
   }
