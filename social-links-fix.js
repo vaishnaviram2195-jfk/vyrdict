@@ -39,3 +39,11 @@
   document.addEventListener('click',()=>setTimeout(patchAll,40),{passive:true});
   new MutationObserver(patchAll).observe(document.documentElement,{subtree:true,childList:true});
 })();
+(()=>{
+  if(document.getElementById('vyrdict-launch-feedback-loader'))return;
+  const s=document.createElement('script');
+  s.id='vyrdict-launch-feedback-loader';
+  s.src='/launch-feedback.js?v=1';
+  s.defer=true;
+  document.head.appendChild(s);
+})();
