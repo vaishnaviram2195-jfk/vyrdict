@@ -7,4 +7,4 @@
 (()=>{if(document.getElementById('vyrdict-image-fallback-loader'))return;const s=document.createElement('script');s.id='vyrdict-image-fallback-loader';s.src='/image-fallback.js?v=1';s.defer=true;document.head.appendChild(s)})();
 (()=>{if(document.getElementById('vyrdict-header-brand-fix-loader'))return;const s=document.createElement('script');s.id='vyrdict-header-brand-fix-loader';s.src='/header-brand-fix.js?v=2';s.defer=true;document.head.appendChild(s)})();
 (()=>{if(document.getElementById('vyrdict-empty-search-suggest-loader'))return;const s=document.createElement('script');s.id='vyrdict-empty-search-suggest-loader';s.src='/search-empty-suggest.js?v=1';s.defer=true;document.head.appendChild(s)})();
-(()=>{if(document.getElementById('vyrdict-seen-on-screen-loader'))return;const s=document.createElement('script');s.id='vyrdict-seen-on-screen-loader';s.src='/seen-on-screen.js?v=2';s.defer=true;document.head.appendChild(s)})();
+(()=>{if(document.getElementById('vyrdict-seen-on-screen-loader'))return;const s=document.createElement('script');s.id='vyrdict-seen-on-screen-loader';s.src='/seen-on-screen.js?v=3';s.defer=true;document.head.appendChild(s)})();
