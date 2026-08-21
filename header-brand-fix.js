@@ -5,7 +5,7 @@
     s.id=STYLE_ID;
     s.textContent=`
       .vyrdict-header-wordmark{display:inline-flex!important;align-items:flex-end!important;gap:.055em!important}
-      .vyrdict-header-mark{display:inline-block!important;width:.18em!important;height:.18em!important;background:#d94d73!important;border-radius:0!important;flex:0 0 auto!important;transform:translateY(-.08em)!important}
+      .vyrdict-header-mark{display:inline-block!important;width:.18em!important;height:.18em!important;background:#d94d73!important;border-radius:0!important;flex:0 0 auto!important;transform:translateY(-.24em)!important}
     `;
     document.head.appendChild(s);
   }
