@@ -6,6 +6,7 @@
     { "src": "/collection(?:/.*)?$", "dest": "/index.html" },
     { "src": "/saved$", "dest": "/index.html" },
     { "src": "/search$", "dest": "/index.html" },
+    { "src": "/careers/?$", "dest": "/careers.html" },
     { "handle": "filesystem" }
   ]
 }
