@@ -5,9 +5,9 @@
   const ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-feedback';
   const STYLE_ID='vyrdict-launch-feedback-style';
   const MODAL_ID='vyrdict-feedback-modal';
-  const PRODUCT_ID='vyrdict-product-feedback';
+  const OLD_PRODUCT_ID='vyrdict-product-feedback';
+  const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
 
-  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function productSlug(){
     let m=decodeURIComponent(location.pathname||'').match(/^\/product\/([^/?#]+)/i);
     if(m)return m[1];
@@ -44,17 +44,15 @@
 #${MODAL_ID} .vfb-submit{margin-top:16px;border:0;border-radius:999px;background:#171511;color:white;padding:12px 20px;font:900 10px/1 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
 #${MODAL_ID} .vfb-submit:disabled{opacity:.45;cursor:default}
 #${MODAL_ID} .vfb-status{min-height:18px;margin-top:11px;color:#5f5750;font:12px/1.4 Arial,sans-serif}
-#${PRODUCT_ID}{width:min(1040px,calc(100% - 34px));margin:28px auto 46px;background:#fffaf4;border:1px solid #d8cec4;border-radius:22px;padding:22px 24px;color:#171511;font-family:Arial,sans-serif}
-#${PRODUCT_ID} .vpf-row{display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap}
-#${PRODUCT_ID} .vpf-label{font:700 24px/1.05 Georgia,serif;letter-spacing:-.025em;margin:0 0 5px}
-#${PRODUCT_ID} .vpf-sub{font-size:11px;line-height:1.5;color:#726860;margin:0}
-#${PRODUCT_ID} .vpf-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-#${PRODUCT_ID} .vpf-vote{border:1px solid #d8cec4;background:#fffdf9;color:#171511;border-radius:999px;padding:10px 14px;font:800 11px/1 Arial,sans-serif;cursor:pointer}
-#${PRODUCT_ID} .vpf-vote:hover{border-color:#e65f72}
-#${PRODUCT_ID} .vpf-vote:disabled{opacity:.55;cursor:default}
-#${PRODUCT_ID} .vpf-report{display:inline-block;margin-top:14px;color:#5f5750;text-decoration:underline;text-underline-offset:3px;font:800 10px/1.4 Arial,sans-serif;cursor:pointer;background:none;border:0;padding:0}
-#${PRODUCT_ID} .vpf-thanks{font:800 11px/1.4 Arial,sans-serif;color:#5f5750}
-@media(max-width:600px){#${MODAL_ID} .vfb-panel{padding:22px 19px;border-radius:22px}#${PRODUCT_ID}{padding:19px;margin-top:22px}#${PRODUCT_ID} .vpf-actions{width:100%}#${PRODUCT_ID} .vpf-vote{flex:1;text-align:center}}
+.vpf-inline-actions{display:inline-flex;align-items:center;gap:7px;flex:0 0 auto}
+.vpf-icon{appearance:none;-webkit-appearance:none;width:38px;height:38px;display:grid;place-items:center;border:1px solid #171511;border-radius:999px;background:transparent;color:#171511;padding:0;font-size:16px;line-height:1;cursor:pointer;transition:background .15s ease,border-color .15s ease,transform .15s ease,opacity .15s ease}
+.vpf-icon:hover,.vpf-icon:focus-visible{border-color:#e65f72;transform:translateY(-1px);outline:none}
+.vpf-icon.is-selected{background:#171511;color:#fff;border-color:#171511;opacity:1!important}
+.vpf-icon:disabled:not(.is-selected){opacity:.42;cursor:default;transform:none}
+.vpf-report-row{margin-top:11px;line-height:1}
+.vpf-inline-report{appearance:none;-webkit-appearance:none;border:0;border-bottom:1px solid #655d56;border-radius:0;background:transparent;color:#655d56;padding:0 0 2px;margin:0;font:800 9px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.01em;cursor:pointer;text-decoration:none}
+.vpf-inline-report:hover,.vpf-inline-report:focus-visible{color:#171511;border-color:#171511;outline:none}
+@media(max-width:600px){#${MODAL_ID} .vfb-panel{padding:22px 19px;border-radius:22px}.vpf-icon{width:36px;height:36px;font-size:15px}.vpf-inline-actions{gap:6px}.vpf-report-row{margin-top:10px}}
 `;
     document.head.appendChild(s);
   }
@@ -136,18 +134,93 @@
 
   function voted(slug){try{return localStorage.getItem('vyrdict:helpful:'+slug)}catch{return null}}
   function markVoted(slug,val){try{localStorage.setItem('vyrdict:helpful:'+slug,val?'yes':'no')}catch{}}
-  function ensureProductPanel(){
+
+  function removeOldPanel(){
+    document.getElementById(OLD_PRODUCT_ID)?.remove();
+    document.getElementById('vyrdict-feedback-prime-style')?.remove();
+  }
+
+  function findProductActions(){
+    const hero=document.querySelector('.productHero');
+    if(!hero)return null;
+    const controls=[...hero.querySelectorAll('button,a')];
+    const share=controls.find(x=>x.hasAttribute('data-share')||norm(x.textContent).includes('share vyrdict'));
+    if(!share)return null;
+    const row=share.closest('.ctas')||share.parentElement;
+    return row?{row,share}:null;
+  }
+
+  function setVoteState(box,prior){
+    const buttons=[...box.querySelectorAll('[data-vpf-vote]')];
+    for(const b of buttons){
+      const chosen=b.dataset.vpfVote===prior;
+      b.classList.toggle('is-selected',chosen);
+      b.setAttribute('aria-pressed',chosen?'true':'false');
+      b.disabled=!!prior;
+    }
+  }
+
+  function ensureInlineVotes(){
     const slug=productSlug();
-    const old=document.getElementById(PRODUCT_ID);
+    const current=document.querySelector('[data-vpf-inline]');
+    if(!slug){current?.remove();return false}
+    const hit=findProductActions();
+    if(!hit)return false;
+    if(current&&current.dataset.slug===slug&&hit.row.contains(current))return true;
+    current?.remove();
+    const box=document.createElement('span');
+    box.className='vpf-inline-actions';
+    box.dataset.vpfInline='';
+    box.dataset.slug=slug;
+    box.setAttribute('aria-label','Was this product verdict helpful?');
+    box.innerHTML='<button class="vpf-icon" type="button" data-vpf-vote="yes" aria-label="Helpful" title="Helpful">👍</button><button class="vpf-icon" type="button" data-vpf-vote="no" aria-label="Not helpful" title="Not helpful">👎</button>';
+    hit.share.insertAdjacentElement('afterend',box);
+    setVoteState(box,voted(slug));
+    return true;
+  }
+
+  function findScoreDiscovery(){
+    const evidence=[...document.querySelectorAll('a,button')].find(x=>norm(x.textContent).includes('see this product s evidence'))||document.querySelector('.vyrdict-evidence-link');
+    const scoring=[...document.querySelectorAll('a,button')].find(x=>norm(x.textContent).includes('discover how scoring works'));
+    if(evidence||scoring){
+      let root=(evidence||scoring).parentElement;
+      for(let i=0;root&&i<5;i++,root=root.parentElement){
+        const t=norm(root.innerText||'');
+        if(t.includes('how vyrdict scored this')||t.includes('score discovery'))return {root,evidence,scoring};
+      }
+    }
+    const candidates=[...document.querySelectorAll('section,article,div')].filter(el=>{
+      const t=norm(el.innerText||'');
+      return t.includes('how vyrdict scored this')&&(t.includes('evidence')||t.includes('scoring works'));
+    }).sort((a,b)=>a.querySelectorAll('*').length-b.querySelectorAll('*').length);
+    const root=candidates[0];
+    if(!root)return null;
+    const controls=[...root.querySelectorAll('a,button')];
+    return {root,evidence:controls.find(x=>norm(x.textContent).includes('see this product s evidence')),scoring:controls.find(x=>norm(x.textContent).includes('discover how scoring works'))};
+  }
+
+  function commonAncestor(a,b,stop){
+    if(!a)return null;
+    let n=a.parentElement;
+    while(n&&n!==stop){if(!b||n.contains(b))return n;n=n.parentElement}
+    return null;
+  }
+
+  function ensureProductReport(){
+    const slug=productSlug();
+    const old=document.querySelector('[data-vpf-report-row]');
     if(!slug){old?.remove();return false}
-    if(old&&old.dataset.slug===slug)return true;
+    const found=findScoreDiscovery();
+    if(!found)return false;
+    if(old&&old.dataset.slug===slug&&found.root.contains(old))return true;
     old?.remove();
-    const app=document.getElementById('app');
-    if(!app||!app.innerHTML.trim())return false;
-    const sec=document.createElement('section');sec.id=PRODUCT_ID;sec.dataset.slug=slug;
-    const prior=voted(slug);
-    sec.innerHTML=`<div class="vpf-row"><div><h2 class="vpf-label">Was this VYRDICT helpful?</h2><p class="vpf-sub">A quick tap helps us improve product pages.</p></div><div class="vpf-actions">${prior?'<span class="vpf-thanks">Thanks for the feedback. ✨</span>':'<button class="vpf-vote" data-vpf-vote="yes">👍 Yes</button><button class="vpf-vote" data-vpf-vote="no">👎 Not really</button>'}</div></div><button class="vpf-report" data-vpf-report>Something inaccurate or missing? Tell us →</button>`;
-    app.insertAdjacentElement('afterend',sec);
+    const row=document.createElement('div');
+    row.className='vpf-report-row';
+    row.dataset.vpfReportRow='';
+    row.dataset.slug=slug;
+    row.innerHTML='<button class="vpf-inline-report" type="button" data-vpf-report>Something inaccurate or missing? Tell us →</button>';
+    const actionRow=commonAncestor(found.evidence,found.scoring,found.root)||found.evidence?.parentElement||found.scoring?.parentElement;
+    if(actionRow&&actionRow!==found.root)actionRow.insertAdjacentElement('afterend',row);else found.root.appendChild(row);
     return true;
   }
 
@@ -155,20 +228,29 @@
     const faq=e.target.closest?.('[data-vyrdict-faq]');if(faq){e.preventDefault();openFaq();return}
     const fb=e.target.closest?.('[data-vyrdict-feedback]');if(fb){e.preventDefault();openFeedback('site');return}
     const report=e.target.closest?.('[data-vpf-report]');if(report){e.preventDefault();const s=productSlug();if(s)openFeedback('product_issue',s);return}
-    const vote=e.target.closest?.('[data-vpf-vote]');if(vote){
-      e.preventDefault();const slug=productSlug();if(!slug||vote.disabled)return;
-      const box=vote.closest('.vpf-actions');box.querySelectorAll('button').forEach(b=>b.disabled=true);
+    const vote=e.target.closest?.('[data-vpf-vote]');
+    if(vote){
+      e.preventDefault();
+      const slug=productSlug(),box=vote.closest('[data-vpf-inline]');
+      if(!slug||!box||vote.disabled)return;
+      const buttons=[...box.querySelectorAll('[data-vpf-vote]')];buttons.forEach(b=>b.disabled=true);
       const helpful=vote.dataset.vpfVote==='yes';
-      try{await send({feedback_type:'product_helpful',product_slug:slug,helpful});markVoted(slug,helpful);box.innerHTML='<span class="vpf-thanks">Thanks — that helps us improve. ✨</span>'}
-      catch{box.querySelectorAll('button').forEach(b=>b.disabled=false)}
+      try{await send({feedback_type:'product_helpful',product_slug:slug,helpful});markVoted(slug,helpful);setVoteState(box,helpful?'yes':'no')}
+      catch{buttons.forEach(b=>b.disabled=false)}
       return;
     }
-    setTimeout(()=>{ensureFooterLinks();ensureProductPanel()},80);
+    setTimeout(sync,80);
   });
 
-  function sync(){ensureFooterLinks();ensureProductPanel()}
+  function sync(){
+    addStyle();
+    ensureFooterLinks();
+    removeOldPanel();
+    ensureInlineVotes();
+    ensureProductReport();
+  }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();
-  [120,350,800,1500].forEach(ms=>setTimeout(sync,ms));
+  [120,350,800,1500,2400].forEach(ms=>setTimeout(sync,ms));
   const mo=new MutationObserver(()=>{clearTimeout(window.__vfbSyncTimer);window.__vfbSyncTimer=setTimeout(sync,60)});
   mo.observe(document.documentElement,{childList:true,subtree:true});
   addEventListener('popstate',()=>setTimeout(sync,30));
