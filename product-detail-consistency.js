@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictProductDetailConsistencyV1)return;
-  window.__vyrdictProductDetailConsistencyV1=1;
+  if(window.__vyrdictProductDetailConsistencyV2)return;
+  window.__vyrdictProductDetailConsistencyV2=1;
 
   const STYLE_ID='vyrdict-product-detail-consistency-style';
   const FACTS_ATTR='data-vyrdict-fallback-facts';
@@ -14,13 +14,24 @@
   };
 
   function ensureStyle(){
-    // Remove the temporary typography override from earlier launch QA if an old cached copy is still present.
+    // Remove temporary typography overrides from launch QA so one product-detail system wins.
     document.getElementById('vyrdict-product-typography-style')?.remove();
     document.querySelectorAll('.vyrdict-editorial-heading').forEach(el=>el.classList.remove('vyrdict-editorial-heading'));
 
     let st=document.getElementById(STYLE_ID);
     if(!st){st=document.createElement('style');st.id=STYLE_ID;document.head.appendChild(st)}
     st.textContent=`
+/* Product name: intentionally smaller than the old 50–78px scale. */
+.productHero .info > h1{
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:clamp(38px,4.1vw,56px)!important;
+  font-weight:400!important;
+  font-style:normal!important;
+  line-height:.96!important;
+  letter-spacing:-.045em!important;
+  margin:12px 0!important;
+}
+/* Editorial story hierarchy: one size, one weight, everywhere. */
 .story article:first-child > h3.vyrdict-detail-heading{
   font-family:Georgia,"Times New Roman",serif!important;
   font-size:29px!important;
@@ -38,12 +49,19 @@
   color:#4e4740!important;
 }
 .story article:nth-child(2) > h3{
-  font-family:Georgia,"Times New Roman",serif;
-  font-size:29px;
-  font-weight:400;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:29px!important;
+  font-weight:400!important;
+  font-style:normal!important;
+  line-height:1.12!important;
+  letter-spacing:normal!important;
 }
 .story .vyrdict-fallback-fact{border-left-color:#e65f72}
+@media(max-width:900px){
+  .productHero .info > h1{font-size:clamp(38px,6vw,52px)!important;line-height:.98!important}
+}
 @media(max-width:600px){
+  .productHero .info > h1{font-size:clamp(34px,9vw,42px)!important;line-height:1!important;letter-spacing:-.04em!important}
   .story article:first-child > h3.vyrdict-detail-heading,
   .story article:nth-child(2) > h3{font-size:27px!important;line-height:1.12!important}
   .story article:first-child > p.vyrdict-detail-copy{font-size:14px!important;line-height:1.6!important}
@@ -55,13 +73,9 @@
     const story=document.querySelector('.story');
     const left=story?.querySelector('article:first-child');
     if(!left)return false;
-    const targets=new Set(['what it does','why it s viral']);
     const heads=[...left.querySelectorAll(':scope > h1,:scope > h2,:scope > h3,:scope > h4')];
     for(const h of heads){
-      const t=norm(h.textContent);
-      // THE VYRDICT is an eyebrow div. Every direct editorial h3 is part of the same visual hierarchy.
-      if(t)h.classList.add('vyrdict-detail-heading');
-      if(targets.has(t))h.classList.add('vyrdict-detail-heading');
+      if(norm(h.textContent))h.classList.add('vyrdict-detail-heading');
     }
     [...left.querySelectorAll(':scope > p')].forEach(p=>p.classList.add('vyrdict-detail-copy'));
     return true;
