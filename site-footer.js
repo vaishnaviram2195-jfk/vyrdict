@@ -85,6 +85,7 @@
               <a href="https://www.linkedin.com/company/143431971/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
               <a href="https://www.instagram.com/vyrdict.co/" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
               <a href="https://www.tiktok.com/@vyrdict" target="_blank" rel="noopener noreferrer">TikTok ↗</a>
+              <a href="/careers">Careers</a>
               <a href="/suggest-product.html" data-vyrdict-suggest>Suggest a Product</a>
               <a href="mailto:hello@vyrdict.com">hello@vyrdict.com</a>
             </div>
