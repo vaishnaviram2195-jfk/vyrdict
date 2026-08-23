@@ -41,10 +41,6 @@
     return document.getElementById('skip-list')||document.querySelector('section.skiplist,.section.skiplist')||sectionByHeading('skip it')||sectionByHeading('the skip list');
   }
 
-  function getWeekly(){
-    return sectionByHeading('weekly viral rankings')||sectionByHeading('weekly viral ranking');
-  }
-
   function productItems(rail){
     return [...rail.children].filter(el=>!el.matches('script,style,.vyrdict-featured-cta,.v-home-discovery-card,.v-skip-discovery-card'));
   }
@@ -125,7 +121,6 @@
     addStyle();
     render(getWorth(),{kicker:'The good list',title:'More worth-it finds',copy:'See more products where the value keeps up with the hype.',action:'See all worth it'});
     render(getSkip(),{kicker:'Keep scrolling',title:'More hype to skip',copy:'See what else is getting attention without earning the spend.',action:'See all skips'});
-    render(getWeekly(),{kicker:'Beyond the top 3',title:'Keep climbing the ranking',copy:'See what else is trending this week.',action:'See more rankings'});
   }
 
   function schedule(){[0,80,180,350,700,1200,2200,3500].forEach(ms=>setTimeout(apply,ms))}
