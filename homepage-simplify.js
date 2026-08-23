@@ -26,6 +26,8 @@ body.vyrdict-home-calm .stage .p1{width:46%!important;height:48%!important;left:
 body.vyrdict-home-calm .stage .p2{width:31%!important;height:32%!important;right:7%!important;top:43%!important;left:auto!important;bottom:auto!important;transform:rotate(4deg)!important}
 body.vyrdict-home-calm .stage .p3{width:26%!important;height:26%!important;right:11%!important;top:9%!important;left:auto!important;bottom:auto!important;transform:rotate(3deg)!important}
 body.vyrdict-home-calm .stage .photo{box-shadow:0 10px 26px rgba(46,34,26,.09)!important}
+body.vyrdict-home-calm .category{font-size:12px!important;padding:13px 19px!important;color:#6d675f!important;font-weight:800!important;letter-spacing:.075em!important;opacity:.82}
+body.vyrdict-home-calm .category:hover{color:#171511!important;opacity:1}
 body.vyrdict-home-calm .section{padding-top:72px!important;padding-bottom:72px!important}
 body.vyrdict-home-calm .section .head{margin-bottom:24px!important;gap:20px!important}
 body.vyrdict-home-calm .section .head p{max-width:520px!important;line-height:1.55!important}
@@ -43,6 +45,7 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
   body.vyrdict-home-calm .stage .p2{width:34%!important;height:31%!important;right:4%!important;top:48%!important}
   body.vyrdict-home-calm .stage .p3{width:29%!important;height:25%!important;right:8%!important;top:10%!important}
   body.vyrdict-home-calm .stage .sticker.spark{font-size:20px!important}
+  body.vyrdict-home-calm .category{font-size:11px!important;padding:12px 15px!important;letter-spacing:.065em!important}
   body.vyrdict-home-calm .section{padding-top:54px!important;padding-bottom:54px!important}
   body.vyrdict-home-calm .section .head{margin-bottom:20px!important}
 }
