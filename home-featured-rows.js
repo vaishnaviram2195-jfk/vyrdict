@@ -1,9 +1,9 @@
 (()=>{
-  if(window.__vyrdictFeaturedRowsV2)return;
-  window.__vyrdictFeaturedRowsV2=1;
+  if(window.__vyrdictFeaturedRowsV3)return;
+  window.__vyrdictFeaturedRowsV3=1;
 
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
-  const STYLE_ID='vyrdict-featured-rows-v2-style';
+  const STYLE_ID='vyrdict-featured-rows-v3-style';
   const isHome=()=>location.pathname==='/'||location.pathname==='';
 
   function addStyle(){
@@ -12,6 +12,7 @@
     s.id=STYLE_ID;
     s.textContent=`
       body .vyrdict-featured-cta{box-sizing:border-box;display:flex!important;flex-direction:column!important;justify-content:space-between!important;align-self:stretch!important;overflow:hidden!important;border:1px solid rgba(23,21,17,.14)!important;border-radius:28px!important;background:#fffdf8!important;color:#171511!important;padding:28px!important;box-shadow:none!important;min-width:250px!important;cursor:pointer!important;text-decoration:none!important;visibility:visible!important;opacity:1!important;transition:transform .16s ease,border-color .16s ease!important}
+      body .vyrdict-featured-cta[hidden]{display:none!important}
       body .vyrdict-featured-cta:hover{transform:translateY(-2px);border-color:rgba(23,21,17,.34)!important}
       body .vyrdict-featured-kicker{display:flex;align-items:center;gap:8px;font:950 9px/1 Arial,Helvetica,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#6d675f;text-align:left}
       body .vyrdict-featured-dot{width:7px;height:7px;background:#d94d73;border-radius:2px;flex:0 0 auto}
@@ -24,7 +25,8 @@
       body .vyrdict-featured-extra-row{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px!important;align-items:stretch!important;margin-top:18px!important;overflow:visible!important}
       body .vyrdict-featured-extra-row[hidden]{display:none!important}
       body .vyrdict-featured-extra-row>*{min-width:0!important;width:auto!important;max-width:none!important;flex:none!important}
-      body .vyrdict-featured-collapse-v2{appearance:none;border:0;background:transparent;color:#171511;padding:0 0 2px;margin:20px 0 0;border-bottom:1px solid #171511;font:900 9px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+      body .vyrdict-featured-collapse-v3{display:inline-block!important;appearance:none;border:0;background:transparent;color:#171511;padding:0 0 2px;margin:20px 0 0;border-bottom:1px solid #171511;font:900 9px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;position:relative;z-index:2}
+      body .vyrdict-featured-collapse-v3[hidden]{display:none!important}
       @media(max-width:900px){body .vyrdict-featured-extra-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
       @media(max-width:700px){
         body .vyrdict-featured-cta{padding:22px!important;border-radius:24px!important}
@@ -57,7 +59,7 @@
   }
 
   function removeLegacy(section,rail){
-    section.querySelectorAll('.v-home-discovery-card,.v-skip-discovery-card,.v-home-collapse,.v-skip-collapse,.vyrdict-featured-collapse,.v-home-rail-more').forEach(el=>el.remove());
+    section.querySelectorAll('.v-home-discovery-card,.v-skip-discovery-card,.v-home-collapse,.v-skip-collapse,.vyrdict-featured-collapse,.vyrdict-featured-collapse-v2,.v-home-rail-more').forEach(el=>el.remove());
     rail.querySelectorAll('.v-home-discovery-card,.v-skip-discovery-card').forEach(el=>el.remove());
   }
 
@@ -74,6 +76,20 @@
     if(r.height>0)card.style.setProperty('min-height',`${Math.round(r.height)}px`,'important');
   }
 
+  function ensureCollapse(section,extra){
+    let collapse=section.querySelector('.vyrdict-featured-collapse-v3');
+    if(!collapse){
+      collapse=document.createElement('button');
+      collapse.type='button';
+      collapse.className='vyrdict-featured-collapse-v3';
+      collapse.textContent='Show less';
+      collapse.addEventListener('click',()=>setExpanded(section,false));
+      extra.insertAdjacentElement('afterend',collapse);
+    }
+    collapse.hidden=section.dataset.vyrdictFeaturedExpanded!=='1';
+    return collapse;
+  }
+
   function setExpanded(section,on){
     const rail=section.querySelector('.rail,[data-rail]');
     const extra=section.querySelector('.vyrdict-featured-extra-row');
@@ -83,21 +99,10 @@
     section.dataset.vyrdictFeaturedExpanded=on?'1':'0';
     extra.hidden=!on;
     cta.hidden=on;
+    const collapse=ensureCollapse(section,extra);
+    collapse.hidden=!on;
 
-    let collapse=section.querySelector('.vyrdict-featured-collapse-v2');
-    if(on){
-      if(!collapse){
-        collapse=document.createElement('button');
-        collapse.type='button';
-        collapse.className='vyrdict-featured-collapse-v2';
-        collapse.textContent='Show less';
-        collapse.addEventListener('click',()=>setExpanded(section,false));
-        extra.insertAdjacentElement('afterend',collapse);
-      }
-    }else{
-      collapse?.remove();
-      requestAnimationFrame(()=>setCtaSize(section));
-    }
+    if(!on)requestAnimationFrame(()=>setCtaSize(section));
   }
 
   function initialize(section,cfg){
@@ -108,7 +113,9 @@
     section.classList.add('vyrdict-featured-section');
     removeLegacy(section,rail);
 
-    if(section.dataset.vyrdictFeaturedV2==='1'){
+    if(section.dataset.vyrdictFeaturedV3==='1'){
+      const extra=section.querySelector('.vyrdict-featured-extra-row');
+      if(extra)ensureCollapse(section,extra);
       setCtaSize(section);
       return true;
     }
@@ -133,8 +140,9 @@
     cta.addEventListener('click',()=>setExpanded(section,true));
     rail.appendChild(cta);
 
-    section.dataset.vyrdictFeaturedV2='1';
+    section.dataset.vyrdictFeaturedV3='1';
     section.dataset.vyrdictFeaturedExpanded='0';
+    ensureCollapse(section,extra).hidden=true;
     requestAnimationFrame(()=>setCtaSize(section));
     return true;
   }
@@ -148,15 +156,15 @@
   }
 
   function boot(attempt=0){
-    if(apply()||attempt>=12)return;
-    setTimeout(()=>boot(attempt+1),180);
+    if(apply()||attempt>=20)return;
+    setTimeout(()=>boot(attempt+1),120);
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>boot(),{once:true});else boot();
   addEventListener('popstate',()=>boot());
   addEventListener('hashchange',()=>boot());
   addEventListener('resize',()=>{
-    clearTimeout(window.__vyrdictFeaturedResizeV2);
-    window.__vyrdictFeaturedResizeV2=setTimeout(()=>{setCtaSize(getWorth());setCtaSize(getSkip())},160);
+    clearTimeout(window.__vyrdictFeaturedResizeV3);
+    window.__vyrdictFeaturedResizeV3=setTimeout(()=>{setCtaSize(getWorth());setCtaSize(getSkip())},160);
   });
 })();
