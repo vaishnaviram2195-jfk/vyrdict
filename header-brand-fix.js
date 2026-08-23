@@ -40,7 +40,7 @@
   if(document.getElementById('vyrdict-home-hero-variety-loader'))return;
   const s=document.createElement('script');
   s.id='vyrdict-home-hero-variety-loader';
-  s.src='/homepage-hero-variety.js?v=3';
+  s.src='/homepage-hero-variety.js?v=4';
   s.defer=true;
   document.head.appendChild(s);
 })();
