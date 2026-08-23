@@ -23,16 +23,19 @@
     return true;
   }
 
-  function schedule(){[0,80,220,500,900,1600].forEach(ms=>setTimeout(fix,ms));}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
-  addEventListener('hashchange',()=>setTimeout(fix,60));
-  addEventListener('popstate',()=>setTimeout(fix,60));
+  function boot(attempt=0){
+    if(fix()||attempt>=20)return;
+    setTimeout(()=>boot(attempt+1),120);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>boot(),{once:true});else boot();
+  addEventListener('hashchange',()=>boot());
+  addEventListener('popstate',()=>boot());
 })();
 (()=>{
   if(document.getElementById('vyrdict-home-simplify-loader'))return;
   const s=document.createElement('script');
   s.id='vyrdict-home-simplify-loader';
-  s.src='/homepage-simplify.js?v=5';
+  s.src='/homepage-simplify.js?v=6';
   s.defer=true;
   document.head.appendChild(s);
 })();
@@ -40,7 +43,7 @@
   if(document.getElementById('vyrdict-home-hero-variety-loader'))return;
   const s=document.createElement('script');
   s.id='vyrdict-home-hero-variety-loader';
-  s.src='/homepage-hero-variety.js?v=4';
+  s.src='/homepage-hero-variety.js?v=5';
   s.defer=true;
   document.head.appendChild(s);
 })();
