@@ -116,7 +116,6 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
 
   function simplifySections(){
     limitRail(document.getElementById('viral')||sectionByText("what's trending now"),6,'See all trending');
-    limitRail(sectionByText('weekly viral rankings'),6,'See all rankings');
     limitRail(sectionByText('seen on screen'),4,'See all seen on screen');
     const culture=document.getElementById('culture')||sectionByText('you saw it then everyone bought it');
     if(culture&&!norm(culture.textContent).includes('seen on screen'))limitRail(culture,6,'See all');
