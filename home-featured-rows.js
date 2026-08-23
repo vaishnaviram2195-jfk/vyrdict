@@ -21,6 +21,7 @@
       body .vyrdict-featured-action{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #d8cec4;padding-top:16px;font:950 10px/1 Arial,Helvetica,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:#171511;text-align:left}
       body .vyrdict-featured-arrow{font-size:17px;line-height:1;font-weight:400}
       body .vyrdict-featured-collapse{appearance:none;border:0;background:transparent;color:#171511;padding:0 0 2px;margin:20px 0 0;border-bottom:1px solid #171511;font:900 9px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+      body .vyrdict-featured-section .v-home-rail-more.v-home-more{display:none!important}
       @media(max-width:700px){body .vyrdict-featured-cta{padding:22px!important;border-radius:24px!important}body .vyrdict-featured-copy{padding:22px 0}body .vyrdict-featured-cta h3{font-size:28px}}
     `;
     document.head.appendChild(s);
@@ -40,12 +41,16 @@
     return document.getElementById('skip-list')||document.querySelector('section.skiplist,.section.skiplist')||sectionByHeading('skip it')||sectionByHeading('the skip list');
   }
 
+  function getWeekly(){
+    return sectionByHeading('weekly viral rankings')||sectionByHeading('weekly viral ranking');
+  }
+
   function productItems(rail){
     return [...rail.children].filter(el=>!el.matches('script,style,.vyrdict-featured-cta,.v-home-discovery-card,.v-skip-discovery-card'));
   }
 
   function clearLegacy(section,rail){
-    section.querySelectorAll('.v-home-discovery-card,.v-skip-discovery-card,.v-home-rail-more,.v-home-collapse,.v-skip-collapse,.vyrdict-featured-collapse').forEach(el=>el.remove());
+    section.querySelectorAll('.v-home-discovery-card,.v-skip-discovery-card,.v-home-collapse,.v-skip-collapse,.vyrdict-featured-collapse').forEach(el=>el.remove());
     rail.querySelectorAll('.v-home-discovery-card,.v-skip-discovery-card').forEach(el=>el.remove());
   }
 
@@ -54,6 +59,8 @@
     const rail=section.querySelector('.rail,[data-rail]');
     if(!rail)return false;
 
+    section.classList.add('vyrdict-featured-section');
+    section.dataset.vHomeExpanded='1';
     clearLegacy(section,rail);
     const items=productItems(rail);
     if(items.length<4)return false;
@@ -118,6 +125,7 @@
     addStyle();
     render(getWorth(),{kicker:'The good list',title:'More worth-it finds',copy:'See more products where the value keeps up with the hype.',action:'See all worth it'});
     render(getSkip(),{kicker:'Keep scrolling',title:'More hype to skip',copy:'See what else is getting attention without earning the spend.',action:'See all skips'});
+    render(getWeekly(),{kicker:'Beyond the top 3',title:'Keep climbing the ranking',copy:'See what else is trending this week.',action:'See more rankings'});
   }
 
   function schedule(){[0,80,180,350,700,1200,2200,3500].forEach(ms=>setTimeout(apply,ms))}
