@@ -32,7 +32,7 @@
   if(document.getElementById('vyrdict-home-simplify-loader'))return;
   const s=document.createElement('script');
   s.id='vyrdict-home-simplify-loader';
-  s.src='/homepage-simplify.js?v=2';
+  s.src='/homepage-simplify.js?v=3';
   s.defer=true;
   document.head.appendChild(s);
 })();
