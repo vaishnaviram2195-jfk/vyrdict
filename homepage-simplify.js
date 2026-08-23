@@ -39,6 +39,15 @@ body.vyrdict-home-calm .v-home-more:hover{opacity:.68}
 body.vyrdict-home-calm .v-home-rail-more{display:block!important;width:max-content!important;margin:20px 0 0!important}
 body.vyrdict-home-calm .v-home-category-more{margin-top:20px}
 body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
+body.vyrdict-home-calm .v-home-discovery-card{box-sizing:border-box;display:flex!important;flex-direction:column!important;justify-content:space-between!important;align-self:stretch!important;overflow:hidden!important;border:1px solid rgba(23,21,17,.14)!important;border-radius:28px!important;background:#fffdf8!important;color:#171511!important;padding:28px!important;box-shadow:none!important;min-width:250px;cursor:pointer;text-decoration:none!important;transition:transform .16s ease,border-color .16s ease}
+body.vyrdict-home-calm .v-home-discovery-card:hover{transform:translateY(-2px);border-color:rgba(23,21,17,.34)!important}
+body.vyrdict-home-calm .v-home-discovery-top{display:flex;align-items:center;gap:8px;font:950 9px/1 Arial,Helvetica,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#6d675f}
+body.vyrdict-home-calm .v-home-discovery-dot{width:7px;height:7px;background:#d94d73;border-radius:2px;flex:0 0 auto}
+body.vyrdict-home-calm .v-home-discovery-copy{margin:auto 0;padding:28px 0}
+body.vyrdict-home-calm .v-home-discovery-card h3{font:700 clamp(28px,3vw,38px)/1 Georgia,serif;letter-spacing:-.035em;margin:0 0 12px;color:#171511}
+body.vyrdict-home-calm .v-home-discovery-card p{font:12px/1.55 Arial,Helvetica,sans-serif;color:#6d675f;margin:0;max-width:230px}
+body.vyrdict-home-calm .v-home-discovery-action{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #d8cec4;padding-top:16px;font:950 10px/1 Arial,Helvetica,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:#171511}
+body.vyrdict-home-calm .v-home-discovery-arrow{font-size:17px;line-height:1;font-weight:400}
 @media(max-width:700px){
   body.vyrdict-home-calm .hero{padding-top:24px!important;padding-bottom:24px!important}
   body.vyrdict-home-calm .stage{min-height:300px!important}
@@ -50,6 +59,9 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
   body.vyrdict-home-calm .section{padding-top:54px!important;padding-bottom:54px!important}
   body.vyrdict-home-calm .section .head{margin-bottom:20px!important}
   body.vyrdict-home-calm .v-home-rail-more{margin-top:17px!important}
+  body.vyrdict-home-calm .v-home-discovery-card{padding:22px!important;border-radius:24px!important}
+  body.vyrdict-home-calm .v-home-discovery-copy{padding:22px 0}
+  body.vyrdict-home-calm .v-home-discovery-card h3{font-size:28px}
 }
 `;
     document.head.appendChild(s);
@@ -90,8 +102,56 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
     if(!section)return;
     const rail=section.querySelector('.rail,[data-rail]');
     if(!rail)return;
-    const items=[...rail.children].filter(el=>!el.matches('script,style,.v-home-more'));
+    const items=[...rail.children].filter(el=>!el.matches('script,style,.v-home-more,.v-home-discovery-card'));
     ensureMore(section,rail,items,limit,label);
+  }
+
+  function ensureDiscoveryCard(section,{limit=3,kicker,title,copy,action}){
+    if(!section)return;
+    const rail=section.querySelector('.rail,[data-rail]');
+    if(!rail)return;
+    const items=[...rail.children].filter(el=>!el.matches('script,style,.v-home-more,.v-home-discovery-card'));
+    if(items.length<=limit)return;
+    items.forEach((el,i)=>{el.hidden=i>=limit});
+    section.querySelector('.v-home-rail-more')?.remove();
+    let card=rail.querySelector('.v-home-discovery-card');
+    if(!card){
+      card=document.createElement('button');
+      card.type='button';
+      card.className='v-home-discovery-card';
+      card.innerHTML=`<span class="v-home-discovery-top"><span class="v-home-discovery-dot"></span>${kicker}</span><span class="v-home-discovery-copy"><h3>${title}</h3><p>${copy}</p></span><span class="v-home-discovery-action"><span>${action}</span><span class="v-home-discovery-arrow">→</span></span>`;
+      card.addEventListener('click',()=>{
+        const expanded=section.dataset.vHomeDiscoveryExpanded!=='1';
+        section.dataset.vHomeDiscoveryExpanded=expanded?'1':'0';
+        items.forEach((el,i)=>{if(i>=limit)el.hidden=!expanded});
+        card.hidden=expanded;
+        if(expanded){
+          let collapse=section.querySelector('.v-home-rail-more');
+          if(!collapse){
+            collapse=document.createElement('button');
+            collapse.type='button';
+            collapse.className='v-home-more v-home-rail-more';
+            collapse.textContent='Show less';
+            collapse.addEventListener('click',()=>{
+              section.dataset.vHomeDiscoveryExpanded='0';
+              items.forEach((el,i)=>{if(i>=limit)el.hidden=true});
+              collapse.remove();
+              card.hidden=false;
+            });
+            rail.insertAdjacentElement('afterend',collapse);
+          }
+        }
+      });
+      rail.appendChild(card);
+    }
+    const first=items[0];
+    if(first){
+      requestAnimationFrame(()=>{
+        const r=first.getBoundingClientRect();
+        if(r.width>0){card.style.flex=`0 0 ${Math.round(r.width)}px`;card.style.width=`${Math.round(r.width)}px`}
+        if(r.height>0)card.style.minHeight=`${Math.round(r.height)}px`;
+      });
+    }
   }
 
   function simplifyCategories(){
@@ -121,8 +181,9 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
   function simplifySections(){
     limitRail(document.getElementById('viral')||sectionByText("what's trending now"),6,'See all trending');
     const worth=sectionByText('actually worth the hype')||sectionByText('worth the hype');
-    if(worth)limitRail(worth,3,'See all worth it');
-    limitRail(document.getElementById('skip-list')||sectionByText('the skip list'),3,'See all skips');
+    if(worth)ensureDiscoveryCard(worth,{limit:3,kicker:'The good list',title:'More worth-it finds',copy:'See more products where the value keeps up with the hype.',action:'See all worth it'});
+    const skips=document.getElementById('skip-list')||sectionByText('the skip list');
+    if(skips)ensureDiscoveryCard(skips,{limit:3,kicker:'Keep scrolling',title:'More hype to skip',copy:'See what else is getting attention without earning the spend.',action:'See all skips'});
     limitRail(sectionByText('weekly viral rankings'),6,'See all rankings');
     limitRail(sectionByText('seen on screen'),4,'See all seen on screen');
     const culture=document.getElementById('culture')||sectionByText('you saw it then everyone bought it');
@@ -142,5 +203,6 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
   addEventListener('popstate',schedule);
   addEventListener('hashchange',schedule);
+  addEventListener('resize',()=>{clearTimeout(window.__vyrdictHomeResize);window.__vyrdictHomeResize=setTimeout(apply,140)});
   new MutationObserver(()=>{clearTimeout(window.__vyrdictHomeSimplifyTimer);window.__vyrdictHomeSimplifyTimer=setTimeout(apply,100)}).observe(document.documentElement,{childList:true,subtree:true});
 })();
