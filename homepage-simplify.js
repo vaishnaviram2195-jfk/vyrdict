@@ -34,8 +34,9 @@ body.vyrdict-home-calm .section .head p{max-width:520px!important;line-height:1.
 body.vyrdict-home-calm .rail{gap:18px!important;padding-bottom:12px!important}
 body.vyrdict-home-calm #skip-list{border-block:0!important;background:#efe6de!important}
 body.vyrdict-home-calm .vyrdict-screen-match{display:none!important}
-body.vyrdict-home-calm .v-home-more{appearance:none;border:0;background:transparent;color:#171511;padding:0 0 2px;margin:18px 0 0;border-bottom:1px solid #171511;font:900 9px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+body.vyrdict-home-calm .v-home-more{appearance:none;border:0;background:transparent;color:#171511;padding:0 0 2px;border-bottom:1px solid #171511;font:900 9px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
 body.vyrdict-home-calm .v-home-more:hover{opacity:.68}
+body.vyrdict-home-calm .v-home-rail-more{display:block!important;width:max-content!important;margin:20px 0 0!important}
 body.vyrdict-home-calm .v-home-category-more{margin-top:20px}
 body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
 @media(max-width:700px){
@@ -48,6 +49,7 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
   body.vyrdict-home-calm .category{font-size:11px!important;padding:12px 15px!important;letter-spacing:.065em!important}
   body.vyrdict-home-calm .section{padding-top:54px!important;padding-bottom:54px!important}
   body.vyrdict-home-calm .section .head{margin-bottom:20px!important}
+  body.vyrdict-home-calm .v-home-rail-more{margin-top:17px!important}
 }
 `;
     document.head.appendChild(s);
@@ -59,28 +61,28 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
     return h?.closest('section')||h?.closest('.section')||null;
   }
 
-  function ensureMore(root,items,limit,label='See all'){
-    if(!root||items.length<=limit)return;
-    root.dataset.vHomeLimit=String(limit);
-    const expanded=root.dataset.vHomeExpanded==='1';
+  function ensureMore(section,rail,items,limit,label='See all'){
+    if(!section||!rail||items.length<=limit)return;
+    section.dataset.vHomeLimit=String(limit);
+    const expanded=section.dataset.vHomeExpanded==='1';
     items.forEach((el,i)=>{
       if(i<limit){el.hidden=false;return}
       el.dataset.vHomeOverflow='1';
       el.hidden=!expanded;
     });
-    let btn=root.querySelector(':scope > .v-home-more');
+    let btn=section.querySelector('.v-home-rail-more');
     if(!btn){
       btn=document.createElement('button');
       btn.type='button';
-      btn.className='v-home-more';
-      root.appendChild(btn);
+      btn.className='v-home-more v-home-rail-more';
       btn.addEventListener('click',()=>{
-        const on=root.dataset.vHomeExpanded!=='1';
-        root.dataset.vHomeExpanded=on?'1':'0';
+        const on=section.dataset.vHomeExpanded!=='1';
+        section.dataset.vHomeExpanded=on?'1':'0';
         items.forEach((el,i)=>{if(i>=limit)el.hidden=!on});
-        btn.textContent=on?'Show less':'See all';
+        btn.textContent=on?'Show less':label;
       });
     }
+    if(btn.previousElementSibling!==rail)rail.insertAdjacentElement('afterend',btn);
     btn.textContent=expanded?'Show less':label;
   }
 
@@ -89,7 +91,7 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
     const rail=section.querySelector('.rail,[data-rail]');
     if(!rail)return;
     const items=[...rail.children].filter(el=>!el.matches('script,style,.v-home-more'));
-    ensureMore(section,items,limit,label);
+    ensureMore(section,rail,items,limit,label);
   }
 
   function simplifyCategories(){
@@ -118,7 +120,9 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
 
   function simplifySections(){
     limitRail(document.getElementById('viral')||sectionByText("what's trending now"),6,'See all trending');
-    limitRail(document.getElementById('skip-list')||sectionByText('the skip list'),6,'See all skips');
+    const worth=sectionByText('actually worth the hype')||sectionByText('worth the hype');
+    if(worth)limitRail(worth,3,'See all worth it');
+    limitRail(document.getElementById('skip-list')||sectionByText('the skip list'),3,'See all skips');
     limitRail(sectionByText('weekly viral rankings'),6,'See all rankings');
     limitRail(sectionByText('seen on screen'),4,'See all seen on screen');
     const culture=document.getElementById('culture')||sectionByText('you saw it then everyone bought it');
