@@ -1,106 +1,75 @@
 (()=>{
-  if(window.__vyrdictWeeklyExpandV6)return;
-  window.__vyrdictWeeklyExpandV6=1;
+  if(window.__vyrdictWeeklyExpandV7)return;
+  window.__vyrdictWeeklyExpandV7=1;
 
   const ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-weekly-rankings';
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
-  const STYLE_ID='vyrdict-weekly-expand-v6-style';
-  const CATEGORY_NAMES=new Set(['beauty','hair','makeup','fashion','home','wellness','fitness','tech','food drinks','pets','travel','kids baby','toys collectibles','stationery craft','stationery crafts']);
+  const CATEGORIES=new Set(['beauty','hair','makeup','fashion','home','wellness','fitness','tech','food drinks','pets','travel','kids baby','toys collectibles','stationery craft','stationery crafts']);
   const cache=new Map();
-  let renderToken=0;
+  let busy=false;
 
   function addStyle(){
-    if(document.getElementById(STYLE_ID))return;
+    if(document.getElementById('vyrdict-weekly-expand-v7-style'))return;
     const s=document.createElement('style');
-    s.id=STYLE_ID;
+    s.id='vyrdict-weekly-expand-v7-style';
     s.textContent=`
-      body .vyrdict-weekly-row-v6{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px!important;align-items:stretch!important;overflow:visible!important}
-      body .vyrdict-weekly-row-v6>.vyrdict-weekly-top-v6,
-      body .vyrdict-weekly-row-v6>.vyrdict-weekly-extra-v6,
-      body .vyrdict-weekly-row-v6>.vyrdict-weekly-cta-v6{min-width:0!important;width:auto!important;max-width:none!important;grid-column:auto!important;grid-row:auto!important;align-self:stretch!important}
-      body .vyrdict-weekly-section-v6 .v-home-rail-more{display:none!important}
-      body .vyrdict-weekly-rankline-v6{font:900 8px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#6d675f;margin:0 0 8px}
-      body .vyrdict-weekly-collapse-v6{appearance:none;border:0;background:transparent;color:#171511;padding:0 0 2px;margin:20px 0 0;border-bottom:1px solid #171511;font:900 9px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
-      body .vyrdict-weekly-cta-v6.is-loading{opacity:.62;pointer-events:none}
-      @media(max-width:900px){body .vyrdict-weekly-row-v6{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
-      @media(max-width:700px){body .vyrdict-weekly-row-v6{display:flex!important;overflow-x:auto!important;gap:14px!important;scroll-snap-type:x proximity}body .vyrdict-weekly-row-v6>.vyrdict-weekly-top-v6,body .vyrdict-weekly-row-v6>.vyrdict-weekly-extra-v6,body .vyrdict-weekly-row-v6>.vyrdict-weekly-cta-v6{flex:0 0 82%!important;width:82%!important;min-width:250px!important;scroll-snap-align:start}}
+      .vyrdict-weekly-row-v7{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px!important;align-items:stretch!important;overflow:visible!important}
+      .vyrdict-weekly-row-v7>.vyrdict-weekly-top-v7,
+      .vyrdict-weekly-row-v7>.vyrdict-weekly-extra-v7,
+      .vyrdict-weekly-row-v7>.vyrdict-weekly-cta-v7{min-width:0!important;width:auto!important;max-width:none!important;grid-column:auto!important;grid-row:auto!important;align-self:stretch!important}
+      .vyrdict-weekly-section-v7 .v-home-rail-more{display:none!important}
+      .vyrdict-weekly-rankline-v7{font:900 8px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#6d675f;margin:0 0 8px}
+      .vyrdict-weekly-collapse-v7{appearance:none;border:0;background:transparent;color:#171511;padding:0 0 2px;margin:20px 0 0;border-bottom:1px solid #171511;font:900 9px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+      .vyrdict-weekly-cta-v7.is-loading{opacity:.62;pointer-events:none}
+      @media(max-width:900px){.vyrdict-weekly-row-v7{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+      @media(max-width:700px){.vyrdict-weekly-row-v7{display:flex!important;overflow-x:auto!important;gap:14px!important;scroll-snap-type:x proximity}.vyrdict-weekly-row-v7>.vyrdict-weekly-top-v7,.vyrdict-weekly-row-v7>.vyrdict-weekly-extra-v7,.vyrdict-weekly-row-v7>.vyrdict-weekly-cta-v7{flex:0 0 82%!important;width:82%!important;min-width:250px!important;scroll-snap-align:start}}
     `;
     document.head.appendChild(s);
   }
 
   function getSection(){
-    const headings=[...document.querySelectorAll('h1,h2,h3,h4')];
-    const h=headings.find(el=>norm(el.textContent).includes('weekly viral rankings'))||headings.find(el=>norm(el.textContent).includes('weekly viral ranking'));
+    const h=[...document.querySelectorAll('h1,h2,h3,h4')].find(el=>norm(el.textContent).includes('weekly viral rankings'))
+      || [...document.querySelectorAll('h1,h2,h3,h4')].find(el=>norm(el.textContent).includes('weekly viral ranking'));
     return h?.closest('section')||h?.closest('.section')||null;
   }
 
-  function looksLikeProductCard(el){
-    if(!el||el.matches?.('.vyrdict-weekly-cta-v6,.vyrdict-weekly-extra-v6,script,style'))return false;
+  function isCard(el){
+    if(!el||el.matches?.('.vyrdict-weekly-cta-v7,.vyrdict-weekly-extra-v7,script,style'))return false;
     const t=norm(el.innerText||el.textContent);
     return !!el.querySelector?.('img')&&t.includes('hype')&&t.includes('worth')&&(t.includes('see vyrdict')||!!el.querySelector('button,a'));
   }
 
-  function getProductRow(section){
-    if(!section)return null;
+  function getRow(section){
     let best=null,bestCount=0,bestRatio=0;
     for(const parent of section.querySelectorAll('div,ul,ol')){
-      const children=[...parent.children];
-      const cards=children.filter(looksLikeProductCard);
+      const children=[...parent.children],cards=children.filter(isCard);
       if(cards.length<3)continue;
       const ratio=cards.length/Math.max(1,children.length);
-      if(cards.length>bestCount||(cards.length===bestCount&&ratio>bestRatio)){
-        best=parent;bestCount=cards.length;bestRatio=ratio;
-      }
+      if(cards.length>bestCount||(cards.length===bestCount&&ratio>bestRatio)){best=parent;bestCount=cards.length;bestRatio=ratio}
     }
     return best;
   }
 
   function selectedCategory(section){
-    const text=section?.innerText||'';
-    const m=text.match(/Top\s*3\s+in\s+(.+?)\s+right\s+now/i);
+    const m=(section.innerText||'').match(/Top\s*3\s+in\s+(.+?)\s+right\s+now/i);
     if(m?.[1])return m[1].trim();
     const active=[...section.querySelectorAll('button,[role="button"]')].find(el=>{
       const t=norm(el.textContent);
-      if(!CATEGORY_NAMES.has(t))return false;
-      return el.matches('.active,.on,.selected,[aria-pressed="true"]')||el.getAttribute('aria-current')==='true';
+      return CATEGORIES.has(t)&&(el.matches('.active,.on,.selected,[aria-pressed="true"]')||el.getAttribute('aria-current')==='true');
     });
     return active?.textContent?.trim()||'Beauty';
   }
 
-  function categoryMatch(product,selected){
-    const s=norm(selected),c=norm(product?.category),sub=norm(product?.subcategory);
-    if(s==='beauty')return ['beauty','skincare','hair','makeup','perfume','beauty tech'].includes(c)||['beauty','skincare','hair','makeup','perfume','beauty tech'].includes(sub);
-    if(s==='fashion')return c==='fashion'||c==='shoes'||sub==='fashion'||sub==='shoes';
-    if(s==='stationery craft'||s==='stationery crafts')return c==='stationery crafts'||c==='stationery craft'||sub==='stationery crafts'||sub==='stationery craft';
-    return c===s||sub===s;
-  }
-
-  function localCatalog(selected){
-    try{
-      if(typeof S!=='undefined'&&S&&Array.isArray(S.p)){
-        return S.p.filter(p=>categoryMatch(p,selected)).sort((a,b)=>(Number(b.viral_score||0)-Number(a.viral_score||0))||(Number(b.momentum_score||0)-Number(a.momentum_score||0))||(Number(b.worth_score||0)-Number(a.worth_score||0)));
-      }
-    }catch{}
-    try{
-      if(globalThis.S&&Array.isArray(globalThis.S.p)){
-        return globalThis.S.p.filter(p=>categoryMatch(p,selected)).sort((a,b)=>(Number(b.viral_score||0)-Number(a.viral_score||0))||(Number(b.momentum_score||0)-Number(a.momentum_score||0))||(Number(b.worth_score||0)-Number(a.worth_score||0)));
-      }
-    }catch{}
-    return [];
-  }
-
-  async function fetchRankings(selected){
-    const key=norm(selected)||'beauty';
+  async function fetchRankings(category){
+    const key=norm(category)||'beauty';
     if(cache.has(key))return cache.get(key);
     try{
-      const r=await fetch(ENDPOINT+'?category='+encodeURIComponent(selected||'Beauty'),{cache:'no-store'});
+      const r=await fetch(ENDPOINT+'?category='+encodeURIComponent(category||'Beauty'),{cache:'no-store'});
       if(!r.ok)throw new Error('HTTP '+r.status);
       const data=await r.json();
       const products=Array.isArray(data?.products)?data.products:[];
       if(products.length){cache.set(key,products);return products}
     }catch{}
-    const fallback=localCatalog(selected);
-    if(fallback.length){cache.set(key,fallback);return fallback}
     return [];
   }
 
@@ -108,9 +77,8 @@
     const direct=el?.dataset?.slug||el?.getAttribute?.('data-slug');
     if(direct)return String(direct).toLowerCase();
     const a=el?.querySelector?.('a[href*="/product/"]');
-    const source=(a?.getAttribute('href')||el?.getAttribute?.('onclick')||el?.outerHTML||'');
-    const m=String(source).match(/\/product\/([^?'"#)\\\s]+)/i);
-    return m?.[1]?.toLowerCase()||'';
+    const src=a?.getAttribute('href')||el?.outerHTML||'';
+    return String(src).match(/\/product\/([^?'"#)\\\s]+)/i)?.[1]?.toLowerCase()||'';
   }
 
   function excludeTop(products,topCards){
@@ -123,6 +91,16 @@
     });
   }
 
+  function replaceScore(root,label,value){
+    const lab=[...root.querySelectorAll('*')].find(el=>norm(el.textContent)===norm(label));
+    if(!lab)return;
+    let p=lab.parentElement;
+    for(let d=0;p&&d<3;d++,p=p.parentElement){
+      const nums=[...p.querySelectorAll('*')].filter(el=>el.children.length===0&&/^\d{1,3}$/.test((el.textContent||'').trim()));
+      if(nums.length){nums[nums.length-1].textContent=String(Math.round(Number(value||0)));return}
+    }
+  }
+
   function findTitle(root){
     const hs=[...root.querySelectorAll('h1,h2,h3,h4,h5,h6')].filter(h=>{
       const t=norm(h.textContent);
@@ -131,166 +109,90 @@
     return hs.sort((a,b)=>(parseFloat(getComputedStyle(b).fontSize)||0)-(parseFloat(getComputedStyle(a).fontSize)||0))[0]||null;
   }
 
-  function replaceScore(root,label,value){
-    const lab=[...root.querySelectorAll('*')].find(el=>norm(el.textContent)===norm(label));
-    if(!lab)return;
-    let parent=lab.parentElement;
-    for(let depth=0;parent&&depth<3;depth++,parent=parent.parentElement){
-      const nums=[...parent.querySelectorAll('*')].filter(el=>el.children.length===0&&/^\d{1,3}$/.test((el.textContent||'').trim()));
-      if(nums.length){nums[nums.length-1].textContent=String(Math.round(Number(value||0)));return}
-    }
-  }
-
-  function replaceVerdict(root,verdict){
-    if(!verdict)return;
-    const known=['exceptional','worth the hype','mostly worth it','mixed','overhyped','skip'];
-    const hit=[...root.querySelectorAll('*')].find(el=>el.children.length===0&&known.includes(norm(el.textContent)));
-    if(hit)hit.textContent=verdict;
-  }
-
-  function replaceStatus(root,status){
-    if(!status)return;
-    const known=['peak','breakout','resurgence','mainstay'];
-    const hit=[...root.querySelectorAll('*')].find(el=>el.children.length===0&&known.includes(norm(el.textContent)));
-    if(hit)hit.textContent=String(status).toUpperCase();
-  }
-
-  function applyRankLine(root,rank,selected,product){
-    const leaves=[...root.querySelectorAll('*')].filter(el=>el.children.length===0);
-    const existing=leaves.find(el=>/^\d+\s+.+\s+trend\s+\d+/.test(norm(el.textContent)));
-    const trend=product?.momentum_score==null?'—':Math.round(Number(product.momentum_score));
-    const text=`#${rank} ${String(selected||'').toUpperCase()} · TREND ${trend}`;
-    if(existing){existing.textContent=text;return}
-    const body=root.querySelector('.body')||root.querySelector('[class*="body"]')||root;
-    const tag=document.createElement('div');tag.className='vyrdict-weekly-rankline-v6';tag.textContent=text;body.prepend(tag);
-  }
-
-  function nativeCard(product){
-    try{if(typeof card==='function')return String(card(product)||'')}catch{}
-    try{if(typeof globalThis.card==='function')return String(globalThis.card(product)||'')}catch{}
-    return '';
-  }
-
-  function cloneCard(templateCard,product,rank,selected){
-    let el=null;
-    const html=nativeCard(product);
-    if(html){
-      const tpl=document.createElement('template');tpl.innerHTML=html.trim();el=tpl.content.firstElementChild;
-    }
-    if(!el)el=templateCard.cloneNode(true);
-    if(!el)return null;
-
-    el.classList.add('vyrdict-weekly-extra-v6');
-    el.classList.remove('vyrdict-weekly-top-v6');
+  function cloneCard(template,product,rank,category){
+    const el=template.cloneNode(true);
+    el.classList.remove('vyrdict-weekly-top-v7');
+    el.classList.add('vyrdict-weekly-extra-v7');
     el.hidden=false;el.style.removeProperty('display');
     el.removeAttribute?.('onclick');
     el.querySelectorAll?.('[onclick]').forEach(n=>n.removeAttribute('onclick'));
 
     const img=el.querySelector('img');
-    const image=product?.image_url||product?.image||product?.imageUrl||product?.hero_image;
-    if(img&&image){img.src=image;img.alt=[product?.brand,product?.name].filter(Boolean).join(' ')}
-
+    if(img&&product?.image_url){img.src=product.image_url;img.alt=[product.brand,product.name].filter(Boolean).join(' ')}
     const title=findTitle(el);
-    if(title){
-      title.textContent=product?.name||title.textContent;
-      let prev=title.previousElementSibling;
-      if(prev&&product?.brand&&norm(prev.textContent).length<45)prev.textContent=String(product.brand).toUpperCase();
-    }
-
+    if(title){title.textContent=product?.name||title.textContent;const prev=title.previousElementSibling;if(prev&&product?.brand&&norm(prev.textContent).length<45)prev.textContent=String(product.brand).toUpperCase()}
     replaceScore(el,'hype',product?.viral_score);
     replaceScore(el,'worth',product?.worth_score);
-    replaceVerdict(el,product?.verdict);
-    replaceStatus(el,product?.viral_status);
-    applyRankLine(el,rank,selected,product);
+
+    const known=['exceptional','worth the hype','mostly worth it','mixed','overhyped','skip'];
+    const verdict=[...el.querySelectorAll('*')].find(x=>x.children.length===0&&known.includes(norm(x.textContent)));
+    if(verdict&&product?.verdict)verdict.textContent=product.verdict;
+
+    const body=el.querySelector('.body')||el.querySelector('[class*="body"]')||el;
+    const rankline=document.createElement('div');rankline.className='vyrdict-weekly-rankline-v7';
+    rankline.textContent=`#${rank} ${String(category).toUpperCase()} · TREND ${product?.momentum_score==null?'—':Math.round(Number(product.momentum_score))}`;
+    body.prepend(rankline);
 
     if(product?.slug){
       el.dataset.slug=product.slug;
       el.querySelectorAll('a[href*="/product/"]').forEach(a=>a.setAttribute('href','/product/'+product.slug));
-      el.querySelectorAll('button').forEach(btn=>{
-        if(/see\s+vyrdict/i.test(btn.textContent||''))btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();location.assign('/product/'+product.slug)});
-      });
+      el.querySelectorAll('button').forEach(btn=>{if(/see\s+vyrdict/i.test(btn.textContent||''))btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();location.assign('/product/'+product.slug)})});
     }
     return el;
   }
 
-  function clearOld(section,row){
-    section.querySelectorAll('.vyrdict-weekly-cta,.vyrdict-weekly-cta-v4,.vyrdict-weekly-cta-v5,.vyrdict-weekly-collapse,.vyrdict-weekly-collapse-v4,.vyrdict-weekly-collapse-v5,.v-home-rail-more').forEach(el=>el.remove());
-    row?.querySelectorAll(':scope > .vyrdict-weekly-extra-v4,:scope > .vyrdict-weekly-extra-v5,:scope > .vyrdict-weekly-extra-v6,:scope > .vyrdict-weekly-cta-v4,:scope > .vyrdict-weekly-cta-v5,:scope > .vyrdict-weekly-cta-v6').forEach(el=>el.remove());
+  function cleanup(section,row){
+    section.querySelectorAll('.vyrdict-weekly-cta,.vyrdict-weekly-cta-v4,.vyrdict-weekly-cta-v5,.vyrdict-weekly-cta-v6,.vyrdict-weekly-collapse,.vyrdict-weekly-collapse-v4,.vyrdict-weekly-collapse-v5,.vyrdict-weekly-collapse-v6,.v-home-rail-more').forEach(el=>el.remove());
+    row.querySelectorAll(':scope > .vyrdict-weekly-extra-v4,:scope > .vyrdict-weekly-extra-v5,:scope > .vyrdict-weekly-extra-v6,:scope > .vyrdict-weekly-extra-v7,:scope > .vyrdict-weekly-cta-v4,:scope > .vyrdict-weekly-cta-v5,:scope > .vyrdict-weekly-cta-v6,:scope > .vyrdict-weekly-cta-v7').forEach(el=>el.remove());
   }
 
-  function makeCTA(section,row){
-    const card=document.createElement('button');
-    card.type='button';
-    card.className='vyrdict-featured-cta vyrdict-weekly-cta-v6';
-    card.innerHTML='<span class="vyrdict-featured-kicker"><span class="vyrdict-featured-dot"></span>Beyond the top 3</span><span class="vyrdict-featured-copy"><h3>Keep climbing the ranking</h3><p>See what else is trending this week.</p></span><span class="vyrdict-featured-action"><span>See more rankings</span><span class="vyrdict-featured-arrow">→</span></span>';
-    card.addEventListener('click',e=>{
-      e.preventDefault();e.stopPropagation();
-      section.dataset.vyrdictWeeklyExpandedV6='1';
-      card.classList.add('is-loading');
-      const action=card.querySelector('.vyrdict-featured-action span');if(action)action.textContent='Loading rankings…';
-      render();
-    });
-    row.appendChild(card);
-    return card;
+  function addCTA(section,row){
+    const c=document.createElement('button');
+    c.type='button';c.className='vyrdict-featured-cta vyrdict-weekly-cta-v7';
+    c.innerHTML='<span class="vyrdict-featured-kicker"><span class="vyrdict-featured-dot"></span>Beyond the top 3</span><span class="vyrdict-featured-copy"><h3>Keep climbing the ranking</h3><p>See what else is trending this week.</p></span><span class="vyrdict-featured-action"><span>See more rankings</span><span class="vyrdict-featured-arrow">→</span></span>';
+    c.addEventListener('click',async e=>{e.preventDefault();e.stopPropagation();if(busy)return;busy=true;c.classList.add('is-loading');const a=c.querySelector('.vyrdict-featured-action span');if(a)a.textContent='Loading rankings…';await render(true);busy=false});
+    row.appendChild(c);
   }
 
-  async function render(){
-    const token=++renderToken;
-    if(location.pathname!=='/'&&location.pathname!=='')return;
+  async function render(expand=false){
+    if(location.pathname!=='/'&&location.pathname!=='')return false;
     addStyle();
-    const section=getSection();if(!section)return;
-    const row=getProductRow(section);if(!row)return;
+    const section=getSection();if(!section)return false;
+    const row=getRow(section);if(!row)return false;
 
-    section.classList.add('vyrdict-weekly-section-v6');
-    row.classList.add('vyrdict-weekly-row-v6');
-    clearOld(section,row);
+    section.classList.add('vyrdict-weekly-section-v7');
+    row.classList.add('vyrdict-weekly-row-v7');
+    cleanup(section,row);
 
-    const topCards=[...row.children].filter(looksLikeProductCard).slice(0,3);
-    if(topCards.length<3)return;
-    topCards.forEach(el=>{el.classList.add('vyrdict-weekly-top-v6');el.hidden=false;el.style.removeProperty('display')});
+    const top=[...row.children].filter(isCard).slice(0,3);if(top.length<3)return false;
+    top.forEach(el=>{el.classList.add('vyrdict-weekly-top-v7');el.hidden=false;el.style.removeProperty('display')});
 
-    if(section.dataset.vyrdictWeeklyExpandedV6!=='1'){
-      section.querySelector('.vyrdict-weekly-collapse-v6')?.remove();
-      makeCTA(section,row);
-      return;
+    if(!expand){
+      addCTA(section,row);
+      return true;
     }
 
-    const selected=selectedCategory(section);
-    const products=await fetchRankings(selected);
-    if(token!==renderToken)return;
-    const next=excludeTop(products,topCards).slice(0,7);
+    const category=selectedCategory(section);
+    const products=excludeTop(await fetchRankings(category),top).slice(0,7);
+    if(!products.length){addCTA(section,row);return true}
+    products.forEach((p,i)=>row.appendChild(cloneCard(top[i%top.length],p,i+4,category)));
 
-    if(!next.length){
-      section.dataset.vyrdictWeeklyExpandedV6='0';
-      const c=makeCTA(section,row);
-      const action=c.querySelector('.vyrdict-featured-action span');if(action)action.textContent='Try rankings again';
-      return;
-    }
+    const collapse=document.createElement('button');collapse.type='button';collapse.className='vyrdict-weekly-collapse-v7';collapse.textContent='Show less';
+    collapse.addEventListener('click',()=>render(false));row.insertAdjacentElement('afterend',collapse);
+    return true;
+  }
 
-    next.forEach((p,i)=>{
-      const extra=cloneCard(topCards[i%topCards.length],p,i+4,selected);
-      if(extra)row.appendChild(extra);
-    });
-
-    let collapse=section.querySelector('.vyrdict-weekly-collapse-v6');
-    if(!collapse){
-      collapse=document.createElement('button');collapse.type='button';collapse.className='vyrdict-weekly-collapse-v6';collapse.textContent='Show less';
-      collapse.addEventListener('click',()=>{section.dataset.vyrdictWeeklyExpandedV6='0';render()});
-      row.insertAdjacentElement('afterend',collapse);
-    }
+  function boot(attempt=0){
+    Promise.resolve(render(false)).then(ok=>{if(!ok&&attempt<12)setTimeout(()=>boot(attempt+1),150)});
   }
 
   document.addEventListener('click',e=>{
     const section=getSection(),btn=e.target.closest('button,[role="button"]');
-    if(!section||!btn||!section.contains(btn)||btn.matches('.vyrdict-weekly-cta-v6,.vyrdict-weekly-collapse-v6'))return;
-    if(CATEGORY_NAMES.has(norm(btn.textContent))){
-      section.dataset.vyrdictWeeklyExpandedV6='0';
-      setTimeout(render,100);setTimeout(render,300);
-    }
+    if(!section||!btn||!section.contains(btn)||btn.matches('.vyrdict-weekly-cta-v7,.vyrdict-weekly-collapse-v7'))return;
+    if(CATEGORIES.has(norm(btn.textContent)))setTimeout(()=>render(false),220);
   },true);
 
-  function schedule(){[0,100,250,500,900,1500,2500,4000].forEach(ms=>setTimeout(render,ms))}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
-  addEventListener('popstate',schedule);addEventListener('hashchange',schedule);
-  addEventListener('resize',()=>{clearTimeout(window.__vyrdictWeeklyResizeV6);window.__vyrdictWeeklyResizeV6=setTimeout(render,160)});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>boot(),{once:true});else boot();
+  addEventListener('popstate',()=>boot());
+  addEventListener('hashchange',()=>boot());
 })();
