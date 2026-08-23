@@ -1,9 +1,9 @@
 (()=>{
-  if(window.__vyrdictWorthShowLessFixV2)return;
-  window.__vyrdictWorthShowLessFixV2=1;
+  if(window.__vyrdictWorthShowLessFixV3)return;
+  window.__vyrdictWorthShowLessFixV3=1;
 
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
-  const STYLE_ID='vyrdict-worth-show-less-style-v2';
+  const STYLE_ID='vyrdict-worth-show-less-style-v3';
 
   function addStyle(){
     if(document.getElementById(STYLE_ID))return;
@@ -18,7 +18,7 @@
         background:transparent!important;
         color:#fffdf8!important;
         padding:0 0 3px!important;
-        margin:16px 0 4px!important;
+        margin:20px 0 4px!important;
         font:900 9px/1.3 Arial,Helvetica,sans-serif!important;
         letter-spacing:.08em!important;
         text-transform:uppercase!important;
@@ -65,9 +65,13 @@
       });
     }
 
-    if(extra.parentNode&&collapse.nextElementSibling!==extra){
-      extra.parentNode.insertBefore(collapse,extra);
+    if(extra.parentNode&&collapse.previousElementSibling!==extra){
+      extra.insertAdjacentElement('afterend',collapse);
     }
+
+    section.querySelectorAll('.vyrdict-featured-collapse-v3').forEach(el=>{
+      if(el!==collapse)el.hidden=true;
+    });
 
     const expanded=section.dataset.vyrdictFeaturedExpanded==='1'||!extra.hidden;
     collapse.hidden=!expanded;
