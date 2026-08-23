@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictHomeSimplify)return;
-  window.__vyrdictHomeSimplify=1;
+  if(window.__vyrdictHomeSimplifyV6)return;
+  window.__vyrdictHomeSimplifyV6=1;
 
   const STYLE_ID='vyrdict-home-simplify-style';
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
@@ -125,15 +125,19 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
     addStyle();
     const home=isHome();
     document.body?.classList.toggle('vyrdict-home-calm',home);
-    if(!home)return;
+    if(!home)return true;
+    if(!document.querySelector('.hero,.stage'))return false;
     simplifyCategories();
     simplifySections();
+    return true;
   }
 
-  function schedule(){[0,80,220,500,900,1500,2400].forEach(ms=>setTimeout(apply,ms))}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
-  addEventListener('popstate',schedule);
-  addEventListener('hashchange',schedule);
-  addEventListener('resize',()=>{clearTimeout(window.__vyrdictHomeResize);window.__vyrdictHomeResize=setTimeout(apply,140)});
-  new MutationObserver(()=>{clearTimeout(window.__vyrdictHomeSimplifyTimer);window.__vyrdictHomeSimplifyTimer=setTimeout(apply,100)}).observe(document.documentElement,{childList:true,subtree:true});
+  function boot(attempt=0){
+    if(apply()||attempt>=20)return;
+    setTimeout(()=>boot(attempt+1),120);
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>boot(),{once:true});else boot();
+  addEventListener('popstate',()=>boot());
+  addEventListener('hashchange',()=>boot());
 })();
