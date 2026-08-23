@@ -28,3 +28,11 @@
   addEventListener('hashchange',()=>setTimeout(fix,60));
   addEventListener('popstate',()=>setTimeout(fix,60));
 })();
+(()=>{
+  if(document.getElementById('vyrdict-home-simplify-loader'))return;
+  const s=document.createElement('script');
+  s.id='vyrdict-home-simplify-loader';
+  s.src='/homepage-simplify.js?v=1';
+  s.defer=true;
+  document.head.appendChild(s);
+})();
