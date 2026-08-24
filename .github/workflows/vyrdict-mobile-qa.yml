@@ -4,6 +4,11 @@ on:
   push:
     paths:
       - '.github/workflows/vyrdict-mobile-qa.yml'
+      - 'index.html'
+      - 'header-brand-fix.js'
+      - 'homepage-hero-variety.js'
+      - 'homepage-simplify.js'
+      - 'homepage-mobile-final.js'
   workflow_dispatch:
 
 jobs:
@@ -26,25 +31,36 @@ jobs:
           cat > /tmp/mobile-qa.js <<'NODE'
           const { chromium } = require('playwright');
           const fs = require('fs');
-          const base = 'http://vyrdict.com';
+          const base = 'https://vyrdict.com';
           const tests = [];
           function assert(ok, msg){ if(!ok) throw new Error(msg); }
           async function check(page, name, url, required=[]){
             const response = await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
-            await page.waitForTimeout(4500);
+            await page.waitForTimeout(7000);
             const info = await page.evaluate(() => ({
               title: document.title,
               text: document.body?.innerText || '',
               scrollWidth: document.documentElement.scrollWidth,
               innerWidth: window.innerWidth,
-              bodyWidth: document.body?.getBoundingClientRect().width || 0
+              hero1Alt: document.querySelector('.stage .p1 img')?.alt || '',
+              hero2Alt: document.querySelector('.stage .p2 img')?.alt || '',
+              hero1Key: document.querySelector('.stage .p1 img')?.dataset?.vyrdictHeroVariety || '',
+              hero2Key: document.querySelector('.stage .p2 img')?.dataset?.vyrdictHeroVariety || '',
+              categoryButton: document.querySelector('.v-home-category-more')?.textContent?.trim() || '',
+              visibleCategories: [...document.querySelectorAll('[data-category]')].filter(x=>!x.hidden).length
             }));
             assert(response && response.status() < 400, `${name}: HTTP ${response?.status()}`);
             assert(!/Could not load the site/i.test(info.text), `${name}: loader error visible`);
             assert(info.scrollWidth <= info.innerWidth + 4, `${name}: horizontal page overflow ${info.scrollWidth}px > ${info.innerWidth}px`);
             for(const phrase of required) assert(info.text.toLowerCase().includes(phrase.toLowerCase()), `${name}: missing “${phrase}”`);
+            if(name==='home'){
+              assert(info.hero1Key==='blendboss' || /BlendBOSS/i.test(info.hero1Alt), `home: Blender hero missing (${info.hero1Alt})`);
+              assert(info.hero2Key==='baccarat-rouge-540' || /Baccarat Rouge/i.test(info.hero2Alt), `home: Baccarat Rouge hero missing (${info.hero2Alt})`);
+              assert(/See more categories|Show fewer categories/i.test(info.categoryButton), `home: category expansion control missing`);
+              assert(info.visibleCategories >= 6, `home: fewer than six categories visible`);
+            }
             await page.screenshot({path:`qa/${name}.png`,fullPage:true});
-            tests.push({name,url:page.url(),status:'pass',viewport:info.innerWidth,scrollWidth:info.scrollWidth,title:info.title});
+            tests.push({name,url:page.url(),status:'pass',...info});
           }
           (async()=>{
             const browser = await chromium.launch({headless:true});
@@ -52,7 +68,7 @@ jobs:
             const page = await context.newPage();
             try {
               await check(page,'home',`${base}/`,['VYRDICT','Viral Right Now','Worth the Hype']);
-              await check(page,'dalba',`${base}/#/product/d-alba-white-truffle-first-spray-serum-100ml`,['White Truffle','Worth the Hype','What it does','Why it’s viral','Where to buy']);
+              await check(page,'dalba',`${base}/product/d-alba-white-truffle-first-spray-serum-100ml`,['White Truffle','Worth the Hype','What it does','Why it’s viral','Where to buy']);
               await check(page,'suggest',`${base}/suggest-product.html`,['What product is suddenly everywhere?','Product name','Send to VYRDICT']);
               await check(page,'scores',`${base}/how-vyrdict-scores.html`,['How VYRDICT scores the hype','Viral Score','Worth Score']);
               fs.writeFileSync('qa/report.json',JSON.stringify({ok:true,tests},null,2));
