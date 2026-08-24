@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictHomeSimplifyV6)return;
-  window.__vyrdictHomeSimplifyV6=1;
+  if(window.__vyrdictHomeSimplifyV7)return;
+  window.__vyrdictHomeSimplifyV7=1;
 
   const STYLE_ID='vyrdict-home-simplify-style';
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
@@ -37,7 +37,8 @@ body.vyrdict-home-calm .vyrdict-screen-match{display:none!important}
 body.vyrdict-home-calm .v-home-more{appearance:none;border:0;background:transparent;color:#171511;padding:0 0 2px;border-bottom:1px solid #171511;font:900 9px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
 body.vyrdict-home-calm .v-home-more:hover{opacity:.68}
 body.vyrdict-home-calm .v-home-rail-more{display:block!important;width:max-content!important;margin:20px 0 0!important}
-body.vyrdict-home-calm .v-home-category-more{margin-top:20px}
+body.vyrdict-home-calm .v-home-category-more{appearance:none!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important;border:1px solid rgba(23,21,17,.18)!important;background:#fffdf8!important;color:#171511!important;border-radius:999px!important;padding:13px 19px!important;font:900 10px/1 Arial,Helvetica,sans-serif!important;letter-spacing:.065em!important;text-transform:uppercase!important;cursor:pointer!important;white-space:nowrap!important;min-height:42px!important}
+body.vyrdict-home-calm .v-home-category-more:hover{border-color:rgba(23,21,17,.38)!important}
 body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
 @media(max-width:700px){
   body.vyrdict-home-calm .hero{padding-top:24px!important;padding-bottom:24px!important}
@@ -47,6 +48,7 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
   body.vyrdict-home-calm .stage .p3{width:29%!important;height:25%!important;right:8%!important;top:10%!important}
   body.vyrdict-home-calm .stage .sticker.spark{font-size:20px!important}
   body.vyrdict-home-calm .category{font-size:11px!important;padding:12px 15px!important;letter-spacing:.065em!important}
+  body.vyrdict-home-calm .v-home-category-more{font-size:9px!important;padding:12px 15px!important;min-height:40px!important}
   body.vyrdict-home-calm .section{padding-top:54px!important;padding-bottom:54px!important}
   body.vyrdict-home-calm .section .head{margin-bottom:20px!important}
   body.vyrdict-home-calm .v-home-rail-more{margin-top:17px!important}
@@ -95,23 +97,28 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
     if(!section)return;
     section.classList.add('v-home-categories');
     const items=[...section.querySelectorAll('[data-category]')].filter((el,i,a)=>a.indexOf(el)===i);
-    if(items.length<=8)return;
-    const expanded=section.dataset.vHomeExpanded==='1';
-    items.forEach((el,i)=>{el.hidden=i>=8&&!expanded});
+    const limit=6;
+    if(items.length<=limit)return;
+    const parent=items[0]?.parentElement||section;
     let btn=section.querySelector('.v-home-category-more');
     if(!btn){
       btn=document.createElement('button');
       btn.type='button';
-      btn.className='v-home-more v-home-category-more';
+      btn.className='v-home-category-more';
       btn.addEventListener('click',()=>{
-        const on=section.dataset.vHomeExpanded!=='1';
-        section.dataset.vHomeExpanded=on?'1':'0';
-        items.forEach((el,i)=>{el.hidden=i>=8&&!on});
-        btn.textContent=on?'Show less':'View all categories';
+        section.dataset.vHomeExpanded=section.dataset.vHomeExpanded==='1'?'0':'1';
+        simplifyCategories();
       });
-      (items[0]?.parentElement||section).insertAdjacentElement('afterend',btn);
     }
-    btn.textContent=expanded?'Show less':'View all categories';
+    const expanded=section.dataset.vHomeExpanded==='1';
+    items.forEach((el,i)=>{el.hidden=i>=limit&&!expanded});
+    btn.textContent=expanded?'Show fewer categories':'See more categories';
+    if(expanded){
+      items[items.length-1].insertAdjacentElement('afterend',btn);
+    }else{
+      items[limit-1].insertAdjacentElement('afterend',btn);
+    }
+    if(btn.parentElement!==parent)parent.appendChild(btn);
   }
 
   function simplifySections(){
