@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictHomeSimplifyV11)return;
-  window.__vyrdictHomeSimplifyV11=1;
+  if(window.__vyrdictHomeSimplifyV12)return;
+  window.__vyrdictHomeSimplifyV12=1;
 
   const STYLE_ID='vyrdict-home-simplify-style';
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
@@ -74,7 +74,7 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
         return [...new Set(S.p.map(p=>String(p?.category||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
       }
     }catch{}
-    return [...new Set([...container.querySelectorAll('[data-category]')].map(el=>String(el.dataset.category||'').trim()).filter(c=>c&&!['see more categories','show fewer categories'].includes(norm(c))))].sort((a,b)=>a.localeCompare(b));
+    return [...new Set([...container.querySelectorAll('[data-category]')].map(el=>String(el.dataset.category||'').trim()).filter(c=>c&&!['see more categories','show fewer categories','browse more categories','browse more category'].includes(norm(c))))].sort((a,b)=>a.localeCompare(b));
   }
 
   function categoryIcon(c){
@@ -92,10 +92,22 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
     return b;
   }
 
+  function purgeLegacyControls(section,container){
+    section.querySelectorAll('.v-home-category-more').forEach(el=>el.remove());
+    [...section.querySelectorAll('button,summary,details')].forEach(el=>{
+      if(container.contains(el))return;
+      const t=norm(el.textContent);
+      if(t==='see more categories'||t==='show fewer categories'||t==='browse more categories'||t==='browse more category'){
+        const d=el.closest('details');(d||el).remove();
+      }
+    });
+  }
+
   function rebuildCategories(){
     const section=categorySection();if(!section)return false;
     const container=section.querySelector('.categories');if(!container)return false;
     section.classList.add('v-home-categories');
+    purgeLegacyControls(section,container);
     const cats=categoryNames(container);if(!cats.length)return false;
     const wasOpen=container.querySelector('.v-home-category-details')?.open===true;
     container.replaceChildren();
@@ -114,6 +126,7 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
       sync();
       container.appendChild(details);
     }
+    purgeLegacyControls(section,container);
     return true;
   }
 
