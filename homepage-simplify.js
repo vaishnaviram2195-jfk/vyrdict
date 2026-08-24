@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictHomeSimplifyV9)return;
-  window.__vyrdictHomeSimplifyV9=1;
+  if(window.__vyrdictHomeSimplifyV10)return;
+  window.__vyrdictHomeSimplifyV10=1;
 
   const STYLE_ID='vyrdict-home-simplify-style';
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
@@ -51,9 +51,7 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
     return h?.closest('section')||h?.closest('.section')||null;
   }
 
-  function categorySection(){
-    return document.getElementById('categories')||sectionByText('browse by category')||null;
-  }
+  function categorySection(){return document.getElementById('categories')||sectionByText('browse by category')||null}
 
   function ensureMore(section,rail,items,limit,label='See all'){
     if(!section||!rail||items.length<=limit)return;
@@ -61,108 +59,60 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
     items.forEach((el,i)=>{el.hidden=i>=limit&&!expanded});
     let btn=section.querySelector('.v-home-rail-more');
     if(!btn){btn=document.createElement('button');btn.type='button';btn.className='v-home-more v-home-rail-more'}
-    btn.onclick=()=>{
-      const live=[...rail.children].filter(el=>!el.matches('script,style,.v-home-more,.vyrdict-featured-cta'));
-      const on=section.dataset.vHomeExpanded!=='1';
-      section.dataset.vHomeExpanded=on?'1':'0';
-      live.forEach((el,i)=>{el.hidden=i>=limit&&!on});
-      btn.textContent=on?'Show less':label;
-    };
+    btn.onclick=()=>{const live=[...rail.children].filter(el=>!el.matches('script,style,.v-home-more,.vyrdict-featured-cta'));const on=section.dataset.vHomeExpanded!=='1';section.dataset.vHomeExpanded=on?'1':'0';live.forEach((el,i)=>{el.hidden=i>=limit&&!on});btn.textContent=on?'Show less':label};
     if(btn.previousElementSibling!==rail)rail.insertAdjacentElement('afterend',btn);
     btn.textContent=expanded?'Show less':label;
   }
 
   function limitRail(section,limit=6,label='See all'){
-    if(!section)return;
-    const rail=section.querySelector('.rail,[data-rail]');
-    if(!rail)return;
-    const items=[...rail.children].filter(el=>!el.matches('script,style,.v-home-more,.vyrdict-featured-cta'));
-    ensureMore(section,rail,items,limit,label);
+    if(!section)return;const rail=section.querySelector('.rail,[data-rail]');if(!rail)return;const items=[...rail.children].filter(el=>!el.matches('script,style,.v-home-more,.vyrdict-featured-cta'));ensureMore(section,rail,items,limit,label)
+  }
+
+  function removeLegacyCategoryControls(section,container){
+    section.querySelectorAll('.v-home-category-more').forEach(el=>el.remove());
+    [...container.children].forEach(el=>{
+      if(el.matches('.v-home-category-details'))return;
+      const t=norm(el.textContent);
+      if((t==='see more categories'||t==='show fewer categories')&&!el.hasAttribute('data-category'))el.remove();
+    });
   }
 
   function simplifyCategories(){
-    const section=categorySection();
-    if(!section)return false;
-    const container=section.querySelector('.categories');
-    if(!container)return false;
+    const section=categorySection();if(!section)return false;
+    const container=section.querySelector('.categories');if(!container)return false;
     section.classList.add('v-home-categories');
+    removeLegacyCategoryControls(section,container);
 
-    const oldButton=section.querySelector('.v-home-category-more');
-    oldButton?.remove();
-
-    const all=[...container.querySelectorAll('[data-category]')];
-    const seen=new Set();
-    const items=all.filter(el=>{const key=String(el.dataset.category||'');if(!key||seen.has(key))return false;seen.add(key);return true});
-    const limit=6;
-    if(!items.length)return false;
+    const all=[...container.querySelectorAll('[data-category]')];const seen=new Set();
+    const items=all.filter(el=>{const key=String(el.dataset.category||'');if(!key||seen.has(key)){if(key&&seen.has(key))el.remove();return false}seen.add(key);return true});
+    const limit=6;if(!items.length)return false;
 
     let details=container.querySelector('.v-home-category-details');
-    let extra=details?.querySelector('.v-home-category-extra');
-    let summary=details?.querySelector('summary');
+    const duplicateDetails=[...container.querySelectorAll('.v-home-category-details')];
+    duplicateDetails.slice(1).forEach(d=>d.remove());
+    details=duplicateDetails[0]||details;
+    let extra=details?.querySelector('.v-home-category-extra');let summary=details?.querySelector('summary');
 
-    if(items.length<=limit){
-      if(details){for(const el of items)container.insertBefore(el,details);details.remove()}
-      items.forEach(el=>{el.hidden=false;el.style.removeProperty('display')});
-      return true;
-    }
+    if(items.length<=limit){if(details){for(const el of items)container.insertBefore(el,details);details.remove()}items.forEach(el=>{el.hidden=false;el.style.removeProperty('display')});return true}
 
-    if(!details){
-      details=document.createElement('details');
-      details.className='v-home-category-details';
-      summary=document.createElement('summary');
-      extra=document.createElement('div');
-      extra.className='v-home-category-extra';
-      details.append(summary,extra);
-      summary.textContent='See more categories';
-      details.addEventListener('toggle',()=>{summary.textContent=details.open?'Show fewer categories':'See more categories'});
-      container.appendChild(details);
-    }
+    if(!details){details=document.createElement('details');details.className='v-home-category-details';summary=document.createElement('summary');extra=document.createElement('div');extra.className='v-home-category-extra';details.append(summary,extra);summary.textContent='See more categories';details.addEventListener('toggle',()=>{summary.textContent=details.open?'Show fewer categories':'See more categories'});container.appendChild(details)}
+    if(!summary){summary=document.createElement('summary');details.prepend(summary)}
+    if(!extra){extra=document.createElement('div');extra.className='v-home-category-extra';details.appendChild(extra)}
 
     const first=items.slice(0,limit),rest=items.slice(limit);
     first.forEach(el=>{el.hidden=false;el.style.removeProperty('display');if(el.parentElement!==container)container.insertBefore(el,details)});
     rest.forEach(el=>{el.hidden=false;el.style.removeProperty('display');if(el.parentElement!==extra)extra.appendChild(el)});
     if(details.parentElement!==container)container.appendChild(details);
-    if(summary)summary.textContent=details.open?'Show fewer categories':'See more categories';
+    summary.textContent=details.open?'Show fewer categories':'See more categories';
     return true;
   }
 
-  function simplifySections(){
-    limitRail(document.getElementById('viral')||sectionByText("what's trending now"),6,'See all trending');
-    limitRail(sectionByText('seen on screen'),4,'See all seen on screen');
-    const culture=document.getElementById('culture')||sectionByText('you saw it then everyone bought it');
-    if(culture&&!norm(culture.textContent).includes('seen on screen'))limitRail(culture,6,'See all');
-  }
+  function simplifySections(){limitRail(document.getElementById('viral')||sectionByText("what's trending now"),6,'See all trending');limitRail(sectionByText('seen on screen'),4,'See all seen on screen');const culture=document.getElementById('culture')||sectionByText('you saw it then everyone bought it');if(culture&&!norm(culture.textContent).includes('seen on screen'))limitRail(culture,6,'See all')}
+  function revealFast(){const app=document.getElementById('app');if(app?.innerHTML?.trim())document.documentElement.classList.add('vyrdict-ready')}
+  function apply(){addStyle();const home=isHome();document.body?.classList.toggle('vyrdict-home-calm',home);if(!home){revealFast();return true}if(!document.querySelector('.hero,.stage'))return false;simplifyCategories();simplifySections();revealFast();return true}
+  function boot(attempt=0){if(apply()||attempt>=18)return;setTimeout(()=>boot(attempt+1),70)}
 
-  function revealFast(){
-    const app=document.getElementById('app');
-    if(app?.innerHTML?.trim())document.documentElement.classList.add('vyrdict-ready');
-  }
-
-  function apply(){
-    addStyle();
-    const home=isHome();
-    document.body?.classList.toggle('vyrdict-home-calm',home);
-    if(!home){revealFast();return true}
-    if(!document.querySelector('.hero,.stage'))return false;
-    simplifyCategories();
-    simplifySections();
-    revealFast();
-    return true;
-  }
-
-  function boot(attempt=0){
-    if(apply()||attempt>=18)return;
-    setTimeout(()=>boot(attempt+1),70);
-  }
-
-  const observer=new MutationObserver(()=>{
-    if(!isHome())return;
-    clearTimeout(mutationTimer);
-    mutationTimer=setTimeout(()=>{simplifyCategories();revealFast()},100);
-  });
-
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{boot();observer.observe(document.getElementById('app')||document.body,{childList:true,subtree:false})},{once:true});
-  else{boot();const target=document.getElementById('app')||document.body;if(target)observer.observe(target,{childList:true,subtree:false})}
-  addEventListener('popstate',()=>setTimeout(()=>boot(),20));
-  addEventListener('hashchange',()=>setTimeout(()=>boot(),20));
+  const observer=new MutationObserver(()=>{if(!isHome())return;clearTimeout(mutationTimer);mutationTimer=setTimeout(()=>{simplifyCategories();revealFast()},100)});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{boot();observer.observe(document.getElementById('app')||document.body,{childList:true,subtree:false})},{once:true});else{boot();const target=document.getElementById('app')||document.body;if(target)observer.observe(target,{childList:true,subtree:false})}
+  addEventListener('popstate',()=>setTimeout(()=>boot(),20));addEventListener('hashchange',()=>setTimeout(()=>boot(),20));
 })();
