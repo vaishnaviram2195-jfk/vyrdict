@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictHomeSimplifyV10)return;
-  window.__vyrdictHomeSimplifyV10=1;
+  if(window.__vyrdictHomeSimplifyV11)return;
+  window.__vyrdictHomeSimplifyV11=1;
 
   const STYLE_ID='vyrdict-home-simplify-style';
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
@@ -68,51 +68,61 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
     if(!section)return;const rail=section.querySelector('.rail,[data-rail]');if(!rail)return;const items=[...rail.children].filter(el=>!el.matches('script,style,.v-home-more,.vyrdict-featured-cta'));ensureMore(section,rail,items,limit,label)
   }
 
-  function removeLegacyCategoryControls(section,container){
-    section.querySelectorAll('.v-home-category-more').forEach(el=>el.remove());
-    [...container.children].forEach(el=>{
-      if(el.matches('.v-home-category-details'))return;
-      const t=norm(el.textContent);
-      if((t==='see more categories'||t==='show fewer categories')&&!el.hasAttribute('data-category'))el.remove();
-    });
+  function categoryNames(container){
+    try{
+      if(typeof S!=='undefined'&&Array.isArray(S.p)&&S.p.length){
+        return [...new Set(S.p.map(p=>String(p?.category||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+      }
+    }catch{}
+    return [...new Set([...container.querySelectorAll('[data-category]')].map(el=>String(el.dataset.category||'').trim()).filter(c=>c&&!['see more categories','show fewer categories'].includes(norm(c))))].sort((a,b)=>a.localeCompare(b));
   }
 
-  function simplifyCategories(){
+  function categoryIcon(c){
+    try{if(typeof E!=='undefined'&&E&&E[c])return E[c]}catch{}
+    const fallback={Books:'📚',Kitchen:'🍳'};
+    return fallback[c]||'✨';
+  }
+
+  function categoryButton(c){
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='category';
+    b.dataset.category=c;
+    b.textContent=`${categoryIcon(c)} ${c}`;
+    return b;
+  }
+
+  function rebuildCategories(){
     const section=categorySection();if(!section)return false;
     const container=section.querySelector('.categories');if(!container)return false;
     section.classList.add('v-home-categories');
-    removeLegacyCategoryControls(section,container);
-
-    const all=[...container.querySelectorAll('[data-category]')];const seen=new Set();
-    const items=all.filter(el=>{const key=String(el.dataset.category||'');if(!key||seen.has(key)){if(key&&seen.has(key))el.remove();return false}seen.add(key);return true});
-    const limit=6;if(!items.length)return false;
-
-    let details=container.querySelector('.v-home-category-details');
-    const duplicateDetails=[...container.querySelectorAll('.v-home-category-details')];
-    duplicateDetails.slice(1).forEach(d=>d.remove());
-    details=duplicateDetails[0]||details;
-    let extra=details?.querySelector('.v-home-category-extra');let summary=details?.querySelector('summary');
-
-    if(items.length<=limit){if(details){for(const el of items)container.insertBefore(el,details);details.remove()}items.forEach(el=>{el.hidden=false;el.style.removeProperty('display')});return true}
-
-    if(!details){details=document.createElement('details');details.className='v-home-category-details';summary=document.createElement('summary');extra=document.createElement('div');extra.className='v-home-category-extra';details.append(summary,extra);summary.textContent='See more categories';details.addEventListener('toggle',()=>{summary.textContent=details.open?'Show fewer categories':'See more categories'});container.appendChild(details)}
-    if(!summary){summary=document.createElement('summary');details.prepend(summary)}
-    if(!extra){extra=document.createElement('div');extra.className='v-home-category-extra';details.appendChild(extra)}
-
-    const first=items.slice(0,limit),rest=items.slice(limit);
-    first.forEach(el=>{el.hidden=false;el.style.removeProperty('display');if(el.parentElement!==container)container.insertBefore(el,details)});
-    rest.forEach(el=>{el.hidden=false;el.style.removeProperty('display');if(el.parentElement!==extra)extra.appendChild(el)});
-    if(details.parentElement!==container)container.appendChild(details);
-    summary.textContent=details.open?'Show fewer categories':'See more categories';
+    const cats=categoryNames(container);if(!cats.length)return false;
+    const wasOpen=container.querySelector('.v-home-category-details')?.open===true;
+    container.replaceChildren();
+    cats.slice(0,6).forEach(c=>container.appendChild(categoryButton(c)));
+    if(cats.length>6){
+      const details=document.createElement('details');
+      details.className='v-home-category-details';
+      details.open=wasOpen;
+      const summary=document.createElement('summary');
+      const extra=document.createElement('div');
+      extra.className='v-home-category-extra';
+      const sync=()=>{summary.textContent=details.open?'Show fewer categories':'See more categories'};
+      cats.slice(6).forEach(c=>extra.appendChild(categoryButton(c)));
+      details.append(summary,extra);
+      details.addEventListener('toggle',sync);
+      sync();
+      container.appendChild(details);
+    }
     return true;
   }
 
   function simplifySections(){limitRail(document.getElementById('viral')||sectionByText("what's trending now"),6,'See all trending');limitRail(sectionByText('seen on screen'),4,'See all seen on screen');const culture=document.getElementById('culture')||sectionByText('you saw it then everyone bought it');if(culture&&!norm(culture.textContent).includes('seen on screen'))limitRail(culture,6,'See all')}
   function revealFast(){const app=document.getElementById('app');if(app?.innerHTML?.trim())document.documentElement.classList.add('vyrdict-ready')}
-  function apply(){addStyle();const home=isHome();document.body?.classList.toggle('vyrdict-home-calm',home);if(!home){revealFast();return true}if(!document.querySelector('.hero,.stage'))return false;simplifyCategories();simplifySections();revealFast();return true}
+  function apply(){addStyle();const home=isHome();document.body?.classList.toggle('vyrdict-home-calm',home);if(!home){revealFast();return true}if(!document.querySelector('.hero,.stage'))return false;rebuildCategories();simplifySections();revealFast();return true}
   function boot(attempt=0){if(apply()||attempt>=18)return;setTimeout(()=>boot(attempt+1),70)}
 
-  const observer=new MutationObserver(()=>{if(!isHome())return;clearTimeout(mutationTimer);mutationTimer=setTimeout(()=>{simplifyCategories();revealFast()},100)});
+  const observer=new MutationObserver(()=>{if(!isHome())return;clearTimeout(mutationTimer);mutationTimer=setTimeout(()=>{rebuildCategories();revealFast()},80)});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{boot();observer.observe(document.getElementById('app')||document.body,{childList:true,subtree:false})},{once:true});else{boot();const target=document.getElementById('app')||document.body;if(target)observer.observe(target,{childList:true,subtree:false})}
   addEventListener('popstate',()=>setTimeout(()=>boot(),20));addEventListener('hashchange',()=>setTimeout(()=>boot(),20));
 })();
