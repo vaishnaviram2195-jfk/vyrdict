@@ -4,7 +4,7 @@
 
   const ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-weekly-rankings';
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
-  const CATEGORIES=new Set(['beauty','hair','makeup','fashion','home','wellness','fitness','tech','food drinks','pets','travel','kids baby','toys collectibles','stationery craft','stationery crafts','books']);
+  const CATEGORIES=new Set(['beauty','hair','makeup','fashion','home','wellness','fitness','tech','food drinks','pets','travel','kids baby','toys collectibles','stationery craft','stationery crafts','books','kitchen']);
   const cache=new Map();
   let busy=false;
 
