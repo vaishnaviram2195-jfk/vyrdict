@@ -35,7 +35,7 @@
   if(document.getElementById('vyrdict-home-simplify-loader'))return;
   const s=document.createElement('script');
   s.id='vyrdict-home-simplify-loader';
-  s.src='/homepage-simplify.js?v=6';
+  s.src='/homepage-simplify.js?v=7';
   s.defer=true;
   document.head.appendChild(s);
 })();
@@ -44,6 +44,14 @@
   const s=document.createElement('script');
   s.id='vyrdict-home-hero-variety-loader';
   s.src='/homepage-hero-variety.js?v=5';
+  s.defer=true;
+  document.head.appendChild(s);
+})();
+(()=>{
+  if(document.getElementById('vyrdict-mobile-final-loader'))return;
+  const s=document.createElement('script');
+  s.id='vyrdict-mobile-final-loader';
+  s.src='/homepage-mobile-final.js?v=1';
   s.defer=true;
   document.head.appendChild(s);
 })();
