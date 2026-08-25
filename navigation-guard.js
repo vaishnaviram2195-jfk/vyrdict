@@ -1,21 +1,17 @@
 (()=>{
-  if(window.__vyrdictNavigationGuardV1)return;
-  window.__vyrdictNavigationGuardV1=1;
+  if(window.__vyrdictNavigationGuardV2)return;
+  window.__vyrdictNavigationGuardV2=1;
 
   const COVER_ID='vyrdict-route-cover';
-  let token=0;
 
   function hardTop(){
     try{history.scrollRestoration='manual'}catch{}
     try{document.documentElement.style.scrollBehavior='auto'}catch{}
     try{document.body.style.scrollBehavior='auto'}catch{}
+    try{if(document.scrollingElement)document.scrollingElement.scrollTop=0}catch{}
     try{document.documentElement.scrollTop=0}catch{}
     try{document.body.scrollTop=0}catch{}
-    try{window.scrollTo({top:0,left:0,behavior:'auto'})}catch{try{window.scrollTo(0,0)}catch{}}
-  }
-
-  function removeCover(){
-    document.getElementById(COVER_ID)?.remove();
+    try{window.scrollTo(0,0)}catch{}
   }
 
   function makeCover(){
@@ -31,89 +27,123 @@
     return cover;
   }
 
-  function appReady(){
-    const app=document.getElementById('app');
-    if(!app)return true;
-    const text=(app.textContent||'').trim();
-    if(!text)return false;
-    if(/^(loading\b|loading the|bringing back)/i.test(text))return false;
-    return text.length>60 || app.children.length>1;
-  }
-
   function showCover(){
     hardTop();
-    const mine=++token;
     makeCover();
-    const app=document.getElementById('app');
-    let changed=false;
-    let obs=null;
-    let timeout=null;
-
-    const finish=()=>{
-      if(mine!==token)return;
-      if(obs)obs.disconnect();
-      if(timeout)clearTimeout(timeout);
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        if(mine!==token)return;
-        hardTop();
-        removeCover();
-      }));
-    };
-
-    const check=()=>{
-      if(mine!==token)return;
-      if(changed&&appReady())finish();
-    };
-
-    const watchRoot=app||document.body;
-    if(watchRoot){
-      obs=new MutationObserver(muts=>{
-        if(muts.some(m=>!(m.target instanceof Element&&m.target.closest?.('#'+COVER_ID))))changed=true;
-        check();
-      });
-      obs.observe(watchRoot,{subtree:true,childList:true,characterData:true,attributes:false});
-    }
-
-    timeout=setTimeout(()=>{
-      if(mine!==token)return;
-      hardTop();
-      removeCover();
-    },6000);
   }
 
-  function isNavigatingTarget(el){
-    if(!el)return false;
-    if(el.matches?.('input,textarea,select,option'))return false;
-    const a=el.closest?.('a[href]');
-    if(a){
-      if(a.target==='_blank'||a.hasAttribute('download'))return false;
-      const href=a.getAttribute('href')||'';
-      if(!href||href.startsWith('mailto:')||href.startsWith('tel:')||href.startsWith('javascript:'))return false;
-      if(href.startsWith('#'))return false;
-      try{
-        const u=new URL(a.href,location.href);
-        if(u.origin!==location.origin)return false;
-        if(u.pathname===location.pathname&&u.search===location.search&&u.hash!==location.hash)return false;
-        return true;
-      }catch{return false}
+  function slug(v){
+    return String(v||'').toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  }
+
+  function cleanInternal(raw){
+    if(!raw)return null;
+    try{
+      const u=new URL(raw,location.href);
+      if(u.origin!==location.origin)return null;
+      // Normalize old VYRDICT hash routes if an old history/referrer entry remains.
+      if(/^#\//.test(u.hash||'')){
+        const legacy=u.hash.slice(1);
+        if(/^\/(product|category|collection|saved|search)(\/|\?|$)/i.test(legacy))return legacy;
+      }
+      return u.pathname+u.search+u.hash;
+    }catch{return null}
+  }
+
+  function previousInternal(){
+    const stateFrom=cleanInternal(history.state?.from);
+    if(stateFrom&&stateFrom!==(location.pathname+location.search+location.hash))return stateFrom;
+    const ref=cleanInternal(document.referrer);
+    if(ref&&ref!==(location.pathname+location.search+location.hash))return ref;
+    return '/';
+  }
+
+  function destination(target){
+    if(!target)return null;
+    if(target.closest?.('input,textarea,select,option'))return null;
+
+    const product=target.closest?.('[data-product]');
+    if(product?.dataset?.product)return '/product/'+encodeURIComponent(product.dataset.product)+'/';
+
+    const category=target.closest?.('[data-category]');
+    if(category?.dataset?.category){
+      const s=slug(category.dataset.category);
+      if(s)return '/category/'+encodeURIComponent(s)+'/';
     }
-    return !!el.closest?.('[data-product],[data-category],[data-collection],[data-back],[data-nav],[data-search]');
+
+    const collection=target.closest?.('[data-collection]');
+    if(collection?.dataset?.collection)return '/collection/'+encodeURIComponent(collection.dataset.collection)+'/';
+
+    const back=target.closest?.('[data-back]');
+    if(back)return previousInternal();
+
+    const search=target.closest?.('[data-search]');
+    if(search){
+      const q=document.getElementById('q')?.value?.trim();
+      return q?'/search?q='+encodeURIComponent(q):null;
+    }
+
+    const nav=target.closest?.('[data-nav]');
+    if(nav){
+      const href=nav.getAttribute('href')||nav.dataset.nav||'';
+      return cleanInternal(href);
+    }
+
+    const a=target.closest?.('a[href]');
+    if(!a||a.target==='_blank'||a.hasAttribute('download'))return null;
+    const raw=a.getAttribute('href')||'';
+    if(!raw||/^(mailto:|tel:|javascript:)/i.test(raw))return null;
+    if(raw.startsWith('#'))return null;
+
+    // Standalone policy/methodology pages historically used inline history.back().
+    // Route those to the actual internal referrer instead of allowing that handler
+    // to restore a partially rendered SPA document.
+    if(/history\.back\s*\(/i.test(a.getAttribute('onclick')||''))return previousInternal();
+
+    const dest=cleanInternal(a.href);
+    if(!dest)return null;
+    const here=location.pathname+location.search+location.hash;
+    if(dest===here)return null;
+    if(dest.startsWith(location.pathname+location.search+'#'))return null;
+    return dest;
+  }
+
+  function ownNavigation(e,dest){
+    if(!dest)return false;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    showCover();
+    // Full-document navigation deliberately replaces SPA in-place routing here.
+    // The current painted document/cover stays present until the browser commits
+    // the destination, eliminating the empty viewport created by async route swaps.
+    setTimeout(()=>location.assign(dest),0);
+    return true;
   }
 
   document.addEventListener('click',e=>{
     if(e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
-    if(isNavigatingTarget(e.target))showCover();
-  },{capture:true,passive:true});
+    ownNavigation(e,destination(e.target));
+  },true);
 
-  addEventListener('popstate',()=>showCover(),true);
-  addEventListener('hashchange',()=>showCover(),true);
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'||e.target?.id!=='q')return;
+    const q=String(e.target.value||'').trim();
+    if(!q)return;
+    ownNavigation(e,'/search?q='+encodeURIComponent(q));
+  },true);
 
+  // Browser back/forward may restore a bfcache snapshot. Keep it stable and
+  // always remove a cover left in that snapshot once the destination is shown.
   addEventListener('pageshow',()=>{
-    ++token;
     hardTop();
-    removeCover();
+    document.getElementById(COVER_ID)?.remove();
     requestAnimationFrame(()=>requestAnimationFrame(hardTop));
   },true);
 
+  // Do not run an in-place render from this guard on popstate. Full canonical
+  // navigations own the route; the app's legacy listener is only relevant to
+  // old history entries and cannot expose a blank viewport because the current
+  // document is not proactively cleared here.
   hardTop();
 })();
