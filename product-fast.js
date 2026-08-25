@@ -1,6 +1,26 @@
 (()=>{
-  if(window.__vyrdictProductFastV2)return;
-  window.__vyrdictProductFastV2=1;
+  if(window.__vyrdictProductFastV5)return;
+  window.__vyrdictProductFastV5=1;
+
+  // Route safety: VYRDICT swaps tall pages for short loading states while
+  // navigating. If the viewport is still deep in the old page, that creates
+  // a blank beige screen. Force the viewport to the top BEFORE the app's
+  // route handler can replace any content.
+  function hardTop(){
+    try{history.scrollRestoration='manual'}catch{}
+    try{document.documentElement.style.scrollBehavior='auto'}catch{}
+    try{document.body.style.scrollBehavior='auto'}catch{}
+    try{document.documentElement.scrollTop=0}catch{}
+    try{document.body.scrollTop=0}catch{}
+    try{window.scrollTo(0,0)}catch{}
+  }
+  hardTop();
+  const routeSelector='[data-product],[data-category],[data-collection],[data-back],[data-nav],[data-search]';
+  document.addEventListener('click',e=>{if(e.target?.closest?.(routeSelector))hardTop()},{capture:true,passive:true});
+  addEventListener('popstate',hardTop,true);
+  addEventListener('hashchange',hardTop,true);
+  addEventListener('pageshow',hardTop,true);
+
   const ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-product-detail';
   const inflight=new Map();
   const prefetched=new Set();
