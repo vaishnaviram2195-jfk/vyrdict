@@ -1,10 +1,10 @@
 (()=>{
-  if(window.__vyrdictProductShellV8)return;
-  window.__vyrdictProductShellV8=1;
+  if(window.__vyrdictProductShellV9)return;
+  window.__vyrdictProductShellV9=1;
   const match=decodeURIComponent(location.pathname).match(/^\/product\/([^/]+)\/?$/i);if(!match)return;
   const slug=match[1],clean='/product/'+encodeURIComponent(slug)+'/';
-  const BUNDLE='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-bundle-fast?v=8';
-  const CACHE_KEY='vyrdict:bundle-cache:v8';
+  const BUNDLE='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-bundle-fast?v=9';
+  const CACHE_KEY='vyrdict:bundle-cache:v9';
   const schema=document.querySelector('script[type="application/ld+json"]')?.textContent||'';
   const fallbackTitle=document.querySelector('.seo-fallback h1')?.textContent?.trim()||slug.replaceAll('-',' ');
   const seo={title:document.title,description:document.querySelector('meta[name="description"]')?.content||'',canonical:document.querySelector('link[rel="canonical"]')?.href||('https://vyrdict.com'+clean),ogTitle:document.querySelector('meta[property="og:title"]')?.content||document.title,ogDescription:document.querySelector('meta[property="og:description"]')?.content||'',ogImage:document.querySelector('meta[property="og:image"]')?.content||'https://vyrdict.com/vyrdict-social-preview.jpg',schema};
@@ -32,7 +32,7 @@
     const tags='<base href="/"><title>'+attr(seo.title)+'</title><meta name="description" content="'+attr(seo.description)+'"><meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"><link rel="canonical" href="'+attr(seo.canonical)+'"><meta property="og:site_name" content="VYRDICT"><meta property="og:type" content="product"><meta property="og:url" content="'+attr(seo.canonical)+'"><meta property="og:title" content="'+attr(seo.ogTitle)+'"><meta property="og:description" content="'+attr(seo.ogDescription)+'"><meta property="og:image" content="'+attr(seo.ogImage)+'"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="'+attr(seo.ogTitle)+'"><meta name="twitter:description" content="'+attr(seo.ogDescription)+'"><meta name="twitter:image" content="'+attr(seo.ogImage)+'">'+schemaTag;
     h=h.replace(/<title[\s\S]*?<\/title>/i,'').replace(/<meta[^>]+name=["']description["'][^>]*>/i,'').replace(/<link[^>]+rel=["']canonical["'][^>]*>/i,'');h=h.replace('<head>','<head>'+tags);
     const cover='<div id="vyrdict-product-transition" style="position:fixed;inset:0;z-index:2147483646;background:#f4ede5;display:grid;place-items:center;padding:28px;font-family:Arial,Helvetica,sans-serif;color:#171511"><div style="width:min(720px,100%);background:#fffdf8;border:1px solid #d8cec4;border-radius:28px;padding:34px"><div style="font-size:26px;font-weight:950;letter-spacing:-.06em">VYRDICT<span style="display:inline-block;width:7px;height:7px;background:#ed5d78;margin-left:2px"></span></div><div style="margin-top:34px;font-size:9px;font-weight:950;letter-spacing:.12em;text-transform:uppercase;color:#6d675f">Loading product verdict</div><div style="font:400 clamp(36px,5vw,58px)/.98 Georgia,serif;letter-spacing:-.045em;margin:10px 0 18px">'+attr(fallbackTitle)+'</div><div style="color:#6d675f;line-height:1.6;font-size:13px">Bringing back the full product view…</div></div></div>';
-    const tail='<script src="/product-fast.js?v=2" defer><\/script><script src="/analytics.js?v=perf-3" defer><\/script><script src="/product-detail-consistency.js?v=3" defer><\/script><script src="/social-links-fix.js?v=7" defer><\/script><script>(()=>{const c=document.getElementById("vyrdict-product-transition");if(!c)return;let n=0;const ready=()=>{const a=document.getElementById("app");const text=(a?.textContent||"").trim();if((a&&text.length>100&&!/loading/i.test(text))||n++>120){requestAnimationFrame(()=>c.remove());return}setTimeout(ready,25)};ready()})();<\/script>';
+    const tail='<script src="/navigation-guard.js?v=1" defer><\/script><script src="/product-fast.js?v=8" defer><\/script><script src="/analytics.js?v=perf-3" defer><\/script><script src="/product-detail-consistency.js?v=3" defer><\/script><script src="/social-links-fix.js?v=7" defer><\/script><script>(()=>{const c=document.getElementById("vyrdict-product-transition");if(!c)return;let n=0;const ready=()=>{const a=document.getElementById("app");const text=(a?.textContent||"").trim();if((a&&text.length>100&&!/loading/i.test(text))||n++>120){requestAnimationFrame(()=>c.remove());return}setTimeout(ready,25)};ready()})();<\/script>';
     h=h.replace('<body>','<body>'+cover);h=h.replace('</body>',tail+'</body>');document.open();document.write(h);document.close();
   }catch(e){console.error('VYRDICT product shell',e)}})();
 })();
