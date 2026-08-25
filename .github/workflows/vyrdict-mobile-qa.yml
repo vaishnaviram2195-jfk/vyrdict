@@ -29,7 +29,9 @@ jobs:
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null
       - name: Test live VYRDICT interactions and timings
+        shell: bash
         run: |
+          set -o pipefail
           mkdir -p qa
           echo '{"ok":false,"status":"runner-started"}' > qa/report.json
           cat > qa/vyrdict-qa.js <<'NODE'
@@ -53,21 +55,23 @@ jobs:
             out.timings.homeReadyMs=Date.now()-t;
             assert(response&&response.status()<400,`${name}: home HTTP ${response?.status()}`);
             const home=await page.evaluate(()=>({text:document.body?.innerText||'',scrollWidth:document.documentElement.scrollWidth,innerWidth:innerWidth,expanders:[...document.querySelectorAll('#categories button,#categories summary')].filter(x=>/more categories|fewer categories/i.test(x.textContent||'')).map(x=>({tag:x.tagName,text:x.textContent.trim(),cls:x.className})),detailsCount:document.querySelectorAll('#categories details.v-home-category-details').length,categories:[...document.querySelectorAll('#categories [data-category]')].map(x=>x.dataset.category)}));
+            out.home=home;report.current=out;save();
             assert(!/Could not load the site/i.test(home.text),`${name}: loader error visible`);
             assert(home.scrollWidth<=home.innerWidth+4,`${name}: horizontal overflow ${home.scrollWidth}>${home.innerWidth}`);
             assert(home.detailsCount===1,`${name}: expected exactly one category details control, saw ${home.detailsCount}`);
             assert(home.expanders.length===1,`${name}: expected exactly one category expander, saw ${home.expanders.length}: ${JSON.stringify(home.expanders)}`);
             assert(home.categories.length>6,`${name}: expected more than six categories`);
             const summary=page.locator('#categories details.v-home-category-details > summary');
-            await summary.click();await page.waitForTimeout(120);
-            let expanded=await page.evaluate(()=>{const d=document.querySelector('#categories details.v-home-category-details');return {open:d?.open,text:d?.querySelector('summary')?.textContent||'',visible:[...document.querySelectorAll('#categories [data-category]')].filter(x=>x.offsetParent!==null).length}});
-            assert(expanded.open===true,`${name}: category expander did not open`);assert(/show fewer categories/i.test(expanded.text),`${name}: category expander label did not change`);assert(expanded.visible>6,`${name}: expanded categories did not become visible`);
+            await summary.click();await page.waitForTimeout(160);
+            const expanded=await page.evaluate(()=>{const d=document.querySelector('#categories details.v-home-category-details'),extra=d?.querySelector('.v-home-category-extra');return {open:d?.open,text:d?.querySelector('summary')?.textContent||'',visible:[...document.querySelectorAll('#categories [data-category]')].filter(x=>x.offsetParent!==null&&getComputedStyle(x).display!=='none'&&getComputedStyle(x).visibility!=='hidden').length,extraDisplay:extra?getComputedStyle(extra).display:null,extraVisibility:extra?getComputedStyle(extra).visibility:null,extraButtons:extra?[...extra.querySelectorAll('[data-category]')].map(x=>({name:x.dataset.category,hidden:x.hidden,display:getComputedStyle(x).display,visibility:getComputedStyle(x).visibility,rect:x.getBoundingClientRect().toJSON()})):[]}});
+            out.expanded=expanded;save();
+            assert(expanded.open===true,`${name}: category expander did not open: ${JSON.stringify(expanded)}`);assert(/show fewer categories/i.test(expanded.text),`${name}: category expander label did not change: ${JSON.stringify(expanded)}`);assert(expanded.visible>6,`${name}: expanded categories did not become visible: ${JSON.stringify(expanded)}`);
             await summary.click();await page.waitForTimeout(80);assert(await page.locator('#categories details.v-home-category-details').evaluate(d=>!d.open),`${name}: category expander did not close`);
-            const firstCategory=page.locator('#categories > .categories > [data-category]').first();out.category=await firstCategory.getAttribute('data-category');t=Date.now();await firstCategory.click();await page.waitForURL(/\/category\//,{timeout:10000});await waitReady(page,'.grid');out.timings.categoryNavigationMs=Date.now()-t;
+            const firstCategory=page.locator('#categories .categories > [data-category]').first();out.category=await firstCategory.getAttribute('data-category');t=Date.now();await firstCategory.click();await page.waitForURL(/\/category\//,{timeout:10000});await waitReady(page,'.grid');out.timings.categoryNavigationMs=Date.now()-t;
             await page.goto(base+'/?qa2='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await waitReady(page,'.hero');
             const product=page.locator('[data-product]').first();await product.waitFor({state:'visible',timeout:15000});out.productSlug=await product.getAttribute('data-product');t=Date.now();await product.click();await page.waitForURL(/\/product\//,{timeout:10000});await waitReady(page,'.productHero',15000);out.timings.productClickMs=Date.now()-t;
             const productText=await page.locator('body').innerText();assert(/VIRAL SCORE/i.test(productText)&&/WORTH SCORE/i.test(productText),`${name}: product scores missing`);assert(/WHERE TO BUY/i.test(productText),`${name}: where-to-buy missing`);assert(!/Loading the VYRDICT…/i.test(productText),`${name}: product still shows loading state`);
-            await page.screenshot({path:`qa/${name}-product.png`,fullPage:true});out.errors=errors;assert(!errors.some(x=>/ReferenceError|TypeError|SyntaxError/i.test(x)),`${name}: runtime JS error ${errors.join(' | ')}`);report.runs.push(out);save();await context.close();
+            await page.screenshot({path:`qa/${name}-product.png`,fullPage:true});out.errors=errors;assert(!errors.some(x=>/ReferenceError|TypeError|SyntaxError/i.test(x)),`${name}: runtime JS error ${errors.join(' | ')}`);delete report.current;report.runs.push(out);save();await context.close();
           }
           async function directProduct(browser){
             const context=await browser.newContext({viewport:{width:1280,height:900}});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
