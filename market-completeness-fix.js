@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictMarketCompletenessV1)return;
-  window.__vyrdictMarketCompletenessV1=1;
+  if(window.__vyrdictMarketCompletenessV2)return;
+  window.__vyrdictMarketCompletenessV2=1;
   const isProduct=()=>/^\/product\//i.test(location.pathname);
   const region=()=>{
     const active=document.querySelector('.geo-choice.on[data-geo]')?.dataset?.geo;
@@ -11,17 +11,26 @@
   const marketName=()=>region()==='CA'?'Canada':'United States';
   const slug=()=>{const m=decodeURIComponent(location.pathname||'').match(/^\/product\/([^/?#]+)/i);return m?m[1]:''};
   const baseProduct=()=>window.__VYRDICT_BOOT_DATA?.p?.find?.(x=>x.slug===slug())||null;
+  const norm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
   const validHttp=a=>{try{const u=new URL(a.href,location.href);return /^https?:$/.test(u.protocol)}catch{return false}};
-  const exactish=a=>{try{const u=new URL(a.href,location.href),p=u.pathname.toLowerCase();if(!/^https?:$/.test(u.protocol)||p==='/'||p==='')return false;if(/\/search\/?$/.test(p)||p.includes('/search?')||p.includes('/brand/')||p.includes('/buy/'))return false;if(p.includes('/collections/')&&!p.includes('/products/'))return false;if(/\/(collections?|category|categories)\/?$/.test(p))return false;return true}catch{return false}};
-  function scoreNumber(){
-    const p=baseProduct();
-    const n=Number(p?.worth_score);
-    return Number.isFinite(n)?Math.round(n):null;
+  function familyMatch(path){
+    const p=baseProduct(),tail=norm(path),tokens=norm(p?.name).split(' ').filter(x=>x.length>=3&&!['the','and','for','with'].includes(x));
+    if(!tokens.length)return false;
+    const hits=tokens.filter(t=>tail.includes(t)).length;
+    return hits>=Math.min(2,tokens.length);
   }
+  const exactish=a=>{try{
+    const u=new URL(a.href,location.href),p=u.pathname.toLowerCase();
+    if(!/^https?:$/.test(u.protocol)||p==='/'||p==='')return false;
+    if(/\/search\/?$/.test(p)||u.searchParams.has('q')&&/search/i.test(p)||p.includes('/brand/')||p.includes('/buy/'))return false;
+    if(p.includes('/collections/')&&!p.includes('/products/')&&!familyMatch(p))return false;
+    if(/\/(collections?|category|categories)\/?$/.test(p))return false;
+    return true;
+  }catch{return false}};
+  function scoreNumber(){const n=Number(baseProduct()?.worth_score);return Number.isFinite(n)?Math.round(n):null}
   function cleanSummary(block){
     const box=block.querySelector('.market-summary');if(!box)return;
-    const strong=box.querySelector('strong'),em=box.querySelector('em');
-    const worth=scoreNumber();
+    const strong=box.querySelector('strong'),em=box.querySelector('em'),worth=scoreNumber();
     if(strong&&worth!=null&&/(pending|verification|no verified listing)/i.test(strong.textContent||'')){
       strong.textContent='Worth '+worth;
       box.classList.remove('pending','unavailable');
@@ -33,13 +42,8 @@
     const r=region(),links=[...list.querySelectorAll('a.retailer')].filter(validHttp);
     const local=links.filter(a=>(a.dataset.country===r||a.dataset.country==='GLOBAL')&&exactish(a));
     links.forEach(a=>a.style.display='none');
-    let shown=local;
-    let fallback=false;
-    if(!shown.length){
-      const other=links.filter(exactish)[0];
-      shown=other?[other]:[];
-      fallback=!!other;
-    }
+    let shown=local,fallback=false;
+    if(!shown.length){const other=links.filter(exactish)[0];shown=other?[other]:[];fallback=!!other}
     shown.forEach(a=>{
       a.style.display='flex';
       if(fallback){
@@ -58,10 +62,8 @@
   }
   function cleanVerdict(){
     const worth=scoreNumber();if(worth==null)return;
-    const parts=[...document.querySelectorAll('.productHero .ring')];
-    const ring=parts.find(x=>/worth score/i.test(x.textContent||''));
-    const b=ring?.querySelector('b');
-    if(b&&!/^\d{1,3}$/.test((b.textContent||'').trim()))b.textContent=String(worth);
+    const ring=[...document.querySelectorAll('.productHero .ring')].find(x=>/worth score/i.test(x.textContent||''));
+    const b=ring?.querySelector('b');if(b&&!/^\d{1,3}$/.test((b.textContent||'').trim()))b.textContent=String(worth);
   }
   function apply(){if(!isProduct())return;const block=document.getElementById('where-to-buy');if(!block)return;cleanSummary(block);cleanLinks(block);cleanVerdict()}
   function schedule(){[0,100,350,800,1600].forEach(ms=>setTimeout(apply,ms))}
