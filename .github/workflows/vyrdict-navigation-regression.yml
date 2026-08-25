@@ -27,120 +27,158 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null
-      - name: Wait for V2 production guard
+      - name: Wait for production navigation guard
         run: |
           for i in $(seq 1 40); do
             if curl -fsSL 'https://vyrdict.com/navigation-guard.js?v=1' | grep -q '__vyrdictNavigationGuardV2'; then
-              echo 'V2 guard is live'
+              echo 'Navigation guard is live'
               exit 0
             fi
             sleep 5
           done
-          echo 'V2 guard did not reach production in time'
+          echo 'Navigation guard did not reach production in time'
           exit 1
-      - name: Test blank-screen regressions
+      - name: Test painted viewport and back navigation
         run: |
           cat > nav-qa.js <<'NODE'
           const { chromium } = require('playwright');
           const base='https://vyrdict.com';
+          const sleep=ms=>new Promise(r=>setTimeout(r,ms));
           const assert=(ok,msg)=>{if(!ok)throw new Error(msg)};
-          async function syntaxScan(page,label){
-            const bad=await page.evaluate(()=>[...document.scripts].map((s,i)=>{
-              if(s.src)return null;
-              const type=(s.getAttribute('type')||'').toLowerCase();
-              if(type&&!['text/javascript','application/javascript','module'].includes(type))return null;
-              const text=s.textContent||'';
-              if(!text.trim())return null;
-              try{new Function(text);return null}catch(e){return {i,message:String(e.message||e),start:text.slice(0,650),end:text.slice(-650)}}
-            }).filter(Boolean));
-            console.log('SYNTAX_SCAN '+label+' '+JSON.stringify(bad));
-            return bad;
-          }
-          async function layoutState(page,label){
+
+          async function paintState(page,label){
             const s=await page.evaluate(()=>{
-              const snap=sel=>{const el=document.querySelector(sel);if(!el)return null;const r=el.getBoundingClientRect(),c=getComputedStyle(el);return {sel,rect:{x:r.x,y:r.y,top:r.top,bottom:r.bottom,left:r.left,right:r.right,width:r.width,height:r.height},display:c.display,visibility:c.visibility,opacity:c.opacity,position:c.position,transform:c.transform,overflow:c.overflow,marginTop:c.marginTop,paddingTop:c.paddingTop,minHeight:c.minHeight,height:c.height}};
-              return {innerWidth,innerHeight,scrollY,scrollHeight:document.documentElement.scrollHeight,bodyScrollHeight:document.body?.scrollHeight,htmlClass:document.documentElement.className,bodyClass:document.body?.className,htmlStyle:document.documentElement.getAttribute('style'),bodyStyle:document.body?.getAttribute('style'),items:[snap('body'),snap('#app'),snap('.header'),snap('.page'),snap('.grid'),snap('.grid .card')]};
+              const cover=!!document.getElementById('vyrdict-route-cover');
+              const bodyBg=getComputedStyle(document.body||document.documentElement).backgroundColor;
+              const meaningfulTag=/^(A|BUTTON|IMG|H1|H2|H3|H4|P|SPAN|STRONG|B|SMALL|INPUT|ARTICLE|SECTION)$/;
+              let hit=0,total=0;
+              const xs=[.10,.30,.50,.70,.90].map(x=>Math.max(2,Math.min(innerWidth-2,Math.round(innerWidth*x))));
+              const ys=[.14,.24,.34,.44,.54,.64,.74,.84,.94].map(y=>Math.max(2,Math.min(innerHeight-2,Math.round(innerHeight*y))));
+              for(const x of xs)for(const y of ys){
+                total++;
+                const els=document.elementsFromPoint(x,y);
+                const painted=els.some(el=>{
+                  if(el===document.documentElement||el===document.body)return false;
+                  const cs=getComputedStyle(el);
+                  if(cs.display==='none'||cs.visibility==='hidden'||Number(cs.opacity)===0)return false;
+                  if(el.id==='vyrdict-route-cover')return true;
+                  if(meaningfulTag.test(el.tagName))return true;
+                  const bg=cs.backgroundColor;
+                  return bg&&bg!=='rgba(0, 0, 0, 0)'&&bg!=='transparent'&&bg!==bodyBg;
+                });
+                if(painted)hit++;
+              }
+              const ratio=total?hit/total:0;
+              return {label,path:location.pathname+location.search,scrollY,cover,ratio,bodyText:(document.body?.innerText||'').slice(0,220)};
             });
-            console.log('LAYOUT '+label+' '+JSON.stringify(s));
+            console.log('PAINT '+JSON.stringify(s));
             return s;
           }
-          async function visibleState(page,label){
-            const s=await page.evaluate(()=>{
-              const cover=document.getElementById('vyrdict-route-cover');
-              const nodes=[...document.querySelectorAll('header,main,section,article,.card,.hero,.productHero,#app,a,button')];
-              const meaningful=nodes.some(el=>{
-                const cs=getComputedStyle(el);
-                if(cs.visibility==='hidden'||cs.display==='none'||Number(cs.opacity)===0)return false;
-                const r=el.getBoundingClientRect();
-                const onScreen=r.bottom>0&&r.top<innerHeight&&r.right>0&&r.left<innerWidth;
-                if(!onScreen||r.width<20||r.height<16)return false;
-                return (el.textContent||'').trim().length>0||!!el.querySelector?.('img,button,a');
-              });
-              return {scrollY,cover:!!cover,meaningful,path:location.pathname+location.search,bodyText:(document.body?.innerText||'').slice(0,180)};
-            });
-            assert(s.cover||s.meaningful,`${label}: viewport is blank: ${JSON.stringify(s)}`);
+
+          async function assertPainted(page,label){
+            const s=await paintState(page,label);
+            assert(s.cover||s.ratio>=0.08,`${label}: blank viewport: ${JSON.stringify(s)}`);
             return s;
           }
+
+          async function watchPaint(page,label,ms=2600){
+            const started=Date.now();
+            let consecutiveBlank=0,maxBlank=0,samples=0;
+            while(Date.now()-started<ms){
+              try{
+                const s=await paintState(page,label+'@'+(Date.now()-started));
+                samples++;
+                if(!s.cover&&s.ratio<0.08)consecutiveBlank+=100;else consecutiveBlank=0;
+                maxBlank=Math.max(maxBlank,consecutiveBlank);
+              }catch(e){
+                // Navigation can destroy the JS execution context for a few ms.
+              }
+              await sleep(100);
+            }
+            assert(samples>2,`${label}: insufficient viewport samples`);
+            assert(maxBlank<500,`${label}: blank viewport persisted ${maxBlank}ms`);
+          }
+
           async function waitProduct(page){
             await page.locator('.productHero').first().waitFor({state:'visible',timeout:25000});
-            await page.waitForTimeout(150);
-            const s=await visibleState(page,'product ready');
-            assert(s.scrollY<80,`product did not return to top: ${JSON.stringify(s)}`);
+            await sleep(120);
+            const s=await assertPainted(page,'product ready');
+            assert(s.scrollY<80,`product restored at wrong scroll position: ${JSON.stringify(s)}`);
           }
+
           (async()=>{
             const browser=await chromium.launch({headless:true});
             const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
             const page=await context.newPage();
-            page.on('pageerror',e=>console.error('PAGEERROR',e.stack||e.message));
+            const fatal=[];
+            page.on('pageerror',e=>{
+              const m=String(e?.stack||e?.message||e);
+              console.error('PAGEERROR',m);
+              if(/Invalid regular expression|SyntaxError/i.test(m))fatal.push(m);
+            });
 
+            // Home -> Product.
             await page.goto(base+'/?navqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
             await page.locator('[data-product]').first().waitFor({state:'visible',timeout:25000});
-            await syntaxScan(page,'HOME');
+            await assertPainted(page,'home ready');
+            let watch=watchPaint(page,'home to product');
             await page.locator('[data-product]').first().click();
             await page.waitForURL(/\/product\//,{timeout:15000});
-            await page.waitForTimeout(1800);
-            await syntaxScan(page,'PRODUCT_AFTER_SWAP');
             await waitProduct(page);
+            await watch;
 
+            // Deep Product -> Evidence -> Back to same Product.
             const productUrl=page.url();
             const evidence=page.locator('a[href*="/evidence.html?slug="]').first();
             await evidence.waitFor({state:'visible',timeout:15000});
             await evidence.scrollIntoViewIfNeeded();
             await page.evaluate(()=>window.scrollTo(0,document.body.scrollHeight));
-            await visibleState(page,'product before evidence');
+            watch=watchPaint(page,'product to evidence');
             await evidence.click();
             await page.waitForURL(/\/evidence\.html\?slug=/,{timeout:15000});
             await page.locator('#productBack').waitFor({state:'visible',timeout:15000});
+            await assertPainted(page,'evidence loading');
             await page.waitForFunction(()=>!/Loading the evidence/i.test(document.body?.innerText||''),null,{timeout:20000});
-            await page.waitForTimeout(120);
-            await visibleState(page,'evidence ready');
+            await assertPainted(page,'evidence ready');
+            await watch;
+
             await page.evaluate(()=>window.scrollTo(0,document.body.scrollHeight));
+            watch=watchPaint(page,'evidence back to product',3200);
             await page.locator('#productBack').click();
             await page.waitForURL(/\/product\//,{timeout:15000});
             await waitProduct(page);
-            assert(new URL(page.url()).pathname===new URL(productUrl).pathname,'evidence back returned to wrong product');
+            await watch;
+            assert(new URL(page.url()).pathname===new URL(productUrl).pathname,'Evidence Back returned to wrong product');
 
+            // Deep Category -> Product -> browser Back.
             await page.goto(base+'/category/beauty/?navqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
             await page.locator('.grid .card').first().waitFor({state:'visible',timeout:20000});
+            await assertPainted(page,'category ready');
             await page.evaluate(()=>window.scrollTo(0,document.body.scrollHeight));
+            watch=watchPaint(page,'category to product');
             await page.locator('.grid .card').first().click();
             await page.waitForURL(/\/product\//,{timeout:15000});
             await waitProduct(page);
+            await watch;
+
+            watch=watchPaint(page,'browser back to category',3200);
             await page.goBack({waitUntil:'domcontentloaded',timeout:30000});
             await page.locator('.grid .card').first().waitFor({state:'visible',timeout:20000});
-            await page.waitForTimeout(150);
-            const categoryState=await visibleState(page,'category after browser back');
-            assert(categoryState.scrollY<80,`category browser back restored deep/blank scroll: ${JSON.stringify(categoryState)}`);
+            await sleep(120);
+            const categoryState=await assertPainted(page,'category after browser back');
+            assert(categoryState.scrollY<80,`Category Back restored deep scroll: ${JSON.stringify(categoryState)}`);
+            await watch;
 
+            // Collection and Search direct routes.
             for(const u of ['/collection/viral-right-now/','/search?q=ninja']){
               const r=await page.goto(base+u,{waitUntil:'domcontentloaded',timeout:60000});
               assert(r&&r.status()<400,`${u}: HTTP ${r?.status()}`);
               await page.locator('#app,.grid,.hero').first().waitFor({state:'visible',timeout:25000});
-              await page.waitForTimeout(200);
-              await layoutState(page,u);
-              await visibleState(page,u);
+              await sleep(150);
+              await assertPainted(page,u);
             }
 
+            assert(fatal.length===0,'JavaScript syntax errors detected: '+fatal.join(' | '));
             console.log('NAVIGATION_REGRESSION_PASS');
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
