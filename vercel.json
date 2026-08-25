@@ -2,7 +2,8 @@
   "version": 2,
   "routes": [
     { "src": "/product/(?<slug>[^/]+)/?$", "dest": "/api/product-seo?slug=$slug" },
-    { "src": "/category(?:/.*)?$", "dest": "/index.html" },
+    { "src": "/category/(?<slug>[^/]+)/?$", "dest": "/api/category-seo?slug=$slug" },
+    { "src": "/category/?$", "dest": "/index.html" },
     { "src": "/collection(?:/.*)?$", "dest": "/index.html" },
     { "src": "/saved$", "dest": "/index.html" },
     { "src": "/search$", "dest": "/index.html" },
