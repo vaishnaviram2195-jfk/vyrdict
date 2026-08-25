@@ -1,6 +1,7 @@
 {
   "version": 2,
   "routes": [
+    { "src": "/score-discovery/?$", "dest": "/api/score-discovery" },
     { "src": "/product/(?<slug>[^/]+)/?$", "dest": "/api/product-seo?slug=$slug" },
     { "src": "/category/(?<slug>[^/]+)/?$", "dest": "/api/category-seo?slug=$slug" },
     { "src": "/category/?$", "dest": "/index.html" },
