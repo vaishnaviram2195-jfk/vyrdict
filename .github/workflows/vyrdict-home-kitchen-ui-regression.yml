@@ -67,8 +67,9 @@ jobs:
             assert(/show fewer categories/i.test(order.summaryText),'Collapse label is wrong: '+order.summaryText);
             assert(order.summaryTop>=order.lastBottom-2,`Show fewer is not below expanded categories: ${JSON.stringify(order)}`);
 
-            const kitchen=page.locator('#viral .weekly-rank-tab').filter({hasText:/^Kitchen$/i}).first();
+            const kitchen=page.locator('#viral button').filter({hasText:/Kitchen/i}).first();
             await kitchen.waitFor({state:'visible',timeout:30000});
+            console.log('KITCHEN_BUTTON',JSON.stringify((await kitchen.textContent()||'').trim()));
             await kitchen.click();
             await page.waitForFunction(()=>/Top\s*3\s+in\s+Kitchen\s+right\s+now/i.test(document.querySelector('#viral')?.innerText||''),null,{timeout:20000});
             await page.waitForTimeout(800);
