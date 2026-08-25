@@ -1,11 +1,10 @@
 (()=>{
-  if(window.__vyrdictProductFastV5)return;
-  window.__vyrdictProductFastV5=1;
+  if(window.__vyrdictProductFastV6)return;
+  window.__vyrdictProductFastV6=1;
 
-  // Route safety: VYRDICT swaps tall pages for short loading states while
-  // navigating. If the viewport is still deep in the old page, that creates
-  // a blank beige screen. Force the viewport to the top BEFORE the app's
-  // route handler can replace any content.
+  // VYRDICT swaps route content in-place. Keep the viewport at the top before
+  // the old document can shrink, and keep a visible transition layer over the
+  // viewport until the destination has actually rendered.
   function hardTop(){
     try{history.scrollRestoration='manual'}catch{}
     try{document.documentElement.style.scrollBehavior='auto'}catch{}
@@ -14,12 +13,69 @@
     try{document.body.scrollTop=0}catch{}
     try{window.scrollTo(0,0)}catch{}
   }
+
+  let coverToken=0;
+  function showRouteCover(){
+    hardTop();
+    const token=++coverToken;
+    let cover=document.getElementById('vyrdict-route-cover');
+    if(!cover){
+      cover=document.createElement('div');
+      cover.id='vyrdict-route-cover';
+      cover.setAttribute('aria-live','polite');
+      cover.innerHTML='<div class="vyrdict-route-card"><div class="vyrdict-route-logo">VYRDICT<span></span></div><div class="vyrdict-route-label">Loading the verdict…</div></div>';
+      Object.assign(cover.style,{position:'fixed',inset:'0',zIndex:'2147483645',background:'#f4ede5',display:'grid',placeItems:'center',padding:'24px',fontFamily:'Arial,Helvetica,sans-serif',color:'#171511'});
+      const card=cover.firstElementChild;
+      Object.assign(card.style,{width:'min(420px,100%)',background:'#fffdf8',border:'1px solid #d8cec4',borderRadius:'24px',padding:'28px',textAlign:'center',boxShadow:'0 18px 55px rgba(58,43,32,.08)'});
+      const logo=card.querySelector('.vyrdict-route-logo');
+      Object.assign(logo.style,{fontSize:'27px',fontWeight:'950',letterSpacing:'-1.6px',display:'inline-flex',alignItems:'flex-end'});
+      const dot=logo.querySelector('span');
+      Object.assign(dot.style,{width:'7px',height:'7px',background:'#e65f72',display:'inline-block',margin:'0 0 3px 2px'});
+      const label=card.querySelector('.vyrdict-route-label');
+      Object.assign(label.style,{marginTop:'14px',fontSize:'10px',fontWeight:'800',letterSpacing:'.08em',textTransform:'uppercase',color:'#6d675f'});
+      document.body.appendChild(cover);
+    }else cover.style.display='grid';
+
+    const app=document.getElementById('app');
+    let observer=null;
+    let timer=null;
+    const destinationReady=()=>{
+      if(token!==coverToken)return true;
+      const a=document.getElementById('app');
+      if(!a)return false;
+      const text=(a.textContent||'').trim();
+      const loading=/^loading\b|loading the vyrdict|loading the verdict/i.test(text);
+      return text.length>80&&!loading;
+    };
+    const finish=()=>{
+      if(token!==coverToken)return;
+      if(observer)observer.disconnect();
+      if(timer)clearTimeout(timer);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        if(token!==coverToken)return;
+        hardTop();
+        const c=document.getElementById('vyrdict-route-cover');
+        if(c)c.remove();
+      }));
+    };
+    const check=()=>{if(destinationReady())finish()};
+    if(app){observer=new MutationObserver(check);observer.observe(app,{childList:true,subtree:true,characterData:true})}
+    timer=setTimeout(finish,4500);
+    setTimeout(check,0);
+  }
+
   hardTop();
   const routeSelector='[data-product],[data-category],[data-collection],[data-back],[data-nav],[data-search]';
-  document.addEventListener('click',e=>{if(e.target?.closest?.(routeSelector))hardTop()},{capture:true,passive:true});
-  addEventListener('popstate',hardTop,true);
-  addEventListener('hashchange',hardTop,true);
-  addEventListener('pageshow',hardTop,true);
+  document.addEventListener('click',e=>{
+    const target=e.target?.closest?.(routeSelector);
+    if(!target)return;
+    // Search inputs themselves do not navigate on click; actual search action does.
+    if(target.matches('input,textarea'))return;
+    showRouteCover();
+  },{capture:true,passive:true});
+  addEventListener('popstate',showRouteCover,true);
+  addEventListener('hashchange',showRouteCover,true);
+  addEventListener('pageshow',()=>{hardTop();const a=document.getElementById('app');if(a&&/(loading the vyrdict|loading the verdict)/i.test(a.textContent||''))showRouteCover()},true);
 
   const ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-product-detail';
   const inflight=new Map();
