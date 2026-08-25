@@ -17,6 +17,19 @@ function textValue(v){
 }
 const date=v=>{if(!v)return'';const d=new Date(v);return Number.isNaN(d.getTime())?'':d.toISOString().slice(0,10)};
 const http=v=>/^https?:\/\//i.test(String(v||''));
+function trimAtWord(v,max){
+  const s=String(v||'').trim();if(s.length<=max)return s;
+  const probe=s.slice(0,max+1),i=probe.lastIndexOf(' ');
+  return (i>Math.floor(max*.55)?probe.slice(0,i):s.slice(0,max)).replace(/[,:;—–-]+$/,'').trim();
+}
+function buildTitle(fullName,question){
+  const intent=`${fullName} Review: ${question} | VYRDICT`;
+  if(intent.length<=70)return intent;
+  let base=String(fullName||'').replace(/\s+[—–]\s+.*$/,'').trim();
+  const suffix=' Review | VYRDICT';
+  if((base+suffix).length>70)base=trimAtWord(base,70-suffix.length);
+  return `${base}${suffix}`;
+}
 
 module.exports=async function handler(req,res){
   try{
@@ -38,7 +51,7 @@ module.exports=async function handler(req,res){
     const hype=textValue(prof.hype_vs_reality?.hype),reality=textValue(prof.hype_vs_reality?.reality);
     const canonical=`https://vyrdict.com/product/${encodeURIComponent(p.slug)}/`;
     const question=String(p.category||'').toLowerCase()==='books'?'Worth Reading?':'Is It Worth It?';
-    const title=`${fullName} Review: ${question} | VYRDICT`;
+    const title=buildTitle(fullName,question);
     const description=`${fullName}: Viral ${p.viral_score}/100, Worth ${p.worth_score}/100 — ${p.verdict}. ${verdict}`.slice(0,180);
     const reviewed=date(prof.last_reviewed_at||p.last_verified_at)||new Date().toISOString().slice(0,10);
     const image=http(p.image_url)?p.image_url:'https://vyrdict.com/vyrdict-social-preview.jpg';
