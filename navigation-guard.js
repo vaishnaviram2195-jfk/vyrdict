@@ -1,8 +1,9 @@
 (()=>{
-  if(window.__vyrdictNavigationGuardV3)return;
-  window.__vyrdictNavigationGuardV3=1;
+  if(window.__vyrdictNavigationGuardV4)return;
+  window.__vyrdictNavigationGuardV4=1;
 
   const COVER_ID='vyrdict-route-cover';
+  const onProduct=()=>/^\/product\//i.test(location.pathname);
 
   function hardTop(){
     try{history.scrollRestoration='manual'}catch{}
@@ -74,6 +75,7 @@
   }
 
   function previousInternal(){
+    if(onProduct())return '/';
     const here=location.pathname+location.search+location.hash;
     const stateFrom=normalizePath(history.state?.from);
     if(stateFrom&&stateFrom!==here)return stateFrom;
@@ -95,7 +97,7 @@
     const collection=target.closest?.('[data-collection]');
     if(collection?.dataset?.collection)return '/collection/'+encodeURIComponent(collection.dataset.collection)+'/';
 
-    if(target.closest?.('[data-back]'))return previousInternal();
+    if(target.closest?.('[data-back]'))return onProduct()?'/':previousInternal();
 
     if(target.closest?.('[data-search]')){
       const q=document.getElementById('q')?.value?.trim();
@@ -109,7 +111,7 @@
     if(!a||a.target==='_blank'||a.hasAttribute('download'))return null;
     const raw=a.getAttribute('href')||'';
     if(!raw||/^(mailto:|tel:|javascript:)/i.test(raw)||raw.startsWith('#'))return null;
-    if(/history\.back\s*\(/i.test(a.getAttribute('onclick')||''))return previousInternal();
+    if(/history\.back\s*\(/i.test(a.getAttribute('onclick')||''))return onProduct()?'/':previousInternal();
     const dest=normalizePath(a.href);
     if(!dest)return null;
     const here=location.pathname+location.search+location.hash;
@@ -154,7 +156,7 @@
         installed=true;
       }
       if(typeof window.smartBack==='function'&&!window.smartBack.__vyrdictCanonical){
-        const stableBack=function(){go(previousInternal())};
+        const stableBack=function(){go(onProduct()?'/':previousInternal())};
         stableBack.__vyrdictCanonical=1;
         window.smartBack=stableBack;
         installed=true;
