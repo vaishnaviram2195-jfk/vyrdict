@@ -41,12 +41,13 @@ jobs:
           const report={ok:true,runs:[]};
           const save=()=>fs.writeFileSync('qa/report.json',JSON.stringify(report,null,2));
           const assert=(ok,msg)=>{if(!ok)throw new Error(msg)};
+          const badRuntime=s=>/ReferenceError|TypeError|SyntaxError|Invalid regular expression flags/i.test(s);
           async function waitReady(page,selector,timeout=20000){await page.locator(selector).first().waitFor({state:'visible',timeout})}
           async function runViewport(browser,name,viewport,isMobile){
             const context=await browser.newContext({viewport,deviceScaleFactor:1,isMobile,hasTouch:isMobile});
             const page=await context.newPage();
             const errors=[];
-            page.on('pageerror',e=>errors.push('pageerror: '+e.message));
+            page.on('pageerror',e=>errors.push('pageerror: '+(e.stack||e.message)));
             page.on('console',m=>{if(m.type()==='error')errors.push('console: '+m.text())});
             const out={name,timings:{}};
             let t=Date.now();
@@ -63,7 +64,7 @@ jobs:
             assert(home.categories.length>6,`${name}: expected more than six categories`);
             const summary=page.locator('#categories details.v-home-category-details > summary');
             await summary.click();await page.waitForTimeout(160);
-            const expanded=await page.evaluate(()=>{const d=document.querySelector('#categories details.v-home-category-details'),extra=d?.querySelector('.v-home-category-extra');return {open:d?.open,text:d?.querySelector('summary')?.textContent||'',visible:[...document.querySelectorAll('#categories [data-category]')].filter(x=>x.offsetParent!==null&&getComputedStyle(x).display!=='none'&&getComputedStyle(x).visibility!=='hidden').length,extraDisplay:extra?getComputedStyle(extra).display:null,extraVisibility:extra?getComputedStyle(extra).visibility:null,extraButtons:extra?[...extra.querySelectorAll('[data-category]')].map(x=>({name:x.dataset.category,hidden:x.hidden,display:getComputedStyle(x).display,visibility:getComputedStyle(x).visibility,rect:x.getBoundingClientRect().toJSON()})):[]}});
+            const expanded=await page.evaluate(()=>{const d=document.querySelector('#categories details.v-home-category-details'),extra=d?.querySelector('.v-home-category-extra');return {open:d?.open,text:d?.querySelector('summary')?.textContent||'',visible:[...document.querySelectorAll('#categories [data-category]')].filter(x=>x.offsetParent!==null&&getComputedStyle(x).display!=='none'&&getComputedStyle(x).visibility!=='hidden').length,extraDisplay:extra?getComputedStyle(extra).display:null,extraVisibility:extra?getComputedStyle(extra).visibility:null,extraButtons:extra?[...extra.querySelectorAll('[data-category]')].map(x=>({name:x.dataset.category,hidden:x.hidden,display:getComputedStyle(x).display,visibility:getComputedStyle(x).visibility})):[]}});
             out.expanded=expanded;save();
             assert(expanded.open===true,`${name}: category expander did not open: ${JSON.stringify(expanded)}`);assert(/show fewer categories/i.test(expanded.text),`${name}: category expander label did not change: ${JSON.stringify(expanded)}`);assert(expanded.visible>6,`${name}: expanded categories did not become visible: ${JSON.stringify(expanded)}`);
             await summary.click();await page.waitForTimeout(80);assert(await page.locator('#categories details.v-home-category-details').evaluate(d=>!d.open),`${name}: category expander did not close`);
@@ -71,12 +72,13 @@ jobs:
             await page.goto(base+'/?qa2='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await waitReady(page,'.hero');
             const product=page.locator('[data-product]').first();await product.waitFor({state:'visible',timeout:15000});out.productSlug=await product.getAttribute('data-product');t=Date.now();await product.click();await page.waitForURL(/\/product\//,{timeout:10000});await waitReady(page,'.productHero',15000);out.timings.productClickMs=Date.now()-t;
             const productText=await page.locator('body').innerText();assert(/VIRAL SCORE/i.test(productText)&&/WORTH SCORE/i.test(productText),`${name}: product scores missing`);assert(/WHERE TO BUY/i.test(productText),`${name}: where-to-buy missing`);assert(!/Loading the VYRDICT…/i.test(productText),`${name}: product still shows loading state`);
-            await page.screenshot({path:`qa/${name}-product.png`,fullPage:true});out.errors=errors;assert(!errors.some(x=>/ReferenceError|TypeError|SyntaxError/i.test(x)),`${name}: runtime JS error ${errors.join(' | ')}`);delete report.current;report.runs.push(out);save();await context.close();
+            await page.waitForTimeout(250);out.errors=errors;save();assert(!errors.some(badRuntime),`${name}: runtime JS error ${errors.join(' | ')}`);
+            await page.screenshot({path:`qa/${name}-product.png`,fullPage:true});delete report.current;report.runs.push(out);save();await context.close();
           }
           async function directProduct(browser){
-            const context=await browser.newContext({viewport:{width:1280,height:900}});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+            const context=await browser.newContext({viewport:{width:1280,height:900}});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.stack||e.message));page.on('console',m=>{if(m.type()==='error')errors.push('console: '+m.text())});
             const url=base+'/product/d-alba-white-truffle-first-spray-serum-100ml/?qa='+Date.now();const t=Date.now();const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});await waitReady(page,'.productHero',20000);const ms=Date.now()-t;
-            const text=await page.locator('body').innerText();assert(response&&response.status()<400,`direct product HTTP ${response?.status()}`);assert(/White Truffle/i.test(text),`direct product content missing`);assert(/WHERE TO BUY/i.test(text),`direct product where-to-buy missing`);assert(!errors.some(x=>/ReferenceError|TypeError|SyntaxError/i.test(x)),`direct product JS error: ${errors.join(' | ')}`);
+            const text=await page.locator('body').innerText();assert(response&&response.status()<400,`direct product HTTP ${response?.status()}`);assert(/White Truffle/i.test(text),`direct product content missing`);assert(/WHERE TO BUY/i.test(text),`direct product where-to-buy missing`);assert(!errors.some(badRuntime),`direct product JS error: ${errors.join(' | ')}`);
             report.directProduct={readyMs:ms,url:page.url(),errors};save();await page.screenshot({path:'qa/direct-product.png',fullPage:true});await context.close();
           }
           (async()=>{let browser;try{browser=await chromium.launch({headless:true});await runViewport(browser,'mobile',{width:390,height:844},true);await runViewport(browser,'desktop',{width:1440,height:1000},false);await directProduct(browser);report.ok=true;save();console.log(JSON.stringify(report,null,2))}catch(e){report.ok=false;report.error=String(e);save();console.error(e);process.exitCode=1}finally{await browser?.close()}})();
