@@ -21,16 +21,16 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null
-      - name: Wait for navigation guard V5
+      - name: Wait for navigation guard V6
         run: |
           for i in $(seq 1 40); do
-            if curl -fsSL 'https://vyrdict.com/navigation-guard.js?v=1' | grep -q '__vyrdictNavigationGuardV5'; then
-              echo 'Navigation guard V5 is live'
+            if curl -fsSL 'https://vyrdict.com/navigation-guard.js?v=1' | grep -q '__vyrdictNavigationGuardV6'; then
+              echo 'Navigation guard V6 is live'
               exit 0
             fi
             sleep 5
           done
-          echo 'Navigation guard V5 did not reach production in time'
+          echo 'Navigation guard V6 did not reach production in time'
           exit 1
       - name: Verify Eclaire scores, Back to Home, and Lip Kit routing
         run: |
