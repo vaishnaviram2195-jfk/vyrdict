@@ -1,6 +1,7 @@
 {
   "version": 2,
   "routes": [
+    { "src": "/sitemap\.xml$", "dest": "/api/sitemap" },
     { "src": "/product/(?<slug>[^/]+)/?$", "dest": "/api/product-seo?slug=$slug" },
     { "src": "/category(?:/.*)?$", "dest": "/index.html" },
     { "src": "/collection(?:/.*)?$", "dest": "/index.html" },
