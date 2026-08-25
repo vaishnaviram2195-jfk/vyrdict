@@ -32,7 +32,7 @@ jobs:
           done
           echo 'Navigation guard V5 did not reach production in time'
           exit 1
-      - name: Verify Eclaire scores and Back to Home
+      - name: Verify Eclaire scores, Back to Home, and Lip Kit routing
         run: |
           cat > product-qa.js <<'NODE'
           const { chromium } = require('playwright');
@@ -43,6 +43,7 @@ jobs:
             const page=await context.newPage();
             const errors=[];
             page.on('pageerror',e=>errors.push(String(e?.stack||e?.message||e)));
+
             await page.goto('https://vyrdict.com/product/lattafa-eclaire/?qa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
             await page.locator('.productHero').waitFor({state:'visible',timeout:30000});
             await page.waitForFunction(()=>{
@@ -53,13 +54,31 @@ jobs:
             console.log('ECLAIRE_SCORES',JSON.stringify(scores));
             assert(scores[0]==='99',`Expected Viral 99, got ${scores[0]}`);
             assert(scores[1]==='86',`Expected Worth 86, got ${scores[1]}`);
+
             const back=page.locator('[data-back]').first();
             await back.waitFor({state:'visible',timeout:10000});
             await back.click();
             await page.waitForURL(u=>u.origin==='https://vyrdict.com'&&u.pathname==='/',{timeout:20000});
             await page.locator('[data-product]').first().waitFor({state:'visible',timeout:30000});
             console.log('PRODUCT_BACK_HOME_PASS',page.url());
+
+            const lip=page.locator('[data-product="kylie-cosmetics-original-lip-kit"]').first();
+            await lip.waitFor({state:'visible',timeout:30000});
+            const target=await lip.getAttribute('data-product');
+            console.log('LIP_KIT_CARD_TARGET',target);
+            await lip.click();
+            await page.waitForURL(/\/product\//,{timeout:20000});
+            await page.locator('.productHero').waitFor({state:'visible',timeout:30000});
+            console.log('LIP_KIT_LANDED_URL',page.url());
+            const landed=new URL(page.url()).pathname;
+            const heading=(await page.locator('.productHero h1').first().textContent()||'').trim();
+            console.log('LIP_KIT_HEADING',heading);
+            assert(landed==='/product/kylie-cosmetics-original-lip-kit/',`Lip Kit routed to wrong URL: ${landed}`);
+            assert(/Original Lip Kit/i.test(heading),`Wrong product rendered after Lip Kit click: ${heading}`);
+            assert(!/Eclaire/i.test(heading),`Lip Kit incorrectly rendered Eclaire: ${heading}`);
+
             assert(!errors.some(e=>/SyntaxError|Invalid regular expression/i.test(e)),'Fatal JS error: '+errors.join(' | '));
+            console.log('LIP_KIT_ROUTING_PASS');
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           NODE
