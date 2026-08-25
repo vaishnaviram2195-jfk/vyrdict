@@ -1,10 +1,11 @@
 (()=>{
-  if(window.__vyrdictNavigationGuardV6)return;
-  window.__vyrdictNavigationGuardV6=1;
+  if(window.__vyrdictNavigationGuardV7)return;
+  window.__vyrdictNavigationGuardV7=1;
 
   const COVER_ID='vyrdict-route-cover';
   const SCORE_ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-seo-product-data';
   const onProduct=()=>/^\/product\//i.test(location.pathname);
+  const onCategory=()=>/^\/category\//i.test(location.pathname);
 
   try{
     if(localStorage.getItem('vyrdict:catalog-repair:v1')!=='1'){
@@ -46,7 +47,32 @@
     `;
     (document.head||document.documentElement).appendChild(style);
   }
+
+  function installCategoryCardLayout(){
+    if(!onCategory()||document.getElementById('vyrdict-category-card-layout-v1'))return;
+    const style=document.createElement('style');
+    style.id='vyrdict-category-card-layout-v1';
+    style.textContent=`
+      @media(max-width:620px){
+        body .wrap .grid{gap:14px!important}
+        body .wrap .grid .card{border-radius:22px!important;overflow:hidden!important;background:#fffdf8!important}
+        body .wrap .grid .card .pic{height:165px!important;min-height:165px!important;max-height:165px!important;padding:14px!important;display:grid!important;place-items:center!important;overflow:hidden!important;background:#f7f1eb!important;border-bottom:1px solid #e8ddd4!important}
+        body .wrap .grid .card .pic img{display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:137px!important;object-fit:contain!important;object-position:center!important;margin:0 auto!important;position:static!important;transform:none!important}
+        body .wrap .grid .card .body{position:relative!important;z-index:2!important;margin:0!important;padding:16px 17px 18px!important;background:#fffdf8!important;transform:none!important}
+        body .wrap .grid .card .body h2{position:static!important;inset:auto!important;transform:none!important;max-width:100%!important;margin:7px 0 12px!important;font:500 24px/1.06 Georgia,serif!important;letter-spacing:-.02em!important;overflow-wrap:anywhere!important;word-break:normal!important;color:#171511!important}
+        body .wrap .grid .card .scores{margin:0 0 11px!important;gap:7px!important}
+        body .wrap .grid .card .scores span{padding:6px 9px!important;font-size:9px!important}
+        body .wrap .grid .card .body>strong{display:block!important;margin-top:2px!important;font-size:12px!important}
+        body .wrap .grid .card .body p{position:static!important;transform:none!important;min-height:0!important;max-width:100%!important;margin:12px 0 15px!important;font-size:12.5px!important;line-height:1.5!important}
+        body .wrap .grid .card .open{display:inline-block!important;margin-top:2px!important;font-size:9px!important}
+        body .wrap .grid .rank{top:10px!important;left:10px!important}
+      }
+    `;
+    (document.head||document.documentElement).appendChild(style);
+  }
+
   installStableLoadingPaint();
+  installCategoryCardLayout();
 
   function makeCover(){
     let cover=document.getElementById(COVER_ID);
@@ -128,9 +154,6 @@
     if(!target)return null;
     if(target.closest?.('input,textarea,select,option'))return null;
 
-    // Weekly ranking cards are cloned from a visible template. The clone's
-    // current data-slug is authoritative; never trust a stale data-product
-    // value copied from the template button underneath it.
     const weeklyCard=target.closest?.('.vyrdict-weekly-extra-v8[data-slug],.vyrdict-weekly-extra-v7[data-slug],.vyrdict-weekly-extra-v6[data-slug],.vyrdict-weekly-extra-v5[data-slug],.vyrdict-weekly-extra-v4[data-slug]');
     if(weeklyCard?.dataset?.slug)return '/product/'+encodeURIComponent(weeklyCard.dataset.slug)+'/';
 
@@ -224,13 +247,14 @@
   addEventListener('pageshow',()=>{
     hardTop();
     installStableLoadingPaint();
+    installCategoryCardLayout();
     document.getElementById(COVER_ID)?.remove();
     scheduleScoreRepair();
     requestAnimationFrame(()=>requestAnimationFrame(hardTop));
   },true);
 
   const observeApp=()=>{const app=document.getElementById('app');if(app)new MutationObserver(()=>scheduleScoreRepair()).observe(app,{childList:true,subtree:true})};
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{observeApp();scheduleScoreRepair()},{once:true});else{observeApp();scheduleScoreRepair()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{observeApp();installCategoryCardLayout();scheduleScoreRepair()},{once:true});else{observeApp();installCategoryCardLayout();scheduleScoreRepair()}
 
   hardTop();
 })();
