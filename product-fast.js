@@ -1,23 +1,24 @@
 (()=>{
-  if(window.__vyrdictProductFastV6)return;
-  window.__vyrdictProductFastV6=1;
+  if(window.__vyrdictProductFastV7)return;
+  window.__vyrdictProductFastV7=1;
 
-  // VYRDICT swaps route content in-place. Keep the viewport at the top before
-  // the old document can shrink, and keep a visible transition layer over the
-  // viewport until the destination has actually rendered.
+  // Navigation safety: never leave the viewport stranded below a route that
+  // has temporarily shrunk while async content is loading.
   function hardTop(){
     try{history.scrollRestoration='manual'}catch{}
     try{document.documentElement.style.scrollBehavior='auto'}catch{}
     try{document.body.style.scrollBehavior='auto'}catch{}
+    try{if(document.scrollingElement)document.scrollingElement.scrollTop=0}catch{}
     try{document.documentElement.scrollTop=0}catch{}
     try{document.body.scrollTop=0}catch{}
-    try{window.scrollTo(0,0)}catch{}
+    try{window.scrollTo({top:0,left:0,behavior:'instant'})}catch{try{window.scrollTo(0,0)}catch{}}
   }
 
   let coverToken=0;
   function showRouteCover(){
     hardTop();
     const token=++coverToken;
+    const started=performance.now();
     let cover=document.getElementById('vyrdict-route-cover');
     if(!cover){
       cover=document.createElement('div');
@@ -39,13 +40,18 @@
     const app=document.getElementById('app');
     let observer=null;
     let timer=null;
+    let sawMutation=false;
     const destinationReady=()=>{
       if(token!==coverToken)return true;
       const a=document.getElementById('app');
       if(!a)return false;
       const text=(a.textContent||'').trim();
-      const loading=/^loading\b|loading the vyrdict|loading the verdict/i.test(text);
-      return text.length>80&&!loading;
+      const loading=/^loading\b|loading the vyrdict|loading the verdict|loading product/i.test(text);
+      // The previous route may already contain >80 characters when popstate
+      // fires. Do not mistake that old DOM for the destination. Require an
+      // actual mutation (or a small settle window for full-document restores).
+      const changed=sawMutation||performance.now()-started>700;
+      return changed&&text.length>80&&!loading;
     };
     const finish=()=>{
       if(token!==coverToken)return;
@@ -59,23 +65,53 @@
       }));
     };
     const check=()=>{if(destinationReady())finish()};
-    if(app){observer=new MutationObserver(check);observer.observe(app,{childList:true,subtree:true,characterData:true})}
-    timer=setTimeout(finish,4500);
-    setTimeout(check,0);
+    if(app){
+      observer=new MutationObserver(()=>{sawMutation=true;check()});
+      observer.observe(app,{childList:true,subtree:true,characterData:true,attributes:true});
+    }
+    timer=setTimeout(finish,5000);
+    setTimeout(check,750);
   }
 
   hardTop();
-  const routeSelector='[data-product],[data-category],[data-collection],[data-back],[data-nav],[data-search]';
+
+  function isInternalNavigation(target){
+    const known=target?.closest?.('[data-product],[data-category],[data-collection],[data-back],[data-nav],[data-search],[data-section]');
+    if(known&&!known.matches('input,textarea'))return true;
+    const a=target?.closest?.('a[href]');
+    if(!a||a.target==='_blank'||a.hasAttribute('download'))return false;
+    try{
+      const u=new URL(a.href,location.href);
+      if(u.origin!==location.origin)return false;
+      const here=location.pathname+location.search+location.hash;
+      const there=u.pathname+u.search+u.hash;
+      if(there===here||a.getAttribute('href')==='#')return false;
+      return true;
+    }catch{return false}
+  }
+
   document.addEventListener('click',e=>{
-    const target=e.target?.closest?.(routeSelector);
-    if(!target)return;
-    // Search inputs themselves do not navigate on click; actual search action does.
-    if(target.matches('input,textarea'))return;
+    if(!isInternalNavigation(e.target))return;
     showRouteCover();
   },{capture:true,passive:true});
+
   addEventListener('popstate',showRouteCover,true);
   addEventListener('hashchange',showRouteCover,true);
-  addEventListener('pageshow',()=>{hardTop();const a=document.getElementById('app');if(a&&/(loading the vyrdict|loading the verdict)/i.test(a.textContent||''))showRouteCover()},true);
+  addEventListener('pageshow',()=>{
+    hardTop();
+    const a=document.getElementById('app');
+    if(a&&/(loading the vyrdict|loading the verdict|loading product)/i.test(a.textContent||''))showRouteCover();
+    else document.getElementById('vyrdict-route-cover')?.remove();
+  },true);
+
+  // Retire stale app-bundle copies left by earlier navigation builds. This does
+  // not remove user account/saved-product data.
+  try{
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i)||'';
+      if(/^vyrdict:bundle-cache:v[1-7]$/.test(k))localStorage.removeItem(k);
+    }
+  }catch{}
 
   const ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-product-detail';
   const inflight=new Map();
