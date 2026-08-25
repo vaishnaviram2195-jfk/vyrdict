@@ -1,0 +1,105 @@
+name: VYRDICT Home + Kitchen UI Regression
+
+on:
+  push:
+    paths:
+      - 'category-expander-failsafe.js'
+      - 'homepage-simplify.js'
+      - 'weekly-ranking-expand.js'
+      - '.github/workflows/vyrdict-home-kitchen-ui-regression.yml'
+  workflow_dispatch:
+
+jobs:
+  mobile-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Wait for production UI scripts
+        run: |
+          for i in $(seq 1 40); do
+            CAT=$(curl -fsSL 'https://vyrdict.com/category-expander-failsafe.js?v=1' || true)
+            WEEK=$(curl -fsSL 'https://vyrdict.com/weekly-ranking-expand.js?v=8' || true)
+            if echo "$CAT" | grep -q '__vyrdictCategoryFailsafeV2' && echo "$WEEK" | grep -q '__vyrdictWeeklyExpandV10'; then
+              echo 'Latest UI scripts are live'
+              exit 0
+            fi
+            sleep 5
+          done
+          echo 'Latest UI scripts did not reach production in time'
+          exit 1
+      - name: Verify mobile category order, Kitchen cards, and product destination
+        run: |
+          cat > ui-qa.js <<'NODE'
+          const { chromium } = require('playwright');
+          const assert=(ok,msg)=>{if(!ok)throw new Error(msg)};
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+            const page=await context.newPage();
+            const errors=[];
+            page.on('pageerror',e=>errors.push(String(e?.stack||e?.message||e)));
+            await page.goto('https://vyrdict.com/?uiqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+
+            const details=page.locator('.v-home-category-details').first();
+            await details.waitFor({state:'visible',timeout:30000});
+            const summary=details.locator(':scope > summary');
+            await summary.click();
+            await page.waitForFunction(()=>document.querySelector('.v-home-category-details')?.open===true,null,{timeout:10000});
+            const order=await page.evaluate(()=>{
+              const d=document.querySelector('.v-home-category-details');
+              const s=d?.querySelector(':scope > summary');
+              const extra=d?.querySelector('.v-home-category-extra');
+              const cats=[...(extra?.querySelectorAll('[data-category]')||[])].filter(x=>x.offsetParent!==null);
+              const last=cats[cats.length-1];
+              return {summaryText:(s?.textContent||'').trim(),summaryTop:s?.getBoundingClientRect().top||0,lastBottom:last?.getBoundingClientRect().bottom||0,count:cats.length};
+            });
+            console.log('CATEGORY_ORDER',JSON.stringify(order));
+            assert(order.count>0,'Expanded categories missing');
+            assert(/show fewer categories/i.test(order.summaryText),'Collapse label is wrong: '+order.summaryText);
+            assert(order.summaryTop>=order.lastBottom-2,`Show fewer is not below expanded categories: ${JSON.stringify(order)}`);
+
+            const kitchen=page.locator('#viral .weekly-rank-tab').filter({hasText:/^Kitchen$/i}).first();
+            await kitchen.waitFor({state:'visible',timeout:30000});
+            await kitchen.click();
+            await page.waitForFunction(()=>/Top\s*3\s+in\s+Kitchen\s+right\s+now/i.test(document.querySelector('#viral')?.innerText||''),null,{timeout:20000});
+            await page.waitForTimeout(800);
+            const first=page.locator('.vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8').first();
+            await first.waitFor({state:'visible',timeout:20000});
+            const geometry=await first.evaluate(card=>{
+              const art=card.querySelector('.art');
+              const title=[...card.querySelectorAll('h1,h2,h3,h4')].find(x=>(x.textContent||'').trim());
+              const img=art?.querySelector('img')||card.querySelector(':scope > img');
+              const ar=art?.getBoundingClientRect(),tr=title?.getBoundingClientRect(),ir=img?.getBoundingClientRect();
+              return {title:(title?.textContent||'').trim(),artHeight:ar?.height||0,imageHeight:ir?.height||0,artBottom:ar?.bottom||0,titleTop:tr?.top||0,titleHeight:tr?.height||0,cardWidth:card.getBoundingClientRect().width};
+            });
+            console.log('KITCHEN_CARD_GEOMETRY',JSON.stringify(geometry));
+            assert(/SLUSHi/i.test(geometry.title),'Expected Ninja SLUSHi as first Kitchen card: '+geometry.title);
+            assert(geometry.artHeight>0&&geometry.artHeight<=230,'Kitchen image zone too tall: '+geometry.artHeight);
+            assert(geometry.imageHeight<=205,'Kitchen product image too tall: '+geometry.imageHeight);
+            assert(geometry.titleTop>=geometry.artBottom-2,`Kitchen title overlaps image: ${JSON.stringify(geometry)}`);
+            assert(geometry.titleHeight<120,'Kitchen title block is excessively tall: '+geometry.titleHeight);
+
+            const see=first.locator('[data-product],a,button').filter({hasText:/SEE VYRDICT/i}).first();
+            await see.waitFor({state:'visible',timeout:10000});
+            await see.click();
+            await page.waitForURL(u=>u.pathname==='/product/ninja-slushi-professional-frozen-drink-maker/',{timeout:20000});
+            await page.locator('.productHero').waitFor({state:'visible',timeout:30000});
+            const product=await page.evaluate(()=>({heading:(document.querySelector('.productHero h1')?.textContent||'').trim(),hasDials:!!document.querySelector('.productHero .dials'),hasStory:!!document.querySelector('.story')}));
+            console.log('NINJA_PRODUCT_LAYOUT',JSON.stringify(product));
+            assert(/SLUSHi/i.test(product.heading),'Wrong Ninja product rendered: '+product.heading);
+            assert(product.hasDials&&product.hasStory,'Ninja product did not render the standard VYRDICT product layout');
+            assert(!errors.some(e=>/SyntaxError|Invalid regular expression/i.test(e)),'Fatal JS error: '+errors.join(' | '));
+            console.log('HOME_KITCHEN_UI_PASS');
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          node ui-qa.js
