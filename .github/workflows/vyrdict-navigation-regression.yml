@@ -30,13 +30,13 @@ jobs:
       - name: Wait for production navigation guard
         run: |
           for i in $(seq 1 40); do
-            if curl -fsSL 'https://vyrdict.com/navigation-guard.js?v=1' | grep -q '__vyrdictNavigationGuardV2'; then
-              echo 'Navigation guard is live'
+            if curl -fsSL 'https://vyrdict.com/navigation-guard.js?v=1' | grep -q '__vyrdictNavigationGuardV3'; then
+              echo 'Navigation guard v3 is live'
               exit 0
             fi
             sleep 5
           done
-          echo 'Navigation guard did not reach production in time'
+          echo 'Navigation guard v3 did not reach production in time'
           exit 1
       - name: Test painted viewport and back navigation
         run: |
@@ -90,9 +90,7 @@ jobs:
                 samples++;
                 if(!s.cover&&s.ratio<0.08)consecutiveBlank+=100;else consecutiveBlank=0;
                 maxBlank=Math.max(maxBlank,consecutiveBlank);
-              }catch(e){
-                // Navigation can destroy the JS execution context for a few ms.
-              }
+              }catch(e){}
               await sleep(100);
             }
             assert(samples>2,`${label}: insufficient viewport samples`);
@@ -117,7 +115,6 @@ jobs:
               if(/Invalid regular expression|SyntaxError/i.test(m))fatal.push(m);
             });
 
-            // Home -> Product.
             await page.goto(base+'/?navqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
             await page.locator('[data-product]').first().waitFor({state:'visible',timeout:25000});
             await assertPainted(page,'home ready');
@@ -127,7 +124,6 @@ jobs:
             await waitProduct(page);
             await watch;
 
-            // Deep Product -> Evidence -> Back to same Product.
             const productUrl=page.url();
             const evidence=page.locator('a[href*="/evidence.html?slug="]').first();
             await evidence.waitFor({state:'visible',timeout:15000});
@@ -150,7 +146,6 @@ jobs:
             await watch;
             assert(new URL(page.url()).pathname===new URL(productUrl).pathname,'Evidence Back returned to wrong product');
 
-            // Deep Category -> Product -> browser Back.
             await page.goto(base+'/category/beauty/?navqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
             await page.locator('.grid .card').first().waitFor({state:'visible',timeout:20000});
             await assertPainted(page,'category ready');
@@ -169,7 +164,6 @@ jobs:
             assert(categoryState.scrollY<80,`Category Back restored deep scroll: ${JSON.stringify(categoryState)}`);
             await watch;
 
-            // Collection and Search direct routes.
             for(const u of ['/collection/viral-right-now/','/search?q=ninja']){
               const r=await page.goto(base+u,{waitUntil:'domcontentloaded',timeout:60000});
               assert(r&&r.status()<400,`${u}: HTTP ${r?.status()}`);
