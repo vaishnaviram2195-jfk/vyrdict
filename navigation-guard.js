@@ -1,9 +1,17 @@
 (()=>{
-  if(window.__vyrdictNavigationGuardV4)return;
-  window.__vyrdictNavigationGuardV4=1;
+  if(window.__vyrdictNavigationGuardV5)return;
+  window.__vyrdictNavigationGuardV5=1;
 
   const COVER_ID='vyrdict-route-cover';
+  const SCORE_ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-seo-product-data';
   const onProduct=()=>/^\/product\//i.test(location.pathname);
+
+  try{
+    if(localStorage.getItem('vyrdict:catalog-repair:v1')!=='1'){
+      localStorage.removeItem('vyrdict:catalog-cache:v5');
+      localStorage.setItem('vyrdict:catalog-repair:v1','1');
+    }
+  }catch{}
 
   function hardTop(){
     try{history.scrollRestoration='manual'}catch{}
@@ -58,6 +66,38 @@
   function slug(v){
     return String(v||'').toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   }
+
+  function productSlug(){
+    const m=decodeURIComponent(location.pathname||'').match(/^\/product\/([^/?#]+)/i);
+    return m?m[1]:'';
+  }
+
+  let scoreRequest='';
+  async function repairProductScores(){
+    if(!onProduct())return;
+    const rings=[...document.querySelectorAll('.productHero .ring')];
+    if(rings.length<2)return;
+    const values=rings.slice(0,2).map(r=>(r.querySelector('b')?.textContent||'').trim());
+    if(values.every(v=>/^\d{1,3}$/.test(v)))return;
+    const s=productSlug();
+    if(!s||scoreRequest===s)return;
+    scoreRequest=s;
+    try{
+      const r=await fetch(SCORE_ENDPOINT+'?slug='+encodeURIComponent(s),{cache:'no-store',headers:{accept:'application/json'}});
+      if(!r.ok)throw new Error('score '+r.status);
+      const d=await r.json(),p=d?.product||{};
+      if(productSlug()!==s)return;
+      const scores=[Number(p.viral_score),Number(p.worth_score)];
+      scores.forEach((n,i)=>{
+        if(!Number.isFinite(n)||!rings[i])return;
+        const value=Math.max(0,Math.min(100,Math.round(n)));
+        rings[i].style.setProperty('--s',String(value));
+        const b=rings[i].querySelector('b');if(b)b.textContent=String(value);
+      });
+    }catch{}finally{if(productSlug()!==s)scoreRequest=''}
+  }
+
+  function scheduleScoreRepair(){[0,120,450,1000,2200].forEach(ms=>setTimeout(repairProductScores,ms))}
 
   function normalizePath(raw){
     if(!raw)return null;
@@ -179,8 +219,12 @@
     hardTop();
     installStableLoadingPaint();
     document.getElementById(COVER_ID)?.remove();
+    scheduleScoreRepair();
     requestAnimationFrame(()=>requestAnimationFrame(hardTop));
   },true);
+
+  const observeApp=()=>{const app=document.getElementById('app');if(app)new MutationObserver(()=>scheduleScoreRepair()).observe(app,{childList:true,subtree:true})};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{observeApp();scheduleScoreRepair()},{once:true});else{observeApp();scheduleScoreRepair()}
 
   hardTop();
 })();
