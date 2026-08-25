@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictNavigationGuardV2)return;
-  window.__vyrdictNavigationGuardV2=1;
+  if(window.__vyrdictNavigationGuardV3)return;
+  window.__vyrdictNavigationGuardV3=1;
 
   const COVER_ID='vyrdict-route-cover';
 
@@ -13,6 +13,31 @@
     try{document.body.scrollTop=0}catch{}
     try{window.scrollTo(0,0)}catch{}
   }
+
+  function installStableLoadingPaint(){
+    if(document.getElementById('vyrdict-stable-loading-paint'))return;
+    const style=document.createElement('style');
+    style.id='vyrdict-stable-loading-paint';
+    style.textContent=`
+      html,body{min-height:100%}
+      body{min-height:100vh}
+      body #app.loading{
+        min-height:calc(100vh - 122px)!important;
+        margin:18px 0 24px!important;
+        padding:28px!important;
+        display:grid!important;
+        place-items:center!important;
+        background:#fffdf8!important;
+        border:1px solid #d8cec4!important;
+        border-radius:24px!important;
+        color:#6d675f!important;
+        text-align:center!important;
+        box-shadow:0 16px 44px rgba(58,43,32,.05)!important;
+      }
+    `;
+    (document.head||document.documentElement).appendChild(style);
+  }
+  installStableLoadingPaint();
 
   function makeCover(){
     let cover=document.getElementById(COVER_ID);
@@ -119,9 +144,6 @@
     if(q)ownNavigation(e,'/search?q='+encodeURIComponent(q));
   },true);
 
-  // Replace the SPA's public navigation functions after its inline script has
-  // initialized. Any enhancement script that calls nav()/smartBack() now gets
-  // a stable full-document transition instead of an in-place route collapse.
   function takeRouterOwnership(attempt=0){
     let installed=false;
     try{
@@ -142,9 +164,6 @@
   }
   takeRouterOwnership();
 
-  // Old hash/pushState entries may still exist in a user's browser history from
-  // earlier builds. If Back/Forward lands on one, cancel the legacy in-place
-  // route listener and commit the destination as a real document instead.
   function stabilizeHistory(e){
     try{e?.stopImmediatePropagation?.()}catch{}
     const dest=normalizePath(location.href)||'/';
@@ -156,6 +175,7 @@
 
   addEventListener('pageshow',()=>{
     hardTop();
+    installStableLoadingPaint();
     document.getElementById(COVER_ID)?.remove();
     requestAnimationFrame(()=>requestAnimationFrame(hardTop));
   },true);
