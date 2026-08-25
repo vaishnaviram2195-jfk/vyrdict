@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - 'navigation-guard.js'
+      - 'api/score-discovery.js'
+      - 'score-discovery-guard.js'
+      - 'vercel.json'
       - '.github/workflows/vyrdict-product-score-back-regression.yml'
   workflow_dispatch:
 
@@ -21,18 +24,20 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null
-      - name: Wait for navigation guard V6
+      - name: Wait for current production routes
         run: |
           for i in $(seq 1 40); do
-            if curl -fsSL 'https://vyrdict.com/navigation-guard.js?v=1' | grep -q '__vyrdictNavigationGuardV6'; then
-              echo 'Navigation guard V6 is live'
+            NAV=$(curl -fsSL 'https://vyrdict.com/navigation-guard.js?v=1' || true)
+            SCORE=$(curl -fsSI 'https://vyrdict.com/score-discovery?slug=seeq-clear-protein&market=US' || true)
+            if echo "$NAV" | grep -q '__vyrdictNavigationGuardV7' && echo "$SCORE" | grep -qi 'content-type: text/html'; then
+              echo 'Current navigation and score discovery route are live'
               exit 0
             fi
             sleep 5
           done
-          echo 'Navigation guard V6 did not reach production in time'
+          echo 'Current production routes did not reach production in time'
           exit 1
-      - name: Verify Eclaire scores, Back to Home, and Lip Kit routing
+      - name: Verify scores, back routing, and score discovery HTML
         run: |
           cat > product-qa.js <<'NODE'
           const { chromium } = require('playwright');
@@ -62,6 +67,17 @@ jobs:
             await page.locator('[data-product]').first().waitFor({state:'visible',timeout:30000});
             console.log('PRODUCT_BACK_HOME_PASS',page.url());
 
+            const scoreResponse=await page.goto('https://vyrdict.com/score-discovery?slug=seeq-clear-protein&market=US&qa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+            const ct=scoreResponse?.headers()['content-type']||'';
+            console.log('SCORE_DISCOVERY_CONTENT_TYPE',ct);
+            assert(/text\/html/i.test(ct),'Score Discovery is not being served as HTML: '+ct);
+            await page.locator('#app').waitFor({state:'visible',timeout:30000});
+            await page.waitForFunction(()=>/Score Discovery/i.test(document.body.innerText||'')&&/SEE?Q|Clear Protein/i.test(document.body.innerText||''),null,{timeout:30000});
+            const raw=(await page.locator('body').innerText()).trim();
+            assert(!/^<!?doctype|^<html/i.test(raw),'Score Discovery is rendering raw HTML text');
+            console.log('SCORE_DISCOVERY_HTML_PASS',page.url());
+
+            await page.goto('https://vyrdict.com/?qa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
             const lip=page.locator('[data-product="kylie-cosmetics-original-lip-kit"]').first();
             await lip.waitFor({state:'visible',timeout:30000});
             const target=await lip.getAttribute('data-product');
@@ -69,16 +85,16 @@ jobs:
             await lip.click();
             await page.waitForURL(/\/product\//,{timeout:20000});
             await page.locator('.productHero').waitFor({state:'visible',timeout:30000});
-            console.log('LIP_KIT_LANDED_URL',page.url());
             const landed=new URL(page.url()).pathname;
             const heading=(await page.locator('.productHero h1').first().textContent()||'').trim();
+            console.log('LIP_KIT_LANDED_URL',page.url());
             console.log('LIP_KIT_HEADING',heading);
             assert(landed==='/product/kylie-cosmetics-original-lip-kit/',`Lip Kit routed to wrong URL: ${landed}`);
             assert(/Original Lip Kit/i.test(heading),`Wrong product rendered after Lip Kit click: ${heading}`);
             assert(!/Eclaire/i.test(heading),`Lip Kit incorrectly rendered Eclaire: ${heading}`);
 
             assert(!errors.some(e=>/SyntaxError|Invalid regular expression/i.test(e)),'Fatal JS error: '+errors.join(' | '));
-            console.log('LIP_KIT_ROUTING_PASS');
+            console.log('PRODUCT_SCORE_BACK_DISCOVERY_PASS');
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           NODE
