@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictProductFastV3)return;
-  window.__vyrdictProductFastV3=1;
+  if(window.__vyrdictProductFastV4)return;
+  window.__vyrdictProductFastV4=1;
 
   // VYRDICT is a client-side routed app. Letting the browser restore an old
   // scroll offset while route content is being replaced can strand the user
@@ -20,8 +20,14 @@
     [40,120,260,520].forEach(ms=>setTimeout(top,ms));
   }
   const nativePushState=history.pushState.bind(history);
+  const nativeReplaceState=history.replaceState.bind(history);
   history.pushState=function(...args){
     const out=nativePushState(...args);
+    queueMicrotask(resetRouteScroll);
+    return out;
+  };
+  history.replaceState=function(...args){
+    const out=nativeReplaceState(...args);
     queueMicrotask(resetRouteScroll);
     return out;
   };
