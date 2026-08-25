@@ -3,6 +3,7 @@ const DATA='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-seo-pr
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c));
 const date=v=>{if(!v)return'';const d=new Date(v);return Number.isNaN(d.getTime())?'':d.toISOString().slice(0,10)};
 const http=v=>/^https?:\/\//i.test(String(v||''));
+const secureImage=v=>{const s=String(v||'').trim();if(/^https:\/\//i.test(s))return s;if(/^http:\/\//i.test(s))return s.replace(/^http:/i,'https:');return''};
 const catSlug=v=>String(v||'').toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 function textValue(v){
   if(v==null)return'';
@@ -52,9 +53,9 @@ module.exports=async function handler(req,res){
     const categoryUrl=`https://vyrdict.com/category/${catSlug(p.category)}/`;
     const question=isBook?'Worth Reading?':'Is It Worth It?';
     const title=buildTitle(fullName,question);
-    const description=`${fullName}: Viral ${p.viral_score}/100, Worth ${p.worth_score}/100 — ${p.verdict}. ${verdict}`.slice(0,180);
+    const description=trimAtWord(`${fullName}: Viral ${p.viral_score}/100, Worth ${p.worth_score}/100 — ${p.verdict}. ${verdict}`,160);
     const published=date(p.published_at),reviewed=date(prof.last_reviewed_at||p.last_verified_at);
-    const image=http(p.image_url)?p.image_url:'https://vyrdict.com/vyrdict-social-preview.jpg';
+    const image=secureImage(p.image_url)||'https://vyrdict.com/vyrdict-social-preview.jpg';
     const reviewBody=[verdict,hype&&reality?`Hype: ${hype} Reality: ${reality}`:''].filter(Boolean).join(' ');
     const robots=indexable?'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1':'noindex,follow';
 
