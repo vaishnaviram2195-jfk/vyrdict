@@ -44,6 +44,18 @@ jobs:
           const { chromium } = require('playwright');
           const base='https://vyrdict.com';
           const assert=(ok,msg)=>{if(!ok)throw new Error(msg)};
+          async function syntaxScan(page,label){
+            const bad=await page.evaluate(()=>[...document.scripts].map((s,i)=>{
+              if(s.src)return null;
+              const type=(s.getAttribute('type')||'').toLowerCase();
+              if(type&&!['text/javascript','application/javascript','module'].includes(type))return null;
+              const text=s.textContent||'';
+              if(!text.trim())return null;
+              try{new Function(text);return null}catch(e){return {i,message:String(e.message||e),start:text.slice(0,650),end:text.slice(-650)}}
+            }).filter(Boolean));
+            console.log('SYNTAX_SCAN '+label+' '+JSON.stringify(bad));
+            return bad;
+          }
           async function visibleState(page,label){
             const s=await page.evaluate(()=>{
               const cover=document.getElementById('vyrdict-route-cover');
@@ -70,12 +82,16 @@ jobs:
             const browser=await chromium.launch({headless:true});
             const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
             const page=await context.newPage();
-            page.on('pageerror',e=>console.error('PAGEERROR',e.message));
+            page.on('pageerror',e=>console.error('PAGEERROR',e.stack||e.message));
 
             await page.goto(base+'/?navqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
             await page.locator('[data-product]').first().waitFor({state:'visible',timeout:25000});
+            await syntaxScan(page,'HOME');
             await page.locator('[data-product]').first().click();
             await page.waitForURL(/\/product\//,{timeout:15000});
+            await page.waitForTimeout(1800);
+            await syntaxScan(page,'PRODUCT_AFTER_SWAP');
+            console.log('PRODUCT_STATE '+JSON.stringify(await page.evaluate(()=>({url:location.href,text:(document.body?.innerText||'').slice(0,500),scripts:document.scripts.length,html:(document.documentElement?.outerHTML||'').slice(0,800)}))));
             await waitProduct(page);
 
             const productUrl=page.url();
