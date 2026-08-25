@@ -1,0 +1,94 @@
+name: VYRDICT Final Site Audit V2
+
+on:
+  push:
+    paths:
+      - '.github/workflows/vyrdict-final-site-audit-v2.yml'
+  workflow_dispatch:
+
+jobs:
+  full-production-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Wait for repaired production bundle
+        run: |
+          for i in $(seq 1 60); do
+            NAV=$(curl -fsSL 'https://vyrdict.com/navigation-guard.js?v=1' || true)
+            BUNDLE=$(curl -fsSL 'https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-bundle-fast?v=16' || true)
+            if echo "$NAV" | grep -q '__vyrdictNavigationGuardV8' && echo "$BUNDLE" | grep -q 'cleanRoutePart' && ! echo "$BUNDLE" | grep -Fq 'match(/^/product/'; then
+              echo 'Repaired production bundle is live'
+              exit 0
+            fi
+            sleep 5
+          done
+          echo 'Repaired bundle did not reach production in time'
+          exit 1
+      - name: Run final audit
+        shell: bash
+        run: |
+          mkdir -p qa
+          cat > qa/audit.js <<'NODE'
+          const { chromium }=require('playwright');
+          const fs=require('fs');
+          const base='https://vyrdict.com';
+          const report={ok:false,checks:[]};
+          const save=()=>fs.writeFileSync('qa/report.json',JSON.stringify(report,null,2));
+          const pass=(name,data={})=>{report.checks.push({name,ok:true,...data});save()};
+          const assert=(ok,msg)=>{if(!ok)throw new Error(msg)};
+          const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+          const fatal=s=>/SyntaxError|ReferenceError|TypeError|Invalid regular expression/i.test(String(s||''));
+          async function clearLoader(page,label){await page.waitForFunction(()=>['vyrdict-route-cover','startup-loader','vyrdict-product-transition'].every(id=>{const e=document.getElementById(id);if(!e)return true;const c=getComputedStyle(e);return c.display==='none'||c.visibility==='hidden'||Number(c.opacity)===0}),null,{timeout:8000});pass(label+' loader clear')}
+          async function waitProduct(page,label='product'){
+            await page.locator('.productHero').first().waitFor({state:'visible',timeout:30000});
+            await page.waitForFunction(()=>{const x=[...document.querySelectorAll('.productHero .ring b')].slice(0,2).map(e=>(e.textContent||'').trim());return x.length===2&&x.every(v=>/^\d{1,3}$/.test(v))},null,{timeout:15000});
+            await clearLoader(page,label);
+          }
+          async function auditViewport(browser,name,viewport,isMobile){
+            const context=await browser.newContext({viewport,isMobile,hasTouch:isMobile});const page=await context.newPage();const errors=[];
+            page.on('pageerror',e=>errors.push(String(e?.stack||e?.message||e)));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+            let r=await page.goto(base+'/?qa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});assert(r&&r.status()<400,`${name} home ${r?.status()}`);await page.locator('.hero').waitFor({state:'visible',timeout:30000});await clearLoader(page,name+' home');
+            const home=await page.locator('body').innerText();assert(/BROWSE\s+250\+\s+VERIFIED PRODUCTS/i.test(home),`${name}: 250+ label missing`);assert(!/BROWSE\s+267\+/i.test(home),`${name}: stale 267+ visible`);
+            const dims=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,iw:innerWidth}));assert(dims.sw<=dims.iw+4,`${name}: horizontal overflow ${JSON.stringify(dims)}`);pass(name+' homepage');
+            const details=page.locator('#categories details.v-home-category-details').first();await details.waitFor({state:'visible',timeout:15000});await details.locator(':scope > summary').click();await page.waitForFunction(()=>document.querySelector('#categories details.v-home-category-details')?.open===true);
+            const order=await page.evaluate(()=>{const d=document.querySelector('#categories details.v-home-category-details'),s=d?.querySelector(':scope > summary'),a=[...(d?.querySelectorAll('.v-home-category-extra [data-category]')||[])].filter(x=>x.offsetParent!==null),last=a[a.length-1];return{label:(s?.textContent||'').trim(),top:s?.getBoundingClientRect().top||0,last:last?.getBoundingClientRect().bottom||0,count:a.length}});assert(order.count>0&&/Show fewer categories/i.test(order.label)&&order.top>=order.last-2,`${name}: category collapse placement ${JSON.stringify(order)}`);pass(name+' category expansion',order);
+            r=await page.goto(base+'/category/kitchen/?qa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});assert(r&&r.status()<400,`${name} kitchen HTTP ${r?.status()}`);const card=page.locator('.grid .card').first();await card.waitFor({state:'visible',timeout:30000});await clearLoader(page,name+' kitchen');
+            const g=await card.evaluate(c=>{const p=c.querySelector('.pic'),t=c.querySelector('.body h2'),i=p?.querySelector('img'),pr=p?.getBoundingClientRect(),tr=t?.getBoundingClientRect(),ir=i?.getBoundingClientRect();return{pic:pr?.height||0,img:ir?.height||0,picBottom:pr?.bottom||0,titleTop:tr?.top||0,titleHeight:tr?.height||0,title:(t?.textContent||'').trim()}});assert(g.titleTop>=g.picBottom-2,`${name}: Kitchen title overlaps image ${JSON.stringify(g)}`);assert(g.titleHeight<100,`${name}: Kitchen title too tall ${JSON.stringify(g)}`);if(isMobile){assert(g.pic<=180&&g.img<=150,`${name}: Kitchen mobile image too large ${JSON.stringify(g)}`)}else{assert(g.pic<=260&&g.img<=220,`${name}: Kitchen desktop image unexpectedly large ${JSON.stringify(g)}`)}pass(name+' kitchen layout',g);
+            await card.locator('.open').click();await page.waitForURL(/\/product\//,{timeout:20000});await waitProduct(page,name+' product');let text=await page.locator('body').innerText();assert(/VIRAL SCORE/i.test(text)&&/WORTH SCORE/i.test(text)&&/WHERE TO BUY/i.test(text)&&!!await page.locator('.story').count(),`${name}: product detail incomplete`);pass(name+' product open',{url:page.url()});
+            await page.goBack({waitUntil:'domcontentloaded',timeout:30000});await page.locator('.grid .card').first().waitFor({state:'visible',timeout:30000});await clearLoader(page,name+' browser back');assert(location=>true);const path=new URL(page.url()).pathname;assert(path==='/category/kitchen/',`${name}: browser back wrong path ${path}`);pass(name+' browser back',{path});
+            assert(!errors.some(fatal),`${name}: fatal runtime JS error ${errors.filter(fatal).join(' | ')}`);await page.screenshot({path:`qa/${name}.png`,fullPage:true});await context.close();
+          }
+          async function directProducts(browser){
+            const context=await browser.newContext({viewport:{width:1280,height:900}});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e?.stack||e?.message||e)));
+            const cases=[['trtl-travel-pillow','98','88'],['lattafa-eclaire','99','86'],['ninja-slushi-professional-frozen-drink-maker',null,null],['seeq-clear-protein',null,null],['d-alba-white-truffle-first-spray-serum-100ml',null,null]];
+            for(const [slug,v,w] of cases){const r=await page.goto(`${base}/product/${slug}/?qa=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:60000});assert(r&&r.status()<400,`${slug} HTTP ${r?.status()}`);await waitProduct(page,slug);const vals=await page.locator('.productHero .ring b').evaluateAll(xs=>xs.slice(0,2).map(x=>(x.textContent||'').trim()));if(v)assert(vals[0]===v,`${slug} viral ${vals[0]} != ${v}`);if(w)assert(vals[1]===w,`${slug} worth ${vals[1]} != ${w}`);assert(vals.every(x=>/^\d{1,3}$/.test(x)),`${slug}: nonnumeric scores ${JSON.stringify(vals)}`);assert(/WHERE TO BUY/i.test(await page.locator('body').innerText()),`${slug}: missing where to buy`);pass('direct '+slug,{scores:vals})}
+            await page.goto(base+'/product/trtl-travel-pillow/?marketqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await waitProduct(page,'Trtl market');await page.locator('.geo-choice[data-geo="CA"]').waitFor({state:'visible',timeout:15000});for(const m of ['CA','US']){await page.locator(`.geo-choice[data-geo="${m}"]`).click();await sleep(450);const vals=await page.locator('.productHero .ring b').evaluateAll(xs=>xs.slice(0,2).map(x=>(x.textContent||'').trim()));assert(vals.every(x=>/^\d{1,3}$/.test(x)),`Trtl ${m}: scores missing`);const block=await page.locator('#where-to-buy').innerText();assert(!/Worth Score pending|Market verification in progress/i.test(block),`Trtl ${m}: pending text`);const links=page.locator('#where-to-buy a.retailer:visible');assert(await links.count()>0,`Trtl ${m}: no visible retailer`);const href=await links.first().getAttribute('href');assert(/^https?:\/\//.test(href||''),`Trtl ${m}: invalid retailer`);pass('Trtl '+m+' market',{scores:vals,href})}
+            assert(!errors.some(fatal),'direct products fatal runtime error '+errors.filter(fatal).join(' | '));await context.close();
+          }
+          async function routeAudit(browser){
+            const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e?.stack||e?.message||e)));
+            let r=await page.goto(base+'/score-discovery?slug=seeq-clear-protein&market=US&qa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});assert(r&&r.status()<400,'score discovery HTTP '+r?.status());assert(/text\/html/i.test(r.headers()['content-type']||''),'score discovery not HTML');await page.locator('#app').waitFor({state:'visible',timeout:30000});await page.waitForFunction(()=>/Score Discovery/i.test(document.body?.innerText||''),null,{timeout:30000});const raw=(await page.locator('body').innerText()).trim();assert(!/^<!?doctype|^<html/i.test(raw),'score discovery raw HTML');pass('score discovery route');
+            r=await page.goto(base+'/search?q=Original%20Lip%20Kit&qa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});assert(r&&r.status()<400,'search HTTP');const lip=page.locator('[data-product="kylie-cosmetics-original-lip-kit"]').first();await lip.waitFor({state:'visible',timeout:30000});await lip.click();await page.waitForURL(u=>u.pathname==='/product/kylie-cosmetics-original-lip-kit/',{timeout:20000});await waitProduct(page,'search product');let h=(await page.locator('.productHero h1').textContent()||'').trim();assert(/Original Lip Kit/i.test(h)&&!/Eclaire/i.test(h),'search routed wrong '+h);pass('search routing',{heading:h});
+            await page.goto(base+'/?clone='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await page.locator('[data-product]').first().waitFor({state:'visible',timeout:30000});await page.evaluate(()=>{const c=document.createElement('article');c.className='vyrdict-weekly-extra-v8';c.dataset.slug='kylie-cosmetics-original-lip-kit';c.style.cssText='position:fixed;top:100px;left:5px;z-index:9999;background:white;padding:20px';c.innerHTML='<button id="stale" data-product="lattafa-eclaire">SEE VYRDICT</button>';document.body.appendChild(c)});await page.locator('#stale').click();await page.waitForURL(u=>u.pathname==='/product/kylie-cosmetics-original-lip-kit/',{timeout:20000});await waitProduct(page,'weekly clone');h=(await page.locator('.productHero h1').textContent()||'').trim();assert(/Original Lip Kit/i.test(h)&&!/Eclaire/i.test(h),'weekly clone routed wrong '+h);pass('weekly clone routing',{heading:h});
+            for(const path of ['/collection/viral-right-now/','/category/beauty/','/search?q=ninja','/careers/']){const rr=await page.goto(base+path+(path.includes('?')?'&':'?')+'qa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});assert(rr&&rr.status()<400,`${path} HTTP ${rr?.status()}`);const txt=await page.locator('body').innerText();assert(!/Could not load the site|Product temporarily unavailable/i.test(txt),`${path}: visible error`);pass('route '+path,{status:rr.status()})}
+            assert(!errors.some(fatal),'route audit fatal '+errors.filter(fatal).join(' | '));await context.close();
+          }
+          (async()=>{let browser;try{browser=await chromium.launch({headless:true});await auditViewport(browser,'mobile',{width:390,height:844},true);await auditViewport(browser,'desktop',{width:1440,height:1000},false);await directProducts(browser);await routeAudit(browser);report.ok=true;save();console.log('FINAL_SITE_AUDIT_V2_PASS');console.log(JSON.stringify(report,null,2))}catch(e){report.error=String(e?.stack||e);save();console.error(e);process.exitCode=1}finally{await browser?.close()}})();
+          NODE
+          node qa/audit.js 2>&1 | tee qa/console.log
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vyrdict-final-site-audit-v2
+          path: qa/
+          retention-days: 7
