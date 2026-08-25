@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictHomeSimplifyV12)return;
-  window.__vyrdictHomeSimplifyV12=1;
+  if(window.__vyrdictHomeSimplifyV13)return;
+  window.__vyrdictHomeSimplifyV13=1;
 
   const STYLE_ID='vyrdict-home-simplify-style';
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
@@ -38,7 +38,8 @@ body.vyrdict-home-calm .v-home-category-details{flex:1 0 100%;margin:2px 0 0;pad
 body.vyrdict-home-calm .v-home-category-details>summary{list-style:none;width:max-content;appearance:none;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;border:1px solid rgba(23,21,17,.18);background:#fffdf8;color:#171511;border-radius:999px;padding:13px 19px;font:900 10px/1 Arial,Helvetica,sans-serif;letter-spacing:.065em;text-transform:uppercase;cursor:pointer;white-space:nowrap;min-height:42px;user-select:none}
 body.vyrdict-home-calm .v-home-category-details>summary::-webkit-details-marker{display:none}
 body.vyrdict-home-calm .v-home-category-details>summary:hover{border-color:rgba(23,21,17,.38)}
-body.vyrdict-home-calm .v-home-category-extra{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+body.vyrdict-home-calm .v-home-category-details[open]>.v-home-category-extra{display:flex!important;visibility:visible!important;gap:10px;flex-wrap:wrap;margin-top:10px}
+body.vyrdict-home-calm .v-home-category-details[open]>.v-home-category-extra>.category{display:inline-flex!important;visibility:visible!important;opacity:.82!important}
 body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
 @media(max-width:700px){body.vyrdict-home-calm .hero{padding-top:24px!important;padding-bottom:24px!important}body.vyrdict-home-calm .stage{min-height:300px!important}body.vyrdict-home-calm .stage .p1{width:54%!important;height:48%!important;left:7%!important;top:24%!important}body.vyrdict-home-calm .stage .p2{width:34%!important;height:31%!important;right:4%!important;top:48%!important}body.vyrdict-home-calm .stage .p3{width:29%!important;height:25%!important;right:8%!important;top:10%!important}body.vyrdict-home-calm .stage .sticker.spark{font-size:20px!important}body.vyrdict-home-calm .category{font-size:11px!important;padding:12px 15px!important;letter-spacing:.065em!important}body.vyrdict-home-calm .v-home-category-details>summary{font-size:9px;padding:12px 15px;min-height:40px}body.vyrdict-home-calm .section{padding-top:54px!important;padding-bottom:54px!important}body.vyrdict-home-calm .section .head{margin-bottom:20px!important}body.vyrdict-home-calm .v-home-rail-more{margin-top:17px!important}}
 `;
@@ -85,11 +86,7 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
 
   function categoryButton(c){
     const b=document.createElement('button');
-    b.type='button';
-    b.className='category';
-    b.dataset.category=c;
-    b.textContent=`${categoryIcon(c)} ${c}`;
-    return b;
+    b.type='button';b.className='category';b.dataset.category=c;b.hidden=false;b.removeAttribute('hidden');b.style.removeProperty('display');b.style.removeProperty('visibility');b.textContent=`${categoryIcon(c)} ${c}`;return b;
   }
 
   function purgeLegacyControls(section,container){
@@ -106,28 +103,23 @@ body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
   function rebuildCategories(){
     const section=categorySection();if(!section)return false;
     const container=section.querySelector('.categories');if(!container)return false;
-    section.classList.add('v-home-categories');
-    purgeLegacyControls(section,container);
+    section.classList.add('v-home-categories');purgeLegacyControls(section,container);
     const cats=categoryNames(container);if(!cats.length)return false;
     const wasOpen=container.querySelector('.v-home-category-details')?.open===true;
-    container.replaceChildren();
-    cats.slice(0,6).forEach(c=>container.appendChild(categoryButton(c)));
+    container.replaceChildren();cats.slice(0,6).forEach(c=>container.appendChild(categoryButton(c)));
     if(cats.length>6){
-      const details=document.createElement('details');
-      details.className='v-home-category-details';
-      details.open=wasOpen;
-      const summary=document.createElement('summary');
-      const extra=document.createElement('div');
-      extra.className='v-home-category-extra';
-      const sync=()=>{summary.textContent=details.open?'Show fewer categories':'See more categories'};
+      const details=document.createElement('details');details.className='v-home-category-details';details.open=wasOpen;
+      const summary=document.createElement('summary'),extra=document.createElement('div');extra.className='v-home-category-extra';
       cats.slice(6).forEach(c=>extra.appendChild(categoryButton(c)));
-      details.append(summary,extra);
-      details.addEventListener('toggle',sync);
-      sync();
-      container.appendChild(details);
+      const sync=()=>{
+        summary.textContent=details.open?'Show fewer categories':'See more categories';
+        extra.hidden=false;extra.removeAttribute('hidden');
+        if(details.open){extra.style.setProperty('display','flex','important');extra.style.setProperty('visibility','visible','important');extra.querySelectorAll('[data-category]').forEach(b=>{b.hidden=false;b.removeAttribute('hidden');b.style.setProperty('display','inline-flex','important');b.style.setProperty('visibility','visible','important')})}
+        else{extra.style.removeProperty('display');extra.style.removeProperty('visibility');extra.querySelectorAll('[data-category]').forEach(b=>{b.style.removeProperty('display');b.style.removeProperty('visibility')})}
+      };
+      details.append(summary,extra);details.addEventListener('toggle',()=>requestAnimationFrame(sync));sync();container.appendChild(details);
     }
-    purgeLegacyControls(section,container);
-    return true;
+    purgeLegacyControls(section,container);return true;
   }
 
   function simplifySections(){limitRail(document.getElementById('viral')||sectionByText("what's trending now"),6,'See all trending');limitRail(sectionByText('seen on screen'),4,'See all seen on screen');const culture=document.getElementById('culture')||sectionByText('you saw it then everyone bought it');if(culture&&!norm(culture.textContent).includes('seen on screen'))limitRail(culture,6,'See all')}
