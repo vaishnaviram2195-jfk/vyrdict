@@ -33,55 +33,53 @@ jobs:
           done
           echo 'Navigation guard V6 did not reach production in time'
           exit 1
-      - name: Verify Original Lip Kit routes to Kylie
+      - name: Verify Original Lip Kit routing integrity
         run: |
           cat > weekly-routing-qa.js <<'NODE'
           const { chromium } = require('playwright');
           const assert=(ok,msg)=>{if(!ok)throw new Error(msg)};
-          const norm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
           (async()=>{
             const browser=await chromium.launch({headless:true});
             const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
             const page=await context.newPage();
             const errors=[];
             page.on('pageerror',e=>errors.push(String(e?.stack||e?.message||e)));
-            await page.goto('https://vyrdict.com/?weeklyqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
-            await page.locator('[data-product]').first().waitFor({state:'visible',timeout:30000});
 
-            const weeklyHeading=page.getByText(/weekly viral rankings/i).first();
-            await weeklyHeading.waitFor({state:'visible',timeout:20000});
-            const section=weeklyHeading.locator('xpath=ancestor::section[1]');
-
-            const makeup=section.getByRole('button',{name:/^makeup$/i});
-            if(await makeup.count()){
-              await makeup.first().click();
-              await page.waitForTimeout(500);
-            }
-
-            const more=section.getByRole('button',{name:/see more rankings|keep climbing the ranking/i});
-            if(await more.count()){
-              await more.first().click();
-              await page.waitForTimeout(1200);
-            }
-
-            let card=section.locator('.vyrdict-weekly-extra-v8[data-slug="kylie-cosmetics-original-lip-kit"]');
-            if(!(await card.count())){
-              card=section.locator('article,.card,.vyrdict-weekly-extra-v8').filter({hasText:/Original Lip Kit/i}).first();
-            }
-            await card.waitFor({state:'visible',timeout:20000});
-            const info=await card.evaluate(el=>({slug:el.getAttribute('data-slug'),text:(el.innerText||'').slice(0,300),buttonSlug:el.querySelector('[data-product]')?.getAttribute('data-product')||null}));
-            console.log('ORIGINAL_LIP_KIT_CARD',JSON.stringify(info));
-            assert(/Original Lip Kit/i.test(info.text),'Did not find Original Lip Kit card');
-
-            const see=card.getByRole('button',{name:/see vyrdict/i}).first();
-            await see.waitFor({state:'visible',timeout:10000});
-            await see.click();
+            // Real search result: Original Lip Kit must route to Kylie.
+            await page.goto('https://vyrdict.com/search?q=Original%20Lip%20Kit&qa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+            const realCard=page.locator('article,.card').filter({hasText:/Original Lip Kit/i}).first();
+            await realCard.waitFor({state:'visible',timeout:30000});
+            const realBtn=realCard.locator('[data-product]').first();
+            const realSlug=await realBtn.getAttribute('data-product');
+            console.log('REAL_ORIGINAL_LIP_KIT_BUTTON',realSlug);
+            assert(realSlug==='kylie-cosmetics-original-lip-kit',`Real card has wrong slug: ${realSlug}`);
+            await realBtn.click();
             await page.waitForURL(u=>u.pathname==='/product/kylie-cosmetics-original-lip-kit/',{timeout:20000});
             await page.locator('.productHero').waitFor({state:'visible',timeout:30000});
-            const productText=await page.locator('.productHero').innerText();
-            console.log('DESTINATION',page.url(),productText.slice(0,220));
-            assert(/Original Lip Kit/i.test(productText),'Wrong product content after navigation');
-            assert(!/Eclaire/i.test(productText),'Eclaire content appeared after Original Lip Kit click');
+            let text=await page.locator('.productHero').innerText();
+            assert(/Original Lip Kit/i.test(text),'Real card opened wrong product content');
+            assert(!/Eclaire/i.test(text),'Real card opened Eclaire');
+
+            // Deterministic reproduction of the exact clone bug: the visible
+            // cloned card says Kylie, but its copied button still says Eclaire.
+            await page.goto('https://vyrdict.com/?qa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+            await page.locator('[data-product]').first().waitFor({state:'visible',timeout:30000});
+            await page.evaluate(()=>{
+              const card=document.createElement('article');
+              card.className='vyrdict-weekly-extra-v8';
+              card.dataset.slug='kylie-cosmetics-original-lip-kit';
+              card.style.cssText='position:fixed;left:8px;top:120px;z-index:9999;background:white;padding:20px';
+              card.innerHTML='<h3>Original Lip Kit</h3><button id="qa-stale-clone" data-product="lattafa-eclaire">SEE VYRDICT</button>';
+              document.body.appendChild(card);
+            });
+            const stale=page.locator('#qa-stale-clone');
+            await stale.click();
+            await page.waitForURL(u=>u.pathname==='/product/kylie-cosmetics-original-lip-kit/',{timeout:20000});
+            await page.locator('.productHero').waitFor({state:'visible',timeout:30000});
+            text=await page.locator('.productHero').innerText();
+            console.log('CLONE_DESTINATION',page.url(),text.slice(0,180));
+            assert(/Original Lip Kit/i.test(text),'Stale clone guard opened wrong product');
+            assert(!/Eclaire/i.test(text),'Stale clone guard still opened Eclaire');
             assert(!errors.some(e=>/SyntaxError|Invalid regular expression/i.test(e)),'Fatal JS error: '+errors.join(' | '));
             console.log('ORIGINAL_LIP_KIT_ROUTING_PASS');
             await browser.close();
