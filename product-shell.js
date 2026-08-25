@@ -1,10 +1,10 @@
 (()=>{
-  if(window.__vyrdictProductShellV10)return;
-  window.__vyrdictProductShellV10=1;
+  if(window.__vyrdictProductShellV11)return;
+  window.__vyrdictProductShellV11=1;
   const match=decodeURIComponent(location.pathname).match(/^\/product\/([^/]+)\/?$/i);if(!match)return;
   const slug=match[1],clean='/product/'+encodeURIComponent(slug)+'/';
-  const BUNDLE='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-bundle-fast?v=10';
-  const CACHE_KEY='vyrdict:bundle-cache:v10';
+  const BUNDLE='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-bundle-fast?v=11';
+  const CACHE_KEY='vyrdict:bundle-cache:v11';
   const schema=document.querySelector('script[type="application/ld+json"]')?.textContent||'';
   const fallbackTitle=document.querySelector('.seo-fallback h1')?.textContent?.trim()||slug.replaceAll('-',' ');
   const seo={title:document.title,description:document.querySelector('meta[name="description"]')?.content||'',canonical:document.querySelector('link[rel="canonical"]')?.href||('https://vyrdict.com'+clean),ogTitle:document.querySelector('meta[property="og:title"]')?.content||document.title,ogDescription:document.querySelector('meta[property="og:description"]')?.content||'',ogImage:document.querySelector('meta[property="og:image"]')?.content||'https://vyrdict.com/vyrdict-social-preview.jpg',schema};
