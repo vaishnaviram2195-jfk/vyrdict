@@ -56,6 +56,14 @@ jobs:
             console.log('SYNTAX_SCAN '+label+' '+JSON.stringify(bad));
             return bad;
           }
+          async function layoutState(page,label){
+            const s=await page.evaluate(()=>{
+              const snap=sel=>{const el=document.querySelector(sel);if(!el)return null;const r=el.getBoundingClientRect(),c=getComputedStyle(el);return {sel,rect:{x:r.x,y:r.y,top:r.top,bottom:r.bottom,left:r.left,right:r.right,width:r.width,height:r.height},display:c.display,visibility:c.visibility,opacity:c.opacity,position:c.position,transform:c.transform,overflow:c.overflow,marginTop:c.marginTop,paddingTop:c.paddingTop,minHeight:c.minHeight,height:c.height}};
+              return {innerWidth,innerHeight,scrollY,scrollHeight:document.documentElement.scrollHeight,bodyScrollHeight:document.body?.scrollHeight,htmlClass:document.documentElement.className,bodyClass:document.body?.className,htmlStyle:document.documentElement.getAttribute('style'),bodyStyle:document.body?.getAttribute('style'),items:[snap('body'),snap('#app'),snap('.header'),snap('.page'),snap('.grid'),snap('.grid .card')]};
+            });
+            console.log('LAYOUT '+label+' '+JSON.stringify(s));
+            return s;
+          }
           async function visibleState(page,label){
             const s=await page.evaluate(()=>{
               const cover=document.getElementById('vyrdict-route-cover');
@@ -92,7 +100,6 @@ jobs:
             await page.waitForURL(/\/product\//,{timeout:15000});
             await page.waitForTimeout(1800);
             await syntaxScan(page,'PRODUCT_AFTER_SWAP');
-            console.log('PRODUCT_STATE '+JSON.stringify(await page.evaluate(()=>({url:location.href,text:(document.body?.innerText||'').slice(0,500),scripts:document.scripts.length,html:(document.documentElement?.outerHTML||'').slice(0,800)}))));
             await waitProduct(page);
 
             const productUrl=page.url();
@@ -129,6 +136,8 @@ jobs:
               const r=await page.goto(base+u,{waitUntil:'domcontentloaded',timeout:60000});
               assert(r&&r.status()<400,`${u}: HTTP ${r?.status()}`);
               await page.locator('#app,.grid,.hero').first().waitFor({state:'visible',timeout:25000});
+              await page.waitForTimeout(200);
+              await layoutState(page,u);
               await visibleState(page,u);
             }
 
