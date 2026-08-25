@@ -1,7 +1,7 @@
 {
   "version": 2,
   "routes": [
-    { "src": "/product(?:/.*)?$", "dest": "/index.html" },
+    { "src": "/product/(?<slug>[^/]+)/?$", "dest": "/api/product-seo?slug=$slug" },
     { "src": "/category(?:/.*)?$", "dest": "/index.html" },
     { "src": "/collection(?:/.*)?$", "dest": "/index.html" },
     { "src": "/saved$", "dest": "/index.html" },
