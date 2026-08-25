@@ -1,11 +1,12 @@
 (()=>{
-  if(window.__vyrdictNavigationGuardV7)return;
-  window.__vyrdictNavigationGuardV7=1;
+  if(window.__vyrdictNavigationGuardV8)return;
+  window.__vyrdictNavigationGuardV8=1;
 
   const COVER_ID='vyrdict-route-cover';
   const SCORE_ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-seo-product-data';
   const onProduct=()=>/^\/product\//i.test(location.pathname);
   const onCategory=()=>/^\/category\//i.test(location.pathname);
+  let coverTimer=0;
 
   try{
     if(localStorage.getItem('vyrdict:catalog-repair:v1')!=='1'){
@@ -74,6 +75,12 @@
   installStableLoadingPaint();
   installCategoryCardLayout();
 
+  function removeCover(){
+    clearTimeout(coverTimer);
+    coverTimer=0;
+    document.getElementById(COVER_ID)?.remove();
+  }
+
   function makeCover(){
     let cover=document.getElementById(COVER_ID);
     if(cover)return cover;
@@ -87,7 +94,15 @@
     return cover;
   }
 
-  function showCover(){hardTop();makeCover()}
+  function showCover(){
+    hardTop();
+    makeCover();
+    clearTimeout(coverTimer);
+    const href=location.href;
+    coverTimer=setTimeout(()=>{
+      if(location.href===href)removeCover();
+    },5500);
+  }
 
   function slug(v){
     return String(v||'').toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
@@ -120,7 +135,7 @@
         rings[i].style.setProperty('--s',String(value));
         const b=rings[i].querySelector('b');if(b)b.textContent=String(value);
       });
-    }catch{}finally{if(productSlug()!==s)scoreRequest=''}
+    }catch{}finally{scoreRequest=''}
   }
 
   function scheduleScoreRepair(){[0,120,450,1000,2200].forEach(ms=>setTimeout(repairProductScores,ms))}
@@ -191,6 +206,8 @@
 
   function go(dest,replace=false){
     const d=normalizePath(dest)||'/';
+    const here=normalizePath(location.href)||'/';
+    if(d===here){removeCover();return}
     showCover();
     setTimeout(()=>{replace?location.replace(d):location.assign(d)},0);
   }
@@ -235,26 +252,31 @@
   }
   takeRouterOwnership();
 
-  function stabilizeHistory(e){
-    try{e?.stopImmediatePropagation?.()}catch{}
-    const dest=normalizePath(location.href)||'/';
-    showCover();
-    setTimeout(()=>location.replace(dest),0);
-  }
-  addEventListener('popstate',stabilizeHistory,true);
-  addEventListener('hashchange',()=>{if(/^#\//.test(location.hash||''))stabilizeHistory()},true);
-
-  addEventListener('pageshow',()=>{
+  function settleHistory(){
     hardTop();
-    installStableLoadingPaint();
+    removeCover();
     installCategoryCardLayout();
-    document.getElementById(COVER_ID)?.remove();
     scheduleScoreRepair();
     requestAnimationFrame(()=>requestAnimationFrame(hardTop));
+  }
+
+  addEventListener('popstate',settleHistory,true);
+  addEventListener('hashchange',()=>{
+    if(/^#\//.test(location.hash||'')){
+      const legacy=normalizePath(location.href);
+      if(legacy&&legacy!==location.pathname+location.search)location.replace(legacy);
+      return;
+    }
+    settleHistory();
+  },true);
+
+  addEventListener('pageshow',()=>{
+    installStableLoadingPaint();
+    settleHistory();
   },true);
 
   const observeApp=()=>{const app=document.getElementById('app');if(app)new MutationObserver(()=>scheduleScoreRepair()).observe(app,{childList:true,subtree:true})};
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{observeApp();installCategoryCardLayout();scheduleScoreRepair()},{once:true});else{observeApp();installCategoryCardLayout();scheduleScoreRepair()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{observeApp();installCategoryCardLayout();scheduleScoreRepair();removeCover()},{once:true});else{observeApp();installCategoryCardLayout();scheduleScoreRepair();removeCover()}
 
   hardTop();
 })();
