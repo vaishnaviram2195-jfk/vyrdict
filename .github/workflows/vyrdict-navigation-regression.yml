@@ -47,7 +47,7 @@ jobs:
           const assert=(ok,msg)=>{if(!ok)throw new Error(msg)};
 
           async function paintState(page,label){
-            const s=await page.evaluate(()=>{
+            const s=await page.evaluate((label)=>{
               const cover=!!document.getElementById('vyrdict-route-cover');
               const bodyBg=getComputedStyle(document.body||document.documentElement).backgroundColor;
               const meaningfulTag=/^(A|BUTTON|IMG|H1|H2|H3|H4|P|SPAN|STRONG|B|SMALL|INPUT|ARTICLE|SECTION)$/;
@@ -70,7 +70,7 @@ jobs:
               }
               const ratio=total?hit/total:0;
               return {label,path:location.pathname+location.search,scrollY,cover,ratio,bodyText:(document.body?.innerText||'').slice(0,220)};
-            });
+            },label);
             console.log('PAINT '+JSON.stringify(s));
             return s;
           }
