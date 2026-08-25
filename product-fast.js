@@ -1,6 +1,34 @@
 (()=>{
-  if(window.__vyrdictProductFastV2)return;
-  window.__vyrdictProductFastV2=1;
+  if(window.__vyrdictProductFastV3)return;
+  window.__vyrdictProductFastV3=1;
+
+  // VYRDICT is a client-side routed app. Letting the browser restore an old
+  // scroll offset while route content is being replaced can strand the user
+  // inside a blank part of the document on back/forward navigation.
+  try{history.scrollRestoration='manual'}catch{}
+  let navScrollToken=0;
+  function resetRouteScroll(){
+    const token=++navScrollToken;
+    const top=()=>{
+      if(token!==navScrollToken)return;
+      try{window.scrollTo(0,0)}catch{}
+      try{document.documentElement.scrollTop=0}catch{}
+      try{document.body.scrollTop=0}catch{}
+    };
+    top();
+    requestAnimationFrame(()=>{top();requestAnimationFrame(top)});
+    [40,120,260,520].forEach(ms=>setTimeout(top,ms));
+  }
+  const nativePushState=history.pushState.bind(history);
+  history.pushState=function(...args){
+    const out=nativePushState(...args);
+    queueMicrotask(resetRouteScroll);
+    return out;
+  };
+  addEventListener('popstate',resetRouteScroll,true);
+  addEventListener('hashchange',resetRouteScroll,true);
+  addEventListener('pageshow',e=>{if(e.persisted)resetRouteScroll()});
+
   const ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-product-detail';
   const inflight=new Map();
   const prefetched=new Set();
