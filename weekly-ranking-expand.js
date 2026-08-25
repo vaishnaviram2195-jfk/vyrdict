@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictWeeklyExpandV9)return;
-  window.__vyrdictWeeklyExpandV9=1;
+  if(window.__vyrdictWeeklyExpandV10)return;
+  window.__vyrdictWeeklyExpandV10=1;
 
   const ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-weekly-rankings';
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
@@ -9,14 +9,55 @@
   let busy=false;
 
   function addStyle(){
-    if(document.getElementById('vyrdict-weekly-expand-v9-style'))return;
+    if(document.getElementById('vyrdict-weekly-expand-v10-style'))return;
     const s=document.createElement('style');
-    s.id='vyrdict-weekly-expand-v9-style';
+    s.id='vyrdict-weekly-expand-v10-style';
     s.textContent=`
       .vyrdict-weekly-row-v8{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px!important;align-items:stretch!important;overflow:visible!important}
       .vyrdict-weekly-row-v8>.vyrdict-weekly-top-v8,.vyrdict-weekly-row-v8>.vyrdict-weekly-extra-v8,.vyrdict-weekly-row-v8>.vyrdict-weekly-cta-v8{min-width:0!important;width:auto!important;max-width:none!important;grid-column:auto!important;grid-row:auto!important;align-self:stretch!important}
       .vyrdict-weekly-section-v8 .v-home-rail-more{display:none!important}.vyrdict-weekly-rankline-v8{font:900 8px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#6d675f;margin:0 0 8px}.vyrdict-weekly-collapse-v8{appearance:none;border:0;background:transparent;color:#171511;padding:0 0 2px;margin:20px 0 0;border-bottom:1px solid #171511;font:900 9px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.vyrdict-weekly-cta-v8.is-loading{opacity:.68;pointer-events:none}
-      @media(max-width:900px){.vyrdict-weekly-row-v8{grid-template-columns:repeat(2,minmax(0,1fr))!important}}@media(max-width:700px){.vyrdict-weekly-row-v8{display:flex!important;overflow-x:auto!important;gap:14px!important;scroll-snap-type:x proximity}.vyrdict-weekly-row-v8>.vyrdict-weekly-top-v8,.vyrdict-weekly-row-v8>.vyrdict-weekly-extra-v8,.vyrdict-weekly-row-v8>.vyrdict-weekly-cta-v8{flex:0 0 82%!important;width:82%!important;min-width:250px!important;scroll-snap-align:start}}
+
+      /* Keep weekly cards readable even when a product image or title is unusually large. */
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8,
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8{overflow:hidden!important;background:#fffdf8!important}
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8 .art,
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8 .art{height:220px!important;min-height:220px!important;max-height:220px!important;padding:16px!important;display:grid!important;place-items:center!important;overflow:hidden!important;background:#f7f1eb!important}
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8 .art>img,
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8 .art>img{display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:188px!important;object-fit:contain!important;object-position:center!important;mix-blend-mode:normal!important;margin:0 auto!important;position:static!important;transform:none!important}
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8>img,
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8>img{display:block!important;width:100%!important;height:220px!important;max-height:220px!important;object-fit:contain!important;object-position:center!important;background:#fff!important;margin:0!important;position:static!important;transform:none!important}
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8 .body,
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8 .body{position:relative!important;z-index:3!important;background:#fffdf8!important;padding:18px!important;margin:0!important;transform:none!important}
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8 h1,
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8 h2,
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8 h3,
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8 h4,
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8 h1,
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8 h2,
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8 h3,
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8 h4{position:static!important;inset:auto!important;transform:none!important;max-width:100%!important;margin:7px 0 13px!important;font:400 clamp(24px,3.2vw,30px)/1.06 Georgia,serif!important;letter-spacing:-.025em!important;overflow-wrap:anywhere!important;word-break:normal!important;color:#171511!important}
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8 p,
+      body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8 p{position:static!important;transform:none!important;max-width:100%!important}
+
+      @media(max-width:900px){.vyrdict-weekly-row-v8{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+      @media(max-width:700px){
+        .vyrdict-weekly-row-v8{display:flex!important;overflow-x:auto!important;gap:14px!important;scroll-snap-type:x proximity}
+        .vyrdict-weekly-row-v8>.vyrdict-weekly-top-v8,.vyrdict-weekly-row-v8>.vyrdict-weekly-extra-v8,.vyrdict-weekly-row-v8>.vyrdict-weekly-cta-v8{flex:0 0 82%!important;width:82%!important;min-width:250px!important;scroll-snap-align:start}
+        body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8 .art,
+        body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8 .art{height:205px!important;min-height:205px!important;max-height:205px!important;padding:14px!important}
+        body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8 .art>img,
+        body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8 .art>img{max-height:177px!important}
+        body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8>img,
+        body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8>img{height:205px!important;max-height:205px!important}
+        body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8 h1,
+        body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8 h2,
+        body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8 h3,
+        body .vyrdict-weekly-section-v8 .vyrdict-weekly-top-v8 h4,
+        body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8 h1,
+        body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8 h2,
+        body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8 h3,
+        body .vyrdict-weekly-section-v8 .vyrdict-weekly-extra-v8 h4{font-size:26px!important;line-height:1.06!important}
+      }
     `;document.head.appendChild(s)}
   function getSection(){const hs=[...document.querySelectorAll('h1,h2,h3,h4')];const h=hs.find(el=>norm(el.textContent).includes('weekly viral rankings'))||hs.find(el=>norm(el.textContent).includes('weekly viral ranking'));return h?.closest('section')||h?.closest('.section')||null}
   function isCard(el){if(!el||el.matches?.('.vyrdict-weekly-cta-v8,.vyrdict-weekly-extra-v8,script,style'))return false;const t=norm(el.innerText||el.textContent);return !!el.querySelector?.('img')&&t.includes('hype')&&t.includes('worth')&&(t.includes('see vyrdict')||!!el.querySelector('button,a'))}
