@@ -1,20 +1,22 @@
-name: VYRDICT Mobile QA
+name: VYRDICT Production QA
 
 on:
   push:
     paths:
       - '.github/workflows/vyrdict-mobile-qa.yml'
       - 'index.html'
-      - 'header-brand-fix.js'
-      - 'homepage-hero-variety.js'
+      - 'product-shell.js'
+      - 'product-fast.js'
+      - 'product-detail-consistency.js'
+      - 'product-card-alignment.js'
       - 'homepage-simplify.js'
-      - 'homepage-mobile-final.js'
+      - 'social-links-fix.js'
   workflow_dispatch:
 
 jobs:
-  mobile-qa:
+  production-qa:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,66 +27,82 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null
-      - name: Test VYRDICT at phone width
+      - name: Test live VYRDICT interactions and timings
         run: |
           mkdir -p qa
-          cat > /tmp/mobile-qa.js <<'NODE'
+          cat > /tmp/vyrdict-qa.js <<'NODE'
           const { chromium } = require('playwright');
           const fs = require('fs');
-          const base = 'https://vyrdict.com';
-          const tests = [];
-          function assert(ok, msg){ if(!ok) throw new Error(msg); }
-          async function check(page, name, url, required=[]){
-            const response = await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
-            await page.waitForTimeout(7000);
-            const info = await page.evaluate(() => ({
-              title: document.title,
-              text: document.body?.innerText || '',
-              scrollWidth: document.documentElement.scrollWidth,
-              innerWidth: window.innerWidth,
-              hero1Alt: document.querySelector('.stage .p1 img')?.alt || '',
-              hero2Alt: document.querySelector('.stage .p2 img')?.alt || '',
-              hero1Key: document.querySelector('.stage .p1 img')?.dataset?.vyrdictHeroVariety || '',
-              hero2Key: document.querySelector('.stage .p2 img')?.dataset?.vyrdictHeroVariety || '',
-              categoryButton: document.querySelector('.v-home-category-more')?.textContent?.trim() || '',
-              visibleCategories: [...document.querySelectorAll('[data-category]')].filter(x=>!x.hidden).length
+          const base='https://vyrdict.com';
+          const report={ok:true,runs:[]};
+          const assert=(ok,msg)=>{if(!ok)throw new Error(msg)};
+          async function waitReady(page,selector,timeout=20000){await page.locator(selector).first().waitFor({state:'visible',timeout})}
+          async function runViewport(browser,name,viewport,isMobile){
+            const context=await browser.newContext({viewport,deviceScaleFactor:1,isMobile,hasTouch:isMobile});
+            const page=await context.newPage();
+            const errors=[];
+            page.on('pageerror',e=>errors.push('pageerror: '+e.message));
+            page.on('console',m=>{if(m.type()==='error')errors.push('console: '+m.text())});
+            const out={name,timings:{}};
+            let t=Date.now();
+            const response=await page.goto(base+'/?qa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+            await waitReady(page,'.hero');
+            await waitReady(page,'#categories .categories');
+            out.timings.homeReadyMs=Date.now()-t;
+            assert(response&&response.status()<400,`${name}: home HTTP ${response?.status()}`);
+            const home=await page.evaluate(()=>({
+              text:document.body?.innerText||'',
+              scrollWidth:document.documentElement.scrollWidth,
+              innerWidth:innerWidth,
+              expanders:[...document.querySelectorAll('#categories button,#categories summary')].filter(x=>/more categories|fewer categories/i.test(x.textContent||'')).map(x=>({tag:x.tagName,text:x.textContent.trim(),cls:x.className})),
+              detailsCount:document.querySelectorAll('#categories details.v-home-category-details').length,
+              categories:[...document.querySelectorAll('#categories [data-category]')].map(x=>x.dataset.category)
             }));
-            assert(response && response.status() < 400, `${name}: HTTP ${response?.status()}`);
-            assert(!/Could not load the site/i.test(info.text), `${name}: loader error visible`);
-            assert(info.scrollWidth <= info.innerWidth + 4, `${name}: horizontal page overflow ${info.scrollWidth}px > ${info.innerWidth}px`);
-            for(const phrase of required) assert(info.text.toLowerCase().includes(phrase.toLowerCase()), `${name}: missing “${phrase}”`);
-            if(name==='home'){
-              assert(info.hero1Key==='blendboss' || /BlendBOSS/i.test(info.hero1Alt), `home: Blender hero missing (${info.hero1Alt})`);
-              assert(info.hero2Key==='baccarat-rouge-540' || /Baccarat Rouge/i.test(info.hero2Alt), `home: Baccarat Rouge hero missing (${info.hero2Alt})`);
-              assert(/See more categories|Show fewer categories/i.test(info.categoryButton), `home: category expansion control missing`);
-              assert(info.visibleCategories >= 6, `home: fewer than six categories visible`);
-            }
-            await page.screenshot({path:`qa/${name}.png`,fullPage:true});
-            tests.push({name,url:page.url(),status:'pass',...info});
+            assert(!/Could not load the site/i.test(home.text),`${name}: loader error visible`);
+            assert(home.scrollWidth<=home.innerWidth+4,`${name}: horizontal overflow ${home.scrollWidth}>${home.innerWidth}`);
+            assert(home.detailsCount===1,`${name}: expected exactly one category details control, saw ${home.detailsCount}`);
+            assert(home.expanders.length===1,`${name}: expected exactly one category expander, saw ${home.expanders.length}: ${JSON.stringify(home.expanders)}`);
+            assert(home.categories.length>6,`${name}: expected more than six categories`);
+            const summary=page.locator('#categories details.v-home-category-details > summary');
+            await summary.click();
+            await page.waitForTimeout(120);
+            let expanded=await page.evaluate(()=>{const d=document.querySelector('#categories details.v-home-category-details');return {open:d?.open,text:d?.querySelector('summary')?.textContent||'',visible:[...document.querySelectorAll('#categories [data-category]')].filter(x=>x.offsetParent!==null).length}});
+            assert(expanded.open===true,`${name}: category expander did not open`);
+            assert(/show fewer categories/i.test(expanded.text),`${name}: category expander label did not change`);
+            assert(expanded.visible>6,`${name}: expanded categories did not become visible`);
+            await summary.click();await page.waitForTimeout(80);
+            assert(await page.locator('#categories details.v-home-category-details').evaluate(d=>!d.open),`${name}: category expander did not close`);
+
+            const firstCategory=page.locator('#categories > .categories > [data-category]').first();
+            const categoryName=await firstCategory.getAttribute('data-category');
+            t=Date.now();await firstCategory.click();await page.waitForURL(/\/category\//,{timeout:10000});await waitReady(page,'.grid');out.timings.categoryNavigationMs=Date.now()-t;out.category=categoryName;
+
+            await page.goto(base+'/?qa2='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await waitReady(page,'.hero');
+            const product=page.locator('[data-product]').first();await product.waitFor({state:'visible',timeout:15000});
+            out.productSlug=await product.getAttribute('data-product');
+            t=Date.now();await product.click();await page.waitForURL(/\/product\//,{timeout:10000});await waitReady(page,'.productHero',15000);out.timings.productClickMs=Date.now()-t;
+            const productText=await page.locator('body').innerText();
+            assert(/VIRAL SCORE/i.test(productText)&&/WORTH SCORE/i.test(productText),`${name}: product scores missing`);
+            assert(/WHERE TO BUY/i.test(productText),`${name}: where-to-buy missing`);
+            assert(!/Loading the VYRDICT…/i.test(productText),`${name}: product still shows loading state`);
+            await page.screenshot({path:`qa/${name}-product.png`,fullPage:true});
+            out.errors=errors;
+            assert(!errors.some(x=>/ReferenceError|TypeError|SyntaxError/i.test(x)),`${name}: runtime JS error ${errors.join(' | ')}`);
+            report.runs.push(out);await context.close();
           }
-          (async()=>{
-            const browser = await chromium.launch({headless:true});
-            const context = await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
-            const page = await context.newPage();
-            try {
-              await check(page,'home',`${base}/`,['VYRDICT','Viral Right Now','Worth the Hype']);
-              await check(page,'dalba',`${base}/product/d-alba-white-truffle-first-spray-serum-100ml`,['White Truffle','Worth the Hype','What it does','Why it’s viral','Where to buy']);
-              await check(page,'suggest',`${base}/suggest-product.html`,['What product is suddenly everywhere?','Product name','Send to VYRDICT']);
-              await check(page,'scores',`${base}/how-vyrdict-scores.html`,['How VYRDICT scores the hype','Viral Score','Worth Score']);
-              fs.writeFileSync('qa/report.json',JSON.stringify({ok:true,tests},null,2));
-              console.log(JSON.stringify({ok:true,tests},null,2));
-            } catch(e) {
-              fs.writeFileSync('qa/report.json',JSON.stringify({ok:false,error:String(e),tests},null,2));
-              console.error(e);
-              process.exitCode=1;
-            } finally { await browser.close(); }
-          })();
+          async function directProduct(browser){
+            const context=await browser.newContext({viewport:{width:1280,height:900}});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+            const url=base+'/product/d-alba-white-truffle-first-spray-serum-100ml/?qa='+Date.now();const t=Date.now();const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});await waitReady(page,'.productHero',20000);const ms=Date.now()-t;
+            const text=await page.locator('body').innerText();assert(response&&response.status()<400,`direct product HTTP ${response?.status()}`);assert(/White Truffle/i.test(text),`direct product content missing`);assert(/WHERE TO BUY/i.test(text),`direct product where-to-buy missing`);assert(!errors.some(x=>/ReferenceError|TypeError|SyntaxError/i.test(x)),`direct product JS error: ${errors.join(' | ')}`);
+            report.directProduct={readyMs:ms,url:page.url(),errors};await page.screenshot({path:'qa/direct-product.png',fullPage:true});await context.close();
+          }
+          (async()=>{const browser=await chromium.launch({headless:true});try{await runViewport(browser,'mobile',{width:390,height:844},true);await runViewport(browser,'desktop',{width:1440,height:1000},false);await directProduct(browser);fs.writeFileSync('qa/report.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2))}catch(e){report.ok=false;report.error=String(e);fs.writeFileSync('qa/report.json',JSON.stringify(report,null,2));console.error(e);process.exitCode=1}finally{await browser.close()}})();
           NODE
-          node /tmp/mobile-qa.js
-      - name: Upload QA screenshots
+          node /tmp/vyrdict-qa.js
+      - name: Upload QA report and screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vyrdict-mobile-qa
+          name: vyrdict-production-qa
           path: qa/
           retention-days: 7
