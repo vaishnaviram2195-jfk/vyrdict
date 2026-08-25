@@ -59,13 +59,14 @@ jobs:
           async function visibleState(page,label){
             const s=await page.evaluate(()=>{
               const cover=document.getElementById('vyrdict-route-cover');
-              const els=[...document.elementsFromPoint(innerWidth/2,Math.min(innerHeight/2,500))];
-              const meaningful=els.some(el=>{
-                if(el===document.documentElement||el===document.body)return false;
+              const nodes=[...document.querySelectorAll('header,main,section,article,.card,.hero,.productHero,#app,a,button')];
+              const meaningful=nodes.some(el=>{
                 const cs=getComputedStyle(el);
                 if(cs.visibility==='hidden'||cs.display==='none'||Number(cs.opacity)===0)return false;
                 const r=el.getBoundingClientRect();
-                return r.width>20&&r.height>20&&((el.textContent||'').trim().length>0||el.querySelector?.('img,button,a'));
+                const onScreen=r.bottom>0&&r.top<innerHeight&&r.right>0&&r.left<innerWidth;
+                if(!onScreen||r.width<20||r.height<16)return false;
+                return (el.textContent||'').trim().length>0||!!el.querySelector?.('img,button,a');
               });
               return {scrollY,cover:!!cover,meaningful,path:location.pathname+location.search,bodyText:(document.body?.innerText||'').slice(0,180)};
             });
