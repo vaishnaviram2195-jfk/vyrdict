@@ -28,7 +28,7 @@
     const d=await bundle();if(!d?.html)throw new Error('html');let h=patchApp(d.html);
     const tags='<base href="/"><title>'+attr(seo.title)+'</title><meta name="description" content="'+attr(seo.description)+'"><meta name="robots" content="index,follow,max-image-preview:large"><link rel="canonical" href="'+attr(seo.canonical)+'"><meta property="og:site_name" content="VYRDICT"><meta property="og:type" content="product"><meta property="og:url" content="'+attr(seo.canonical)+'"><meta property="og:title" content="'+attr(seo.ogTitle)+'"><meta property="og:description" content="'+attr(seo.ogDescription)+'"><meta property="og:image" content="'+attr(seo.ogImage)+'"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="'+attr(seo.ogTitle)+'"><meta name="twitter:description" content="'+attr(seo.ogDescription)+'"><meta name="twitter:image" content="'+attr(seo.ogImage)+'">';
     h=h.replace(/<title[\s\S]*?<\/title>/i,'').replace(/<meta[^>]+name=["']description["'][^>]*>/i,'').replace(/<link[^>]+rel=["']canonical["'][^>]*>/i,'');h=h.replace('<head>','<head>'+tags);
-    const tail='<script src="/product-fast.js?v=2" defer><\/script><script src="/analytics.js?v=restore-original-type-2" defer><\/script><script src="/product-detail-consistency.js?v=3" defer><\/script><script src="/social-links-fix.js?v=7" defer><\/script>';
+    const tail='<script src="/product-fast.js?v=2" defer><\/script><script src="/analytics.js?v=perf-3" defer><\/script><script src="/product-detail-consistency.js?v=3" defer><\/script><script src="/social-links-fix.js?v=7" defer><\/script>';
     h=h.replace('</body>',tail+'</body>');document.open();document.write(h);document.close();
   }catch(e){console.error('VYRDICT product shell',e)}})();
 })();
