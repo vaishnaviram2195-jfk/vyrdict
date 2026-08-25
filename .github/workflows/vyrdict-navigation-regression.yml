@@ -103,6 +103,8 @@ jobs:
             await evidence.click();
             await page.waitForURL(/\/evidence\.html\?slug=/,{timeout:15000});
             await page.locator('#productBack').waitFor({state:'visible',timeout:15000});
+            await page.waitForFunction(()=>!/Loading the evidence/i.test(document.body?.innerText||''),null,{timeout:20000});
+            await page.waitForTimeout(120);
             await visibleState(page,'evidence ready');
             await page.evaluate(()=>window.scrollTo(0,document.body.scrollHeight));
             await page.locator('#productBack').click();
