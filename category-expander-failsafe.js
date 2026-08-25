@@ -1,10 +1,21 @@
 (()=>{
-  if(window.__vyrdictCategoryFailsafeV1)return;
-  window.__vyrdictCategoryFailsafeV1=1;
+  if(window.__vyrdictCategoryFailsafeV2)return;
+  window.__vyrdictCategoryFailsafeV2=1;
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const labels=new Set(['see more categories','show fewer categories','browse more categories','browse more category','browse fewer categories']);
   const isHome=()=>location.pathname==='/'||location.pathname==='';
   let observer=null,timer=0;
+  function installStyle(){
+    if(document.getElementById('vyrdict-category-expander-order-v2'))return;
+    const style=document.createElement('style');
+    style.id='vyrdict-category-expander-order-v2';
+    style.textContent=`
+      body.vyrdict-home-calm .v-home-category-details[open]{display:flex!important;flex-direction:column!important;align-items:flex-start!important;width:100%!important}
+      body.vyrdict-home-calm .v-home-category-details[open]>.v-home-category-extra{order:1!important;width:100%!important;margin-top:0!important;margin-bottom:12px!important}
+      body.vyrdict-home-calm .v-home-category-details[open]>summary{order:2!important;margin:0!important;align-self:flex-start!important}
+    `;
+    (document.head||document.documentElement).appendChild(style);
+  }
   function section(){
     const byId=document.getElementById('categories');if(byId)return byId;
     const h=[...document.querySelectorAll('h1,h2,h3,h4')].find(x=>norm(x.textContent).includes('browse by category'));
@@ -35,6 +46,7 @@
   }
   function fix(){
     if(!isHome())return false;
+    installStyle();
     const sec=section(),container=sec?.querySelector('.categories');if(!sec||!container)return false;
     let details=container.querySelector('.v-home-category-details');
     if(!details)return false;
