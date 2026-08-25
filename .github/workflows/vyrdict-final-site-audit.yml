@@ -1,0 +1,250 @@
+name: VYRDICT Final Site Audit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/vyrdict-final-site-audit.yml'
+      - 'navigation-guard.js'
+      - 'index.html'
+      - 'product-shell.js'
+      - 'product-fast.js'
+      - 'homepage-simplify.js'
+      - 'category-expander-failsafe.js'
+      - 'weekly-ranking-expand.js'
+      - 'market-completeness-fix.js'
+      - 'product-detail-consistency.js'
+      - 'product-card-alignment.js'
+      - 'api/product-seo.js'
+      - 'api/category-seo.js'
+      - 'api/score-discovery.js'
+      - 'vercel.json'
+  workflow_dispatch:
+
+jobs:
+  final-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Wait for current production build
+        run: |
+          for i in $(seq 1 60); do
+            NAV=$(curl -fsSL 'https://vyrdict.com/navigation-guard.js?v=1' || true)
+            HOME=$(curl -fsSL 'https://vyrdict.com/?finalqa=1' || true)
+            if echo "$NAV" | grep -q '__vyrdictNavigationGuardV8' && echo "$HOME" | grep -q 'VYRDICT'; then
+              echo 'Current production build is live'
+              exit 0
+            fi
+            sleep 5
+          done
+          echo 'Current production build did not reach production in time'
+          exit 1
+      - name: Run full production smoke and regression audit
+        shell: bash
+        run: |
+          mkdir -p qa
+          cat > qa/final-audit.js <<'NODE'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const base='https://vyrdict.com';
+          const report={ok:false,checks:[],errors:[]};
+          const save=()=>fs.writeFileSync('qa/final-report.json',JSON.stringify(report,null,2));
+          const pass=(name,data={})=>{report.checks.push({name,ok:true,...data});save()};
+          const assert=(ok,msg)=>{if(!ok)throw new Error(msg)};
+          const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+          const runtimeFatal=s=>/SyntaxError|ReferenceError|TypeError|Invalid regular expression/i.test(String(s||''));
+
+          async function noStuckLoader(page,label,timeout=7000){
+            await page.waitForFunction(()=>{
+              const ids=['vyrdict-route-cover','startup-loader','vyrdict-product-transition'];
+              return ids.every(id=>{
+                const el=document.getElementById(id);if(!el)return true;
+                const cs=getComputedStyle(el);return cs.display==='none'||cs.visibility==='hidden'||Number(cs.opacity)===0;
+              });
+            },null,{timeout});
+            pass(label+' loader cleared');
+          }
+
+          async function bodyState(page){
+            return page.evaluate(()=>({
+              path:location.pathname+location.search,
+              text:(document.body?.innerText||'').slice(0,500),
+              scrollWidth:document.documentElement.scrollWidth,
+              innerWidth,
+              cover:!!document.getElementById('vyrdict-route-cover')
+            }));
+          }
+
+          async function waitProduct(page){
+            await page.locator('.productHero').first().waitFor({state:'visible',timeout:30000});
+            await page.waitForFunction(()=>{
+              const vals=[...document.querySelectorAll('.productHero .ring b')].slice(0,2).map(x=>(x.textContent||'').trim());
+              return vals.length===2&&vals.every(v=>/^\d{1,3}$/.test(v));
+            },null,{timeout:15000});
+            await noStuckLoader(page,'product');
+          }
+
+          async function homeAudit(browser,name,viewport,isMobile){
+            const context=await browser.newContext({viewport,isMobile,hasTouch:isMobile});
+            const page=await context.newPage();
+            const errors=[];
+            page.on('pageerror',e=>errors.push(String(e?.stack||e?.message||e)));
+            page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+
+            let response=await page.goto(base+'/?finalqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+            assert(response&&response.status()<400,`${name}: home HTTP ${response?.status()}`);
+            await page.locator('.hero').first().waitFor({state:'visible',timeout:30000});
+            await page.locator('#categories .categories').first().waitFor({state:'visible',timeout:30000});
+            await noStuckLoader(page,`${name} home`);
+            const home=await bodyState(page);
+            assert(home.scrollWidth<=home.innerWidth+4,`${name}: horizontal overflow ${home.scrollWidth}>${home.innerWidth}`);
+            const homeText=await page.locator('body').innerText();
+            assert(/BROWSE\s+250\+\s+VERIFIED PRODUCTS/i.test(homeText),`${name}: homepage product-count label is not 250+`);
+            assert(!/BROWSE\s+267\+\s+VERIFIED PRODUCTS/i.test(homeText),`${name}: stale 267+ label still visible`);
+            assert(!/Could not load the site/i.test(homeText),`${name}: load error visible`);
+            pass(`${name} homepage`,{path:home.path});
+
+            const details=page.locator('#categories details.v-home-category-details').first();
+            await details.waitFor({state:'visible',timeout:15000});
+            const summary=details.locator(':scope > summary');
+            await summary.click();
+            await page.waitForFunction(()=>document.querySelector('#categories details.v-home-category-details')?.open===true,null,{timeout:10000});
+            const order=await page.evaluate(()=>{
+              const d=document.querySelector('#categories details.v-home-category-details');
+              const s=d?.querySelector(':scope > summary');
+              const extra=d?.querySelector('.v-home-category-extra');
+              const cats=[...(extra?.querySelectorAll('[data-category]')||[])].filter(x=>x.offsetParent!==null);
+              const last=cats[cats.length-1];
+              return {summaryText:(s?.textContent||'').trim(),summaryTop:s?.getBoundingClientRect().top||0,lastBottom:last?.getBoundingClientRect().bottom||0,count:cats.length};
+            });
+            assert(order.count>0,`${name}: expanded categories missing`);
+            assert(/show fewer categories/i.test(order.summaryText),`${name}: collapse label wrong: ${order.summaryText}`);
+            assert(order.summaryTop>=order.lastBottom-2,`${name}: Show fewer is not below expanded categories: ${JSON.stringify(order)}`);
+            pass(`${name} category expander`,order);
+
+            await page.goto(base+'/category/kitchen/?finalqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+            const kitchen=page.locator('.grid .card').first();
+            await kitchen.waitFor({state:'visible',timeout:30000});
+            await noStuckLoader(page,`${name} kitchen category`);
+            const geometry=await kitchen.evaluate(card=>{
+              const pic=card.querySelector('.pic'),title=card.querySelector('.body h2'),img=pic?.querySelector('img');
+              const pr=pic?.getBoundingClientRect(),tr=title?.getBoundingClientRect(),ir=img?.getBoundingClientRect();
+              return {title:(title?.textContent||'').trim(),picHeight:pr?.height||0,imageHeight:ir?.height||0,picBottom:pr?.bottom||0,titleTop:tr?.top||0,titleHeight:tr?.height||0};
+            });
+            assert(geometry.picHeight>0&&geometry.picHeight<=180,`${name}: Kitchen image zone too tall: ${geometry.picHeight}`);
+            assert(geometry.imageHeight<=150,`${name}: Kitchen image too tall: ${geometry.imageHeight}`);
+            assert(geometry.titleTop>=geometry.picBottom-2,`${name}: Kitchen title overlaps image: ${JSON.stringify(geometry)}`);
+            assert(geometry.titleHeight<95,`${name}: Kitchen title block too tall: ${geometry.titleHeight}`);
+            pass(`${name} kitchen card layout`,geometry);
+
+            await kitchen.locator('.open').first().click();
+            await page.waitForURL(/\/product\//,{timeout:20000});
+            await waitProduct(page);
+            let productText=await page.locator('body').innerText();
+            assert(/VIRAL SCORE/i.test(productText)&&/WORTH SCORE/i.test(productText),`${name}: scores missing`);
+            assert(/WHERE TO BUY/i.test(productText),`${name}: where-to-buy missing`);
+            assert(!!await page.locator('.story').count(),`${name}: standard product story layout missing`);
+            pass(`${name} kitchen product destination`,{url:page.url()});
+
+            await page.goBack({waitUntil:'domcontentloaded',timeout:30000});
+            await page.locator('.grid .card').first().waitFor({state:'visible',timeout:30000});
+            await noStuckLoader(page,`${name} browser back`);
+            const backState=await bodyState(page);
+            assert(/^\/category\/kitchen\//.test(backState.path),`${name}: browser back returned to wrong page: ${backState.path}`);
+            pass(`${name} browser back`,{path:backState.path});
+
+            assert(!errors.some(runtimeFatal),`${name}: runtime JS error: ${errors.filter(runtimeFatal).join(' | ')}`);
+            await page.screenshot({path:`qa/${name}-home-kitchen.png`,fullPage:true});
+            await context.close();
+          }
+
+          async function trtlMarketAudit(browser){
+            const context=await browser.newContext({viewport:{width:1280,height:900}});
+            const page=await context.newPage();
+            const errors=[];page.on('pageerror',e=>errors.push(String(e?.stack||e?.message||e)));
+            const r=await page.goto(base+'/product/trtl-travel-pillow/?finalqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+            assert(r&&r.status()<400,`Trtl HTTP ${r?.status()}`);
+            await waitProduct(page);
+            const initial=await page.locator('.productHero .ring b').evaluateAll(xs=>xs.slice(0,2).map(x=>(x.textContent||'').trim()));
+            assert(initial[0]==='98',`Trtl Viral expected 98, got ${initial[0]}`);
+            assert(initial[1]==='88',`Trtl Worth expected 88, got ${initial[1]}`);
+            await page.locator('.geo-choice[data-geo="CA"]').waitFor({state:'visible',timeout:15000});
+            for(const market of ['CA','US']){
+              await page.locator(`.geo-choice[data-geo="${market}"]`).click();
+              await sleep(500);
+              const vals=await page.locator('.productHero .ring b').evaluateAll(xs=>xs.slice(0,2).map(x=>(x.textContent||'').trim()));
+              assert(vals.every(v=>/^\d{1,3}$/.test(v)),`Trtl ${market}: score missing ${JSON.stringify(vals)}`);
+              const block=await page.locator('#where-to-buy').innerText();
+              assert(!/Worth Score pending|Market verification in progress/i.test(block),`Trtl ${market}: pending market state still visible`);
+              const visibleLinks=page.locator('#where-to-buy a.retailer:visible');
+              assert(await visibleLinks.count()>0,`Trtl ${market}: no visible exact-product retailer`);
+              const href=await visibleLinks.first().getAttribute('href');
+              assert(/^https?:\/\//i.test(href||''),`Trtl ${market}: invalid retailer href ${href}`);
+              pass(`Trtl ${market} score and retailer`,{scores:vals,href});
+            }
+            assert(!errors.some(runtimeFatal),'Trtl runtime error: '+errors.filter(runtimeFatal).join(' | '));
+            await page.screenshot({path:'qa/trtl-market.png',fullPage:true});await context.close();
+          }
+
+          async function routeAudit(browser){
+            const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+            const page=await context.newPage();
+            const errors=[];page.on('pageerror',e=>errors.push(String(e?.stack||e?.message||e)));
+
+            let r=await page.goto(base+'/score-discovery?slug=seeq-clear-protein&market=US&finalqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+            assert(r&&r.status()<400,`Score Discovery HTTP ${r?.status()}`);
+            const ct=r.headers()['content-type']||'';assert(/text\/html/i.test(ct),'Score Discovery not served as HTML: '+ct);
+            await page.locator('#app').waitFor({state:'visible',timeout:30000});
+            await page.waitForFunction(()=>/Score Discovery/i.test(document.body?.innerText||''),null,{timeout:30000});
+            const raw=(await page.locator('body').innerText()).trim();
+            assert(!/^<!?doctype|^<html/i.test(raw),'Score Discovery is raw HTML text');
+            pass('Score Discovery HTML route',{contentType:ct});
+
+            r=await page.goto(base+'/search?q=Original%20Lip%20Kit&finalqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+            assert(r&&r.status()<400,`Search HTTP ${r?.status()}`);await page.locator('.grid,.card,article').first().waitFor({state:'visible',timeout:30000});
+            const lip=page.locator('[data-product="kylie-cosmetics-original-lip-kit"]').first();await lip.waitFor({state:'visible',timeout:30000});await lip.click();
+            await page.waitForURL(u=>u.pathname==='/product/kylie-cosmetics-original-lip-kit/',{timeout:20000});await waitProduct(page);
+            const heading=(await page.locator('.productHero h1').first().textContent()||'').trim();
+            assert(/Original Lip Kit/i.test(heading)&&!/Eclaire/i.test(heading),'Original Lip Kit routed to wrong product: '+heading);
+            pass('Search product routing',{heading});
+
+            await page.goto(base+'/?cloneqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await page.locator('[data-product]').first().waitFor({state:'visible',timeout:30000});
+            await page.evaluate(()=>{const card=document.createElement('article');card.className='vyrdict-weekly-extra-v8';card.dataset.slug='kylie-cosmetics-original-lip-kit';card.style.cssText='position:fixed;left:8px;top:120px;z-index:9999;background:white;padding:20px';card.innerHTML='<h3>Original Lip Kit</h3><button id="qa-stale-clone" data-product="lattafa-eclaire">SEE VYRDICT</button>';document.body.appendChild(card)});
+            await page.locator('#qa-stale-clone').click();await page.waitForURL(u=>u.pathname==='/product/kylie-cosmetics-original-lip-kit/',{timeout:20000});await waitProduct(page);
+            const cloneHeading=(await page.locator('.productHero h1').first().textContent()||'').trim();assert(/Original Lip Kit/i.test(cloneHeading)&&!/Eclaire/i.test(cloneHeading),'Weekly clone routed incorrectly: '+cloneHeading);
+            pass('Weekly ranking clone routing',{heading:cloneHeading});
+
+            for(const path of ['/collection/viral-right-now/','/category/beauty/','/careers/']){
+              const rr=await page.goto(base+path+'?finalqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+              assert(rr&&rr.status()<400,`${path}: HTTP ${rr?.status()}`);
+              assert(!/Could not load the site|Product temporarily unavailable/i.test(await page.locator('body').innerText()),`${path}: visible error state`);
+              pass(`Route ${path}`,{status:rr.status()});
+            }
+            assert(!errors.some(runtimeFatal),'Route audit runtime error: '+errors.filter(runtimeFatal).join(' | '));await context.close();
+          }
+
+          (async()=>{let browser;try{
+            browser=await chromium.launch({headless:true});
+            await homeAudit(browser,'mobile',{width:390,height:844},true);
+            await homeAudit(browser,'desktop',{width:1440,height:1000},false);
+            await trtlMarketAudit(browser);
+            await routeAudit(browser);
+            report.ok=true;save();console.log('FINAL_SITE_AUDIT_PASS');console.log(JSON.stringify(report,null,2));
+          }catch(e){report.ok=false;report.error=String(e?.stack||e);save();console.error(e);process.exitCode=1}finally{await browser?.close()}})();
+          NODE
+          node qa/final-audit.js 2>&1 | tee qa/console.log
+      - name: Upload final audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vyrdict-final-site-audit
+          path: qa/
+          retention-days: 7
