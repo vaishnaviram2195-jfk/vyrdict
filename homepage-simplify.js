@@ -1,17 +1,15 @@
 (()=>{
-  if(window.__vyrdictHomeSimplifyV13)return;
-  window.__vyrdictHomeSimplifyV13=1;
+  if(window.__vyrdictHomeSimplifyV14)return;
+  window.__vyrdictHomeSimplifyV14=1;
 
   const STYLE_ID='vyrdict-home-simplify-style';
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const isHome=()=>location.pathname==='/'||location.pathname==='';
-  let mutationTimer=0;
+  let mutationTimer=0,categoryGuard=null,guarding=false;
 
   function addStyle(){
     if(document.getElementById(STYLE_ID))return;
-    const s=document.createElement('style');
-    s.id=STYLE_ID;
-    s.textContent=`
+    const s=document.createElement('style');s.id=STYLE_ID;s.textContent=`
 body.vyrdict-home-calm .hero{padding-top:34px!important;padding-bottom:34px!important}
 body.vyrdict-home-calm .hero h1{max-width:760px!important;margin-left:auto!important;margin-right:auto!important}
 body.vyrdict-home-calm .hero p{max-width:650px!important;margin-left:auto!important;margin-right:auto!important}
@@ -42,91 +40,28 @@ body.vyrdict-home-calm .v-home-category-details[open]>.v-home-category-extra{dis
 body.vyrdict-home-calm .v-home-category-details[open]>.v-home-category-extra>.category{display:inline-flex!important;visibility:visible!important;opacity:.82!important}
 body.vyrdict-home-calm [data-category]{transition:opacity .15s ease}
 @media(max-width:700px){body.vyrdict-home-calm .hero{padding-top:24px!important;padding-bottom:24px!important}body.vyrdict-home-calm .stage{min-height:300px!important}body.vyrdict-home-calm .stage .p1{width:54%!important;height:48%!important;left:7%!important;top:24%!important}body.vyrdict-home-calm .stage .p2{width:34%!important;height:31%!important;right:4%!important;top:48%!important}body.vyrdict-home-calm .stage .p3{width:29%!important;height:25%!important;right:8%!important;top:10%!important}body.vyrdict-home-calm .stage .sticker.spark{font-size:20px!important}body.vyrdict-home-calm .category{font-size:11px!important;padding:12px 15px!important;letter-spacing:.065em!important}body.vyrdict-home-calm .v-home-category-details>summary{font-size:9px;padding:12px 15px;min-height:40px}body.vyrdict-home-calm .section{padding-top:54px!important;padding-bottom:54px!important}body.vyrdict-home-calm .section .head{margin-bottom:20px!important}body.vyrdict-home-calm .v-home-rail-more{margin-top:17px!important}}
-`;
-    document.head.appendChild(s);
+`;document.head.appendChild(s)
   }
 
-  function sectionByText(text){
-    const wanted=norm(text);
-    const h=[...document.querySelectorAll('h1,h2,h3,h4')].find(x=>norm(x.textContent).includes(wanted));
-    return h?.closest('section')||h?.closest('.section')||null;
-  }
-
+  function sectionByText(text){const wanted=norm(text);const h=[...document.querySelectorAll('h1,h2,h3,h4')].find(x=>norm(x.textContent).includes(wanted));return h?.closest('section')||h?.closest('.section')||null}
   function categorySection(){return document.getElementById('categories')||sectionByText('browse by category')||null}
+  function ensureMore(section,rail,items,limit,label='See all'){if(!section||!rail||items.length<=limit)return;const expanded=section.dataset.vHomeExpanded==='1';items.forEach((el,i)=>{el.hidden=i>=limit&&!expanded});let btn=section.querySelector('.v-home-rail-more');if(!btn){btn=document.createElement('button');btn.type='button';btn.className='v-home-more v-home-rail-more'}btn.onclick=()=>{const live=[...rail.children].filter(el=>!el.matches('script,style,.v-home-more,.vyrdict-featured-cta'));const on=section.dataset.vHomeExpanded!=='1';section.dataset.vHomeExpanded=on?'1':'0';live.forEach((el,i)=>{el.hidden=i>=limit&&!on});btn.textContent=on?'Show less':label};if(btn.previousElementSibling!==rail)rail.insertAdjacentElement('afterend',btn);btn.textContent=expanded?'Show less':label}
+  function limitRail(section,limit=6,label='See all'){if(!section)return;const rail=section.querySelector('.rail,[data-rail]');if(!rail)return;const items=[...rail.children].filter(el=>!el.matches('script,style,.v-home-more,.vyrdict-featured-cta'));ensureMore(section,rail,items,limit,label)}
 
-  function ensureMore(section,rail,items,limit,label='See all'){
-    if(!section||!rail||items.length<=limit)return;
-    const expanded=section.dataset.vHomeExpanded==='1';
-    items.forEach((el,i)=>{el.hidden=i>=limit&&!expanded});
-    let btn=section.querySelector('.v-home-rail-more');
-    if(!btn){btn=document.createElement('button');btn.type='button';btn.className='v-home-more v-home-rail-more'}
-    btn.onclick=()=>{const live=[...rail.children].filter(el=>!el.matches('script,style,.v-home-more,.vyrdict-featured-cta'));const on=section.dataset.vHomeExpanded!=='1';section.dataset.vHomeExpanded=on?'1':'0';live.forEach((el,i)=>{el.hidden=i>=limit&&!on});btn.textContent=on?'Show less':label};
-    if(btn.previousElementSibling!==rail)rail.insertAdjacentElement('afterend',btn);
-    btn.textContent=expanded?'Show less':label;
-  }
+  function categoryNames(container){try{if(typeof S!=='undefined'&&Array.isArray(S.p)&&S.p.length)return [...new Set(S.p.map(p=>String(p?.category||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b))}catch{}return [...new Set([...container.querySelectorAll('[data-category]')].map(el=>String(el.dataset.category||'').trim()).filter(c=>c&&!['see more categories','show fewer categories','browse more categories','browse more category'].includes(norm(c))))].sort((a,b)=>a.localeCompare(b))}
+  function categoryIcon(c){try{if(typeof E!=='undefined'&&E&&E[c])return E[c]}catch{}return({Books:'📚',Kitchen:'🍳'}[c]||'✨')}
+  function categoryButton(c){const b=document.createElement('button');b.type='button';b.className='category';b.dataset.category=c;b.hidden=false;b.textContent=`${categoryIcon(c)} ${c}`;return b}
+  function isLegacyText(t){t=norm(t);return t==='see more categories'||t==='show fewer categories'||t==='browse more categories'||t==='browse more category'||t==='browse fewer categories'}
+  function purgeLegacyControls(section,container){section.querySelectorAll('.v-home-category-more').forEach(el=>el.remove());[...section.querySelectorAll('button,summary,details')].forEach(el=>{if(container.contains(el)){if(el.matches('.v-home-category-details')||el.closest('.v-home-category-details'))return;if(isLegacyText(el.textContent)){const d=el.closest('details');(d||el).remove()}return}if(isLegacyText(el.textContent)){const d=el.closest('details');(d||el).remove()}})}
+  function enforceCategoryState(section,container){if(guarding)return;guarding=true;try{purgeLegacyControls(section,container);const details=container.querySelector('.v-home-category-details');if(details?.open){const extra=details.querySelector('.v-home-category-extra');if(extra){extra.hidden=false;extra.removeAttribute('hidden');extra.style.setProperty('display','flex','important');extra.style.setProperty('visibility','visible','important');extra.querySelectorAll('[data-category]').forEach(b=>{b.hidden=false;b.removeAttribute('hidden');b.style.setProperty('display','inline-flex','important');b.style.setProperty('visibility','visible','important')})}}}finally{guarding=false}}
+  function installCategoryGuard(section,container){if(categoryGuard?.target===section)return;categoryGuard?.observer?.disconnect();const observer=new MutationObserver(()=>enforceCategoryState(section,container));observer.observe(section,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class','style','open']});categoryGuard={target:section,observer};enforceCategoryState(section,container)}
 
-  function limitRail(section,limit=6,label='See all'){
-    if(!section)return;const rail=section.querySelector('.rail,[data-rail]');if(!rail)return;const items=[...rail.children].filter(el=>!el.matches('script,style,.v-home-more,.vyrdict-featured-cta'));ensureMore(section,rail,items,limit,label)
-  }
-
-  function categoryNames(container){
-    try{
-      if(typeof S!=='undefined'&&Array.isArray(S.p)&&S.p.length){
-        return [...new Set(S.p.map(p=>String(p?.category||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-      }
-    }catch{}
-    return [...new Set([...container.querySelectorAll('[data-category]')].map(el=>String(el.dataset.category||'').trim()).filter(c=>c&&!['see more categories','show fewer categories','browse more categories','browse more category'].includes(norm(c))))].sort((a,b)=>a.localeCompare(b));
-  }
-
-  function categoryIcon(c){
-    try{if(typeof E!=='undefined'&&E&&E[c])return E[c]}catch{}
-    const fallback={Books:'📚',Kitchen:'🍳'};
-    return fallback[c]||'✨';
-  }
-
-  function categoryButton(c){
-    const b=document.createElement('button');
-    b.type='button';b.className='category';b.dataset.category=c;b.hidden=false;b.removeAttribute('hidden');b.style.removeProperty('display');b.style.removeProperty('visibility');b.textContent=`${categoryIcon(c)} ${c}`;return b;
-  }
-
-  function purgeLegacyControls(section,container){
-    section.querySelectorAll('.v-home-category-more').forEach(el=>el.remove());
-    [...section.querySelectorAll('button,summary,details')].forEach(el=>{
-      if(container.contains(el))return;
-      const t=norm(el.textContent);
-      if(t==='see more categories'||t==='show fewer categories'||t==='browse more categories'||t==='browse more category'){
-        const d=el.closest('details');(d||el).remove();
-      }
-    });
-  }
-
-  function rebuildCategories(){
-    const section=categorySection();if(!section)return false;
-    const container=section.querySelector('.categories');if(!container)return false;
-    section.classList.add('v-home-categories');purgeLegacyControls(section,container);
-    const cats=categoryNames(container);if(!cats.length)return false;
-    const wasOpen=container.querySelector('.v-home-category-details')?.open===true;
-    container.replaceChildren();cats.slice(0,6).forEach(c=>container.appendChild(categoryButton(c)));
-    if(cats.length>6){
-      const details=document.createElement('details');details.className='v-home-category-details';details.open=wasOpen;
-      const summary=document.createElement('summary'),extra=document.createElement('div');extra.className='v-home-category-extra';
-      cats.slice(6).forEach(c=>extra.appendChild(categoryButton(c)));
-      const sync=()=>{
-        summary.textContent=details.open?'Show fewer categories':'See more categories';
-        extra.hidden=false;extra.removeAttribute('hidden');
-        if(details.open){extra.style.setProperty('display','flex','important');extra.style.setProperty('visibility','visible','important');extra.querySelectorAll('[data-category]').forEach(b=>{b.hidden=false;b.removeAttribute('hidden');b.style.setProperty('display','inline-flex','important');b.style.setProperty('visibility','visible','important')})}
-        else{extra.style.removeProperty('display');extra.style.removeProperty('visibility');extra.querySelectorAll('[data-category]').forEach(b=>{b.style.removeProperty('display');b.style.removeProperty('visibility')})}
-      };
-      details.append(summary,extra);details.addEventListener('toggle',()=>requestAnimationFrame(sync));sync();container.appendChild(details);
-    }
-    purgeLegacyControls(section,container);return true;
-  }
+  function rebuildCategories(){const section=categorySection();if(!section)return false;const container=section.querySelector('.categories');if(!container)return false;section.classList.add('v-home-categories');purgeLegacyControls(section,container);const cats=categoryNames(container);if(!cats.length)return false;const wasOpen=container.querySelector('.v-home-category-details')?.open===true;container.replaceChildren();cats.slice(0,6).forEach(c=>container.appendChild(categoryButton(c)));if(cats.length>6){const details=document.createElement('details');details.className='v-home-category-details';details.open=wasOpen;const summary=document.createElement('summary'),extra=document.createElement('div');extra.className='v-home-category-extra';cats.slice(6).forEach(c=>extra.appendChild(categoryButton(c)));const sync=()=>{summary.textContent=details.open?'Show fewer categories':'See more categories';if(details.open)enforceCategoryState(section,container)};details.append(summary,extra);details.addEventListener('toggle',()=>requestAnimationFrame(sync));sync();container.appendChild(details)}purgeLegacyControls(section,container);installCategoryGuard(section,container);return true}
 
   function simplifySections(){limitRail(document.getElementById('viral')||sectionByText("what's trending now"),6,'See all trending');limitRail(sectionByText('seen on screen'),4,'See all seen on screen');const culture=document.getElementById('culture')||sectionByText('you saw it then everyone bought it');if(culture&&!norm(culture.textContent).includes('seen on screen'))limitRail(culture,6,'See all')}
   function revealFast(){const app=document.getElementById('app');if(app?.innerHTML?.trim())document.documentElement.classList.add('vyrdict-ready')}
-  function apply(){addStyle();const home=isHome();document.body?.classList.toggle('vyrdict-home-calm',home);if(!home){revealFast();return true}if(!document.querySelector('.hero,.stage'))return false;rebuildCategories();simplifySections();revealFast();return true}
+  function apply(){addStyle();const home=isHome();document.body?.classList.toggle('vyrdict-home-calm',home);if(!home){categoryGuard?.observer?.disconnect();categoryGuard=null;revealFast();return true}if(!document.querySelector('.hero,.stage'))return false;rebuildCategories();simplifySections();revealFast();return true}
   function boot(attempt=0){if(apply()||attempt>=18)return;setTimeout(()=>boot(attempt+1),70)}
-
   const observer=new MutationObserver(()=>{if(!isHome())return;clearTimeout(mutationTimer);mutationTimer=setTimeout(()=>{rebuildCategories();revealFast()},80)});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{boot();observer.observe(document.getElementById('app')||document.body,{childList:true,subtree:false})},{once:true});else{boot();const target=document.getElementById('app')||document.body;if(target)observer.observe(target,{childList:true,subtree:false})}
   addEventListener('popstate',()=>setTimeout(()=>boot(),20));addEventListener('hashchange',()=>setTimeout(()=>boot(),20));
