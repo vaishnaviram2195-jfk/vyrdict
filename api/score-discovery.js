@@ -10,7 +10,7 @@ module.exports=async function handler(req,res){
       res.setHeader('Cache-Control','no-store');
       return res.status(400).send('<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>VYRDICT</title><p>Product unavailable.</p>');
     }
-    const upstream=await fetch(`${UPSTREAM}?slug=${encodeURIComponent(slug)}&market=${market}`,{headers:{accept:'text/html'},cache:'no-store'});
+    const upstream=await fetch(`${UPSTREAM}?slug=${encodeURIComponent(slug)}&market=${market}`,{headers:{accept:'text/html','x-vyrdict-proxy':'1'},cache:'no-store'});
     let html=await upstream.text();
     if(!upstream.ok)throw new Error(`score discovery ${upstream.status}`);
     html=html
