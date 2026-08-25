@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictNavigationGuardV5)return;
-  window.__vyrdictNavigationGuardV5=1;
+  if(window.__vyrdictNavigationGuardV6)return;
+  window.__vyrdictNavigationGuardV6=1;
 
   const COVER_ID='vyrdict-route-cover';
   const SCORE_ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-seo-product-data';
@@ -127,6 +127,12 @@
   function destination(target){
     if(!target)return null;
     if(target.closest?.('input,textarea,select,option'))return null;
+
+    // Weekly ranking cards are cloned from a visible template. The clone's
+    // current data-slug is authoritative; never trust a stale data-product
+    // value copied from the template button underneath it.
+    const weeklyCard=target.closest?.('.vyrdict-weekly-extra-v8[data-slug],.vyrdict-weekly-extra-v7[data-slug],.vyrdict-weekly-extra-v6[data-slug],.vyrdict-weekly-extra-v5[data-slug],.vyrdict-weekly-extra-v4[data-slug]');
+    if(weeklyCard?.dataset?.slug)return '/product/'+encodeURIComponent(weeklyCard.dataset.slug)+'/';
 
     const product=target.closest?.('[data-product]');
     if(product?.dataset?.product)return '/product/'+encodeURIComponent(product.dataset.product)+'/';
