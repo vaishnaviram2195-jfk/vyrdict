@@ -1,11 +1,12 @@
 (()=>{
-  if(window.__vyrdictProductShellV5)return;
-  window.__vyrdictProductShellV5=1;
+  if(window.__vyrdictProductShellV6)return;
+  window.__vyrdictProductShellV6=1;
   const match=decodeURIComponent(location.pathname).match(/^\/product\/([^/]+)\/?$/i);if(!match)return;
   const slug=match[1],clean='/product/'+encodeURIComponent(slug)+'/';
   const BUNDLE='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-bundle-fast?v=6';
   const CACHE_KEY='vyrdict:bundle-cache:v6';
-  const seo={title:document.title,description:document.querySelector('meta[name="description"]')?.content||'',canonical:document.querySelector('link[rel="canonical"]')?.href||('https://vyrdict.com'+clean),ogTitle:document.querySelector('meta[property="og:title"]')?.content||document.title,ogDescription:document.querySelector('meta[property="og:description"]')?.content||'',ogImage:document.querySelector('meta[property="og:image"]')?.content||'https://vyrdict.com/vyrdict-social-preview.jpg'};
+  const schema=document.querySelector('script[type="application/ld+json"]')?.textContent||'';
+  const seo={title:document.title,description:document.querySelector('meta[name="description"]')?.content||'',canonical:document.querySelector('link[rel="canonical"]')?.href||('https://vyrdict.com'+clean),ogTitle:document.querySelector('meta[property="og:title"]')?.content||document.title,ogDescription:document.querySelector('meta[property="og:description"]')?.content||'',ogImage:document.querySelector('meta[property="og:image"]')?.content||'https://vyrdict.com/vyrdict-social-preview.jpg',schema};
   const attr=s=>String(s||'').replace(/[&"<>]/g,c=>({'&':'&amp;','"':'&quot;','<':'&lt;','>':'&gt;'}[c]));
   const save=d=>{try{if(d?.html)localStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),html:d.html}))}catch{}};
   async function bundle(){
@@ -26,7 +27,8 @@
   }
   (async()=>{try{
     const d=await bundle();if(!d?.html)throw new Error('html');let h=patchApp(d.html);
-    const tags='<base href="/"><title>'+attr(seo.title)+'</title><meta name="description" content="'+attr(seo.description)+'"><meta name="robots" content="index,follow,max-image-preview:large"><link rel="canonical" href="'+attr(seo.canonical)+'"><meta property="og:site_name" content="VYRDICT"><meta property="og:type" content="product"><meta property="og:url" content="'+attr(seo.canonical)+'"><meta property="og:title" content="'+attr(seo.ogTitle)+'"><meta property="og:description" content="'+attr(seo.ogDescription)+'"><meta property="og:image" content="'+attr(seo.ogImage)+'"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="'+attr(seo.ogTitle)+'"><meta name="twitter:description" content="'+attr(seo.ogDescription)+'"><meta name="twitter:image" content="'+attr(seo.ogImage)+'">';
+    const schemaTag=seo.schema?'<script type="application/ld+json">'+seo.schema.replace(/<\/script/gi,'<\\/script')+'<\/script>':'';
+    const tags='<base href="/"><title>'+attr(seo.title)+'</title><meta name="description" content="'+attr(seo.description)+'"><meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"><link rel="canonical" href="'+attr(seo.canonical)+'"><meta property="og:site_name" content="VYRDICT"><meta property="og:type" content="product"><meta property="og:url" content="'+attr(seo.canonical)+'"><meta property="og:title" content="'+attr(seo.ogTitle)+'"><meta property="og:description" content="'+attr(seo.ogDescription)+'"><meta property="og:image" content="'+attr(seo.ogImage)+'"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="'+attr(seo.ogTitle)+'"><meta name="twitter:description" content="'+attr(seo.ogDescription)+'"><meta name="twitter:image" content="'+attr(seo.ogImage)+'">'+schemaTag;
     h=h.replace(/<title[\s\S]*?<\/title>/i,'').replace(/<meta[^>]+name=["']description["'][^>]*>/i,'').replace(/<link[^>]+rel=["']canonical["'][^>]*>/i,'');h=h.replace('<head>','<head>'+tags);
     const tail='<script src="/product-fast.js?v=2" defer><\/script><script src="/analytics.js?v=perf-3" defer><\/script><script src="/product-detail-consistency.js?v=3" defer><\/script><script src="/social-links-fix.js?v=7" defer><\/script>';
     h=h.replace('</body>',tail+'</body>');document.open();document.write(h);document.close();
