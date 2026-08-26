@@ -4,8 +4,20 @@
 
   const STORE_PREFIX='vyrdict:return-context:v1:';
   const MAX_AGE=2*60*60*1000;
+  const COVER_ID='vyrdict-route-cover';
   const onProduct=()=>/^\/product\//i.test(location.pathname||'');
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
+
+  function showCover(){
+    if(document.getElementById(COVER_ID))return;
+    const cover=document.createElement('div');
+    cover.id=COVER_ID;
+    cover.setAttribute('role','status');
+    cover.setAttribute('aria-live','polite');
+    cover.innerHTML='<div style="width:min(420px,calc(100% - 40px));background:#fffdf8;border:1px solid #d8cec4;border-radius:24px;padding:28px;text-align:center;box-shadow:0 18px 55px rgba(58,43,32,.08)"><div style="font:950 27px/1 Arial,Helvetica,sans-serif;letter-spacing:-1.6px;display:inline-flex;align-items:flex-end">VYRDICT<span style="width:7px;height:7px;background:#e65f72;display:inline-block;margin:0 0 2px 2px"></span></div><div style="margin-top:14px;font:800 10px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#6d675f">Loading the verdict…</div></div>';
+    Object.assign(cover.style,{position:'fixed',inset:'0',zIndex:'2147483647',background:'#f4ede5',display:'grid',placeItems:'center',fontFamily:'Arial,Helvetica,sans-serif'});
+    (document.body||document.documentElement).appendChild(cover);
+  }
 
   function internalPath(raw){
     if(!raw)return null;
@@ -139,6 +151,7 @@
     const y=Number(state.vyrdictReturnY);
     const savedSection=state.vyrdictReturnSection;
     if(!Number.isFinite(y)&&!savedSection)return;
+    document.getElementById(COVER_ID)?.remove();
     const serial=++restoreSerial;
     const delays=[0,70,180,420,850];
     delays.forEach((delay,index)=>setTimeout(()=>{
@@ -173,6 +186,7 @@
       const marked=history.state?.vyrdictProductFrom;
       if(ctx&&marked&&String(marked).split('#')[0]===String(ctx.from).split('#')[0]&&history.length>1){
         e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+        showCover();
         history.back();
       }
       return;
@@ -182,6 +196,7 @@
     if(!dest)return;
     saveOrigin(target,dest);
     e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    showCover();
     location.assign(dest);
   },true);
 
