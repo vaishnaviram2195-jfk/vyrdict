@@ -4,6 +4,9 @@
 
   const COVER_ID='vyrdict-route-cover';
   const SCORE_ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-seo-product-data';
+  const RETURN_PREFIX='vyrdict:return-context:v1:';
+  const LAST_NAV_KEY='vyrdict:last-product-nav:v1';
+  const RETURN_MAX_AGE=30*60*1000;
   const onProduct=()=>/^\/product\//i.test(location.pathname);
   const onCategory=()=>/^\/category\//i.test(location.pathname);
   let coverTimer=0;
@@ -155,7 +158,23 @@
     }catch{return null}
   }
 
+  function savedProductReturn(){
+    if(!onProduct())return null;
+    const current=(location.pathname+location.search).split('#')[0];
+    try{
+      const ctx=JSON.parse(sessionStorage.getItem(RETURN_PREFIX+current)||'null');
+      const nav=JSON.parse(sessionStorage.getItem(LAST_NAV_KEY)||'null');
+      if(!ctx?.from||!nav?.from||!nav?.dest)return null;
+      if(Date.now()-Number(nav.ts||0)>RETURN_MAX_AGE)return null;
+      if(String(nav.dest).split('#')[0]!==current)return null;
+      if(String(nav.from).split('#')[0]!==String(ctx.from).split('#')[0])return null;
+      return normalizePath(ctx.from);
+    }catch{return null}
+  }
+
   function previousInternal(){
+    const saved=onProduct()?savedProductReturn():null;
+    if(saved)return saved;
     if(onProduct())return '/';
     const here=location.pathname+location.search+location.hash;
     const stateFrom=normalizePath(history.state?.from);
@@ -163,6 +182,23 @@
     const ref=normalizePath(document.referrer);
     if(ref&&ref!==here)return ref;
     return '/';
+  }
+
+  function isBackTarget(target){
+    if(!target)return false;
+    if(target.closest?.('[data-back]'))return true;
+    const a=target.closest?.('a[href]');
+    return !!a&&/history\.back\s*\(/i.test(a.getAttribute('onclick')||'');
+  }
+
+  function contextualHistoryBack(e){
+    if(!onProduct()||!savedProductReturn()||history.length<=1)return false;
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+    e?.stopImmediatePropagation?.();
+    showCover();
+    history.back();
+    return true;
   }
 
   function destination(target){
@@ -181,7 +217,7 @@
     const collection=target.closest?.('[data-collection]');
     if(collection?.dataset?.collection)return '/collection/'+encodeURIComponent(collection.dataset.collection)+'/';
 
-    if(target.closest?.('[data-back]'))return onProduct()?'/':previousInternal();
+    if(target.closest?.('[data-back]'))return previousInternal();
 
     if(target.closest?.('[data-search]')){
       const q=document.getElementById('q')?.value?.trim();
@@ -195,7 +231,7 @@
     if(!a||a.target==='_blank'||a.hasAttribute('download'))return null;
     const raw=a.getAttribute('href')||'';
     if(!raw||/^(mailto:|tel:|javascript:)/i.test(raw)||raw.startsWith('#'))return null;
-    if(/history\.back\s*\(/i.test(a.getAttribute('onclick')||''))return onProduct()?'/':previousInternal();
+    if(/history\.back\s*\(/i.test(a.getAttribute('onclick')||''))return previousInternal();
     const dest=normalizePath(a.href);
     if(!dest)return null;
     const here=location.pathname+location.search+location.hash;
@@ -223,6 +259,7 @@
 
   document.addEventListener('click',e=>{
     if(e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+    if(isBackTarget(e.target)&&contextualHistoryBack(e))return;
     ownNavigation(e,destination(e.target));
   },true);
 
@@ -242,7 +279,10 @@
         installed=true;
       }
       if(typeof window.smartBack==='function'&&!window.smartBack.__vyrdictCanonical){
-        const stableBack=function(){go(onProduct()?'/':previousInternal())};
+        const stableBack=function(){
+          if(onProduct()&&savedProductReturn()&&history.length>1){showCover();history.back();return}
+          go(previousInternal());
+        };
         stableBack.__vyrdictCanonical=1;
         window.smartBack=stableBack;
         installed=true;
