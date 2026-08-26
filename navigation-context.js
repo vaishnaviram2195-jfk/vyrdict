@@ -3,7 +3,9 @@
   window.__vyrdictNavigationContextV1=1;
 
   const STORE_PREFIX='vyrdict:return-context:v1:';
+  const LAST_NAV_KEY='vyrdict:last-product-nav:v1';
   const MAX_AGE=2*60*60*1000;
+  const LAST_NAV_AGE=30*60*1000;
   const COVER_ID='vyrdict-route-cover';
   const onProduct=()=>/^\/product\//i.test(location.pathname||'');
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
@@ -86,7 +88,10 @@
         vyrdictReturnUi:ui
       },'',location.href);
     }catch{}
-    try{sessionStorage.setItem(STORE_PREFIX+dest.split('#')[0],JSON.stringify(ctx))}catch{}
+    try{
+      sessionStorage.setItem(STORE_PREFIX+dest.split('#')[0],JSON.stringify(ctx));
+      sessionStorage.setItem(LAST_NAV_KEY,JSON.stringify({from,dest:dest.split('#')[0],ts:ctx.ts}));
+    }catch{}
     return ctx;
   }
 
@@ -99,13 +104,29 @@
     }catch{return null}
   }
 
+  function lastProductNavigation(){
+    try{
+      const nav=JSON.parse(sessionStorage.getItem(LAST_NAV_KEY)||'null');
+      if(!nav||!nav.from||!nav.dest||Date.now()-Number(nav.ts||0)>LAST_NAV_AGE)return null;
+      return nav;
+    }catch{return null}
+  }
+
+  function cameFromSavedNavigation(ctx){
+    if(!ctx)return false;
+    const current=(location.pathname+location.search).split('#')[0];
+    const nav=lastProductNavigation();
+    if(nav&&String(nav.dest).split('#')[0]===current&&String(nav.from).split('#')[0]===String(ctx.from).split('#')[0])return true;
+    const marked=history.state?.vyrdictProductFrom;
+    if(marked&&String(marked).split('#')[0]===String(ctx.from).split('#')[0])return true;
+    const ref=internalPath(document.referrer);
+    return !!ref&&ref.split('#')[0]===String(ctx.from).split('#')[0];
+  }
+
   function markProductEntry(){
     if(!onProduct())return;
     const ctx=currentProductContext();
-    if(!ctx)return;
-    const ref=internalPath(document.referrer);
-    const expected=String(ctx.from||'').split('#')[0];
-    if(!ref||ref.split('#')[0]!==expected)return;
+    if(!ctx||!cameFromSavedNavigation(ctx))return;
     try{history.replaceState({...(history.state||{}),vyrdictProductFrom:ctx.from,vyrdictProductReturnTs:ctx.ts},'',location.href)}catch{}
   }
 
@@ -183,8 +204,7 @@
 
     if(isProductBack(target)){
       const ctx=currentProductContext();
-      const marked=history.state?.vyrdictProductFrom;
-      if(ctx&&marked&&String(marked).split('#')[0]===String(ctx.from).split('#')[0]&&history.length>1){
+      if(ctx&&cameFromSavedNavigation(ctx)&&history.length>1){
         e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
         showCover();
         history.back();
