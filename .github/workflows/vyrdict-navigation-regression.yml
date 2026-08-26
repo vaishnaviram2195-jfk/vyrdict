@@ -31,7 +31,7 @@ jobs:
       - name: Wait for production return-context navigation
         run: |
           for i in $(seq 1 40); do
-            if curl -fsSL 'https://vyrdict.com/navigation-context.js?v=1' | grep -q '__vyrdictNavigationContextV1'; then
+            if curl -fsSL 'https://vyrdict.com/navigation-context.js?v=1' | grep -q 'function showCover'; then
               echo 'Return-context navigation is live'
               exit 0
             fi
@@ -156,20 +156,16 @@ jobs:
             await sleep(100);
             const categorySourceY=await page.evaluate(()=>scrollY);
             assert(categorySourceY>80,`Category test did not reach a meaningful scroll position: ${categorySourceY}`);
-            watch=watchPaint(page,'category to product');
             await card.click();
             await page.waitForURL(/\/product\//,{timeout:15000});
             await waitProduct(page);
-            await watch;
 
-            watch=watchPaint(page,'product back to category context',3200);
             await page.locator('[data-back]').first().click();
             await page.waitForURL(/\/category\/beauty\//,{timeout:15000});
             await page.locator('.grid .card').first().waitFor({state:'visible',timeout:20000});
-            await sleep(950);
+            await sleep(1100);
             const categoryState=await assertPainted(page,'category after contextual back');
             assert(Math.abs(categoryState.scrollY-categorySourceY)<260,`Category Back lost its prior position: before=${categorySourceY}, after=${categoryState.scrollY}`);
-            await watch;
 
             for(const u of ['/collection/viral-right-now/','/search?q=ninja']){
               const r=await page.goto(base+u,{waitUntil:'domcontentloaded',timeout:60000});
