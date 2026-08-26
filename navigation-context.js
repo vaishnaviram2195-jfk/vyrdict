@@ -1,0 +1,193 @@
+(()=>{
+  if(window.__vyrdictNavigationContextV1)return;
+  window.__vyrdictNavigationContextV1=1;
+
+  const STORE_PREFIX='vyrdict:return-context:v1:';
+  const MAX_AGE=2*60*60*1000;
+  const onProduct=()=>/^\/product\//i.test(location.pathname||'');
+  const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
+
+  function internalPath(raw){
+    if(!raw)return null;
+    try{
+      const u=new URL(raw,location.href);
+      if(u.origin!==location.origin)return null;
+      return u.pathname+u.search+u.hash;
+    }catch{return null}
+  }
+
+  function productPathFromTarget(target){
+    if(!target||onProduct())return null;
+    const weekly=target.closest?.('[data-slug]');
+    const weeklySlug=weekly?.dataset?.slug;
+    if(weeklySlug&&weekly.closest?.('.vyrdict-weekly-section-v8,.vyrdict-weekly-section-v7,.vyrdict-weekly-section-v6,.vyrdict-weekly-section-v5')){
+      return '/product/'+encodeURIComponent(weeklySlug)+'/';
+    }
+    const product=target.closest?.('[data-product]');
+    if(product?.dataset?.product)return '/product/'+encodeURIComponent(product.dataset.product)+'/';
+    const a=target.closest?.('a[href]');
+    if(!a||a.target==='_blank'||a.hasAttribute('download'))return null;
+    const p=internalPath(a.href);
+    return /^\/product\/[^/?#]+\/?(?:[?#].*)?$/i.test(p||'')?p:null;
+  }
+
+  function sectionContext(target){
+    const sec=target?.closest?.('section,.section,[data-section]')||null;
+    const heading=sec?.querySelector?.('h1,h2,h3,h4,[role="heading"]')||null;
+    return {
+      id:sec?.id||'',
+      label:norm(heading?.textContent||''),
+      top:sec?Math.round(scrollY+sec.getBoundingClientRect().top):Math.round(scrollY)
+    };
+  }
+
+  function railContext(target){
+    let el=target instanceof Element?target:null;
+    while(el&&el!==document.body){
+      if(el.scrollWidth>el.clientWidth+24){
+        const cls=[...el.classList].find(c=>/rail|row|weekly|carousel|scroll/i.test(c))||'';
+        if(cls)return {className:cls,left:Math.round(el.scrollLeft||0)};
+      }
+      el=el.parentElement;
+    }
+    return null;
+  }
+
+  function uiContext(){
+    const details=document.querySelector('.v-home-category-details');
+    return {
+      categoryOpen:!!details?.open,
+      weeklyExpanded:!!document.querySelector('.vyrdict-weekly-extra-v8,.vyrdict-weekly-extra-v7,.vyrdict-weekly-extra-v6,.vyrdict-weekly-extra-v5')
+    };
+  }
+
+  function saveOrigin(target,dest){
+    const from=location.pathname+location.search+location.hash;
+    const section=sectionContext(target),rail=railContext(target),ui=uiContext();
+    const ctx={from,dest,y:Math.round(scrollY),section,rail,ui,ts:Date.now()};
+    try{
+      history.replaceState({
+        ...(history.state||{}),
+        vyrdictReturnY:ctx.y,
+        vyrdictReturnSection:section,
+        vyrdictReturnRail:rail,
+        vyrdictReturnUi:ui
+      },'',location.href);
+    }catch{}
+    try{sessionStorage.setItem(STORE_PREFIX+dest.split('#')[0],JSON.stringify(ctx))}catch{}
+    return ctx;
+  }
+
+  function currentProductContext(){
+    const key=STORE_PREFIX+(location.pathname+location.search).split('#')[0];
+    try{
+      const ctx=JSON.parse(sessionStorage.getItem(key)||'null');
+      if(!ctx||!ctx.from||Date.now()-Number(ctx.ts||0)>MAX_AGE)return null;
+      return ctx;
+    }catch{return null}
+  }
+
+  function markProductEntry(){
+    if(!onProduct())return;
+    const ctx=currentProductContext();
+    if(!ctx)return;
+    const ref=internalPath(document.referrer);
+    const expected=String(ctx.from||'').split('#')[0];
+    if(!ref||ref.split('#')[0]!==expected)return;
+    try{history.replaceState({...(history.state||{}),vyrdictProductFrom:ctx.from,vyrdictProductReturnTs:ctx.ts},'',location.href)}catch{}
+  }
+
+  function isProductBack(target){
+    if(!onProduct()||!target)return false;
+    if(target.closest?.('[data-back]'))return true;
+    const c=target.closest?.('a,button,[role="button"]');
+    if(!c)return false;
+    const text=norm(c.textContent||c.getAttribute?.('aria-label')||'');
+    const onclick=c.getAttribute?.('onclick')||'';
+    return text==='back'||text==='go back'||/^back to\b/.test(text)||/history\.back\s*\(|smartBack\s*\(/i.test(onclick);
+  }
+
+  function findSection(saved){
+    if(!saved)return null;
+    if(saved.id){
+      try{const byId=document.getElementById(saved.id);if(byId)return byId}catch{}
+    }
+    if(saved.label){
+      const heads=[...document.querySelectorAll('h1,h2,h3,h4,[role="heading"]')];
+      const h=heads.find(x=>norm(x.textContent)===saved.label)||heads.find(x=>norm(x.textContent).includes(saved.label)||saved.label.includes(norm(x.textContent)));
+      if(h)return h.closest('section,.section,[data-section]')||h;
+    }
+    return null;
+  }
+
+  function restoreUi(state){
+    const ui=state?.vyrdictReturnUi;
+    if(!ui)return;
+    const details=document.querySelector('.v-home-category-details');
+    if(details&&ui.categoryOpen&&!details.open)details.open=true;
+    if(ui.weeklyExpanded&&!document.querySelector('.vyrdict-weekly-extra-v8,.vyrdict-weekly-extra-v7,.vyrdict-weekly-extra-v6,.vyrdict-weekly-extra-v5')){
+      const section=[...document.querySelectorAll('section,.section')].find(s=>norm(s.innerText).includes('weekly viral ranking'));
+      const more=section&&[...section.querySelectorAll('button,[role="button"]')].find(b=>/see more rankings|keep climbing/i.test(b.textContent||''));
+      if(more&&!more.dataset.vyrdictRestoreClicked){more.dataset.vyrdictRestoreClicked='1';setTimeout(()=>more.click(),20)}
+    }
+  }
+
+  let restoreSerial=0;
+  function restoreReturnPosition(){
+    if(onProduct())return;
+    const state=history.state||{};
+    const y=Number(state.vyrdictReturnY);
+    const savedSection=state.vyrdictReturnSection;
+    if(!Number.isFinite(y)&&!savedSection)return;
+    const serial=++restoreSerial;
+    const delays=[0,70,180,420,850];
+    delays.forEach((delay,index)=>setTimeout(()=>{
+      if(serial!==restoreSerial||onProduct())return;
+      restoreUi(state);
+      const maxY=Math.max(0,document.documentElement.scrollHeight-innerHeight);
+      if(Number.isFinite(y)&&maxY>=Math.min(y,80)){
+        window.scrollTo({top:Math.min(y,maxY),left:0,behavior:'auto'});
+      }else{
+        const sec=findSection(savedSection);
+        if(sec)sec.scrollIntoView({block:'start',behavior:'auto'});
+      }
+      const rail=state.vyrdictReturnRail;
+      if(rail?.className){
+        try{document.querySelector('.'+CSS.escape(rail.className))?.scrollTo({left:Number(rail.left)||0,behavior:'auto'})}catch{}
+      }
+      if(index===delays.length-1){
+        const sec=findSection(savedSection);
+        if(Number.isFinite(y)&&Math.abs(scrollY-Math.min(y,Math.max(0,document.documentElement.scrollHeight-innerHeight)))>180&&sec){
+          sec.scrollIntoView({block:'start',behavior:'auto'});
+        }
+      }
+    },delay));
+  }
+
+  document.addEventListener('click',e=>{
+    if(e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+    const target=e.target;
+
+    if(isProductBack(target)){
+      const ctx=currentProductContext();
+      const marked=history.state?.vyrdictProductFrom;
+      if(ctx&&marked&&String(marked).split('#')[0]===String(ctx.from).split('#')[0]&&history.length>1){
+        e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+        history.back();
+      }
+      return;
+    }
+
+    const dest=productPathFromTarget(target);
+    if(!dest)return;
+    saveOrigin(target,dest);
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    location.assign(dest);
+  },true);
+
+  addEventListener('popstate',()=>setTimeout(restoreReturnPosition,0),true);
+  addEventListener('pageshow',()=>setTimeout(restoreReturnPosition,0),true);
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{markProductEntry();setTimeout(restoreReturnPosition,0)},{once:true});
+  else{markProductEntry();setTimeout(restoreReturnPosition,0)}
+})();
