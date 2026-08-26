@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/vyrdict-navigation-regression.yml'
+      - 'navigation-context.js'
       - 'navigation-guard.js'
       - 'index.html'
       - 'product-shell.js'
@@ -27,18 +28,18 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null
-      - name: Wait for production navigation guard
+      - name: Wait for production return-context navigation
         run: |
           for i in $(seq 1 40); do
-            if curl -fsSL 'https://vyrdict.com/navigation-guard.js?v=1' | grep -q '__vyrdictNavigationGuardV3'; then
-              echo 'Navigation guard v3 is live'
+            if curl -fsSL 'https://vyrdict.com/navigation-context.js?v=1' | grep -q '__vyrdictNavigationContextV1'; then
+              echo 'Return-context navigation is live'
               exit 0
             fi
             sleep 5
           done
-          echo 'Navigation guard v3 did not reach production in time'
+          echo 'Return-context navigation did not reach production in time'
           exit 1
-      - name: Test painted viewport and back navigation
+      - name: Test painted viewport and contextual back navigation
         run: |
           cat > nav-qa.js <<'NODE'
           const { chromium } = require('playwright');
@@ -149,19 +150,25 @@ jobs:
             await page.goto(base+'/category/beauty/?navqa='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
             await page.locator('.grid .card').first().waitFor({state:'visible',timeout:20000});
             await assertPainted(page,'category ready');
-            await page.evaluate(()=>window.scrollTo(0,document.body.scrollHeight));
+            const count=await page.locator('.grid .card').count();
+            const card=page.locator('.grid .card').nth(Math.min(Math.max(0,count-1),4));
+            await card.scrollIntoViewIfNeeded();
+            await sleep(100);
+            const categorySourceY=await page.evaluate(()=>scrollY);
+            assert(categorySourceY>80,`Category test did not reach a meaningful scroll position: ${categorySourceY}`);
             watch=watchPaint(page,'category to product');
-            await page.locator('.grid .card').first().click();
+            await card.click();
             await page.waitForURL(/\/product\//,{timeout:15000});
             await waitProduct(page);
             await watch;
 
-            watch=watchPaint(page,'browser back to category',3200);
-            await page.goBack({waitUntil:'domcontentloaded',timeout:30000});
+            watch=watchPaint(page,'product back to category context',3200);
+            await page.locator('[data-back]').first().click();
+            await page.waitForURL(/\/category\/beauty\//,{timeout:15000});
             await page.locator('.grid .card').first().waitFor({state:'visible',timeout:20000});
-            await sleep(120);
-            const categoryState=await assertPainted(page,'category after browser back');
-            assert(categoryState.scrollY<80,`Category Back restored deep scroll: ${JSON.stringify(categoryState)}`);
+            await sleep(950);
+            const categoryState=await assertPainted(page,'category after contextual back');
+            assert(Math.abs(categoryState.scrollY-categorySourceY)<260,`Category Back lost its prior position: before=${categorySourceY}, after=${categoryState.scrollY}`);
             await watch;
 
             for(const u of ['/collection/viral-right-now/','/search?q=ninja']){
