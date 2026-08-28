@@ -1,9 +1,8 @@
 (()=>{
-  if(window.__vyrdictAffiliateRoutingV1)return;
-  window.__vyrdictAffiliateRoutingV1=1;
+  if(window.__vyrdictAffiliateRoutingV2)return;
+  window.__vyrdictAffiliateRoutingV2=1;
 
   const DETAIL='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-product-detail';
-  const DISCLOSURE_ID='vyrdict-affiliate-disclosure';
   const STYLE_ID='vyrdict-affiliate-style';
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const slug=()=>{
@@ -34,17 +33,8 @@
   function ensureStyle(){
     if(document.getElementById(STYLE_ID))return;
     const st=document.createElement('style');st.id=STYLE_ID;
-    st.textContent=`#${DISCLOSURE_ID}{margin:12px 0 0;padding:10px 12px;border:1px solid var(--line,#d8cec4);border-radius:12px;background:#f8f3ed;color:#6d675f;font:500 10px/1.5 Arial,Helvetica,sans-serif}#${DISCLOSURE_ID} b{color:#171511;font-weight:900}`;
+    st.textContent=`.vyrdict-paid-link{display:inline-flex!important;align-items:center!important;margin-left:7px!important;padding:3px 6px!important;border:1px solid var(--line,#d8cec4)!important;border-radius:999px!important;background:#f8f3ed!important;color:#6d675f!important;font:800 7px/1 Arial,Helvetica,sans-serif!important;letter-spacing:.08em!important;text-transform:uppercase!important;vertical-align:middle!important}.vyrdict-affiliate-suppressed{display:none!important}`;
     document.head?.appendChild(st);
-  }
-
-  function ensureDisclosure(block){
-    if(!block||document.getElementById(DISCLOSURE_ID))return;
-    ensureStyle();
-    const box=document.createElement('div');box.id=DISCLOSURE_ID;
-    box.innerHTML='<b>Affiliate disclosure:</b> VYRDICT may earn a commission when you buy through retailer links. This never influences our scores or verdicts.';
-    const list=block.querySelector('.retailers');
-    if(list)list.insertAdjacentElement('afterend',box);else block.appendChild(box);
   }
 
   function activeRows(data){
@@ -66,10 +56,36 @@
     return hits.slice(0,1);
   }
 
+  function resetLinks(links){
+    for(const a of links){
+      if(a.dataset.vyrdictOriginalHref)a.href=a.dataset.vyrdictOriginalHref;
+      a.classList.remove('vyrdict-affiliate-suppressed');
+      a.querySelector('.vyrdict-paid-link')?.remove();
+      delete a.dataset.vyrdictAffiliate;
+      delete a.dataset.vyrdictAffiliateNetwork;
+      delete a.dataset.vyrdictAffiliateProgram;
+    }
+  }
+
+  function markPaid(a){
+    const host=a.querySelector('span')||a;
+    if(host.querySelector?.('.vyrdict-paid-link'))return;
+    const badge=document.createElement('small');
+    badge.className='vyrdict-paid-link';
+    badge.textContent='Paid link';
+    badge.setAttribute('aria-label','Affiliate paid link');
+    host.appendChild(badge);
+  }
+
   function routeLinks(block,data){
+    ensureStyle();
+    document.getElementById('vyrdict-affiliate-disclosure')?.remove();
     const links=[...block.querySelectorAll('a.retailer')];
     if(!links.length)return;
+    resetLinks(links);
+    const mappedByCountry=new Map();
     for(const row of activeRows(data)){
+      const country=String(row.country_code||'GLOBAL').toUpperCase();
       for(const a of chooseLinks(row,links)){
         if(!a.dataset.vyrdictOriginalHref)a.dataset.vyrdictOriginalHref=row.retailer_url||a.getAttribute('href')||'';
         a.href=row.affiliate_url;
@@ -79,6 +95,15 @@
         const rel=new Set(String(a.rel||'').split(/\s+/).filter(Boolean));
         rel.add('sponsored');rel.add('noopener');rel.add('noreferrer');
         a.rel=[...rel].join(' ');
+        markPaid(a);
+        const arr=mappedByCountry.get(country)||[];arr.push(a);mappedByCountry.set(country,arr);
+      }
+    }
+    for(const [country,mapped] of mappedByCountry){
+      if(!mapped.length)continue;
+      for(const a of links){
+        const ac=String(a.dataset.country||'GLOBAL').toUpperCase();
+        if(ac===country&&!a.dataset.vyrdictAffiliate)a.classList.add('vyrdict-affiliate-suppressed');
       }
     }
   }
@@ -87,7 +112,6 @@
   async function apply(){
     const s=slug();if(!s)return;
     const block=document.getElementById('where-to-buy');if(!block)return;
-    ensureDisclosure(block);
     const id=productId(s);if(!id)return;
     const token=++runToken;
     const data=await getDetail(id);
