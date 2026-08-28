@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictAffiliateRoutingV2)return;
-  window.__vyrdictAffiliateRoutingV2=1;
+  if(window.__vyrdictAffiliateRoutingV3)return;
+  window.__vyrdictAffiliateRoutingV3=1;
 
   const DETAIL='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-product-detail';
   const STYLE_ID='vyrdict-affiliate-style';
@@ -43,17 +43,34 @@
     );
   }
 
+  function linkCountry(a){return String(a.dataset.country||a.getAttribute('data-country')||'GLOBAL').toUpperCase()}
+  function linkText(a){return norm(a.querySelector('span')?.childNodes?.[0]?.textContent||a.textContent||'')}
+  function sameRetailerName(row,a){
+    const rn=norm(row.retailer_name),text=linkText(a);
+    if(!rn||!text)return false;
+    if(text.includes(rn)||rn.includes(text))return true;
+    if(rn.includes('amazon')&&text.includes('amazon'))return true;
+    return false;
+  }
+
   function chooseLinks(row,links){
-    const normal=urlKey(row.retailer_url);
-    let hits=links.filter(a=>urlKey(a.dataset.vyrdictOriginalHref||a.getAttribute('href')||a.href)===normal);
-    if(hits.length)return hits;
-    const rn=norm(row.retailer_name),country=String(row.country_code||'').toUpperCase();
-    hits=links.filter(a=>{
-      const ac=String(a.dataset.country||'').toUpperCase();
-      const text=norm(a.querySelector('span')?.childNodes?.[0]?.textContent||a.textContent||'');
-      return (!country||!ac||ac==='GLOBAL'||ac===country)&&rn&&text.includes(rn);
+    const normal=urlKey(row.retailer_url),affiliate=urlKey(row.affiliate_url);
+    let hits=links.filter(a=>{
+      const href=urlKey(a.dataset.vyrdictOriginalHref||a.getAttribute('href')||a.href);
+      return href===normal||href===affiliate;
     });
-    return hits.slice(0,1);
+    if(hits.length)return hits;
+    const country=String(row.country_code||'').toUpperCase();
+    hits=links.filter(a=>{
+      const ac=linkCountry(a);
+      return (!country||!ac||ac==='GLOBAL'||ac===country)&&sameRetailerName(row,a);
+    });
+    if(hits.length)return hits.slice(0,1);
+    const sameCountry=links.filter(a=>{
+      const ac=linkCountry(a);
+      return country&&ac===country;
+    });
+    return sameCountry.length===1?sameCountry:[];
   }
 
   function resetLinks(links){
@@ -102,7 +119,7 @@
     for(const [country,mapped] of mappedByCountry){
       if(!mapped.length)continue;
       for(const a of links){
-        const ac=String(a.dataset.country||'GLOBAL').toUpperCase();
+        const ac=linkCountry(a);
         if(ac===country&&!a.dataset.vyrdictAffiliate)a.classList.add('vyrdict-affiliate-suppressed');
       }
     }
