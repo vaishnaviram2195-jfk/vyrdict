@@ -25,6 +25,7 @@
 #${FOOTER_ID} .vf-links a:hover{opacity:.62;transform:translateX(2px)}
 #${FOOTER_ID} .vf-rule{height:1px;background:#cfc2b7;margin:46px 0 18px}
 #${FOOTER_ID} .vf-bottom{display:flex;justify-content:space-between;align-items:center;gap:20px;color:#746d66;font-size:9px;line-height:1.5;letter-spacing:.02em}
+#${FOOTER_ID} .vf-associate{margin-top:8px;color:#746d66;font-size:9px;line-height:1.5;letter-spacing:.01em}
 #${FOOTER_ID} .vf-wordmark{margin:34px 0 4px;font-size:clamp(54px,7vw,92px);font-weight:950;letter-spacing:-.075em;line-height:.88;white-space:nowrap;color:#171511;user-select:none;display:flex;align-items:flex-end}
 #${FOOTER_ID} .vf-wordmark .vf-logo-dot{transform:translateY(-.02em)}
 @media(max-width:860px){
@@ -74,6 +75,7 @@
             <div class="vf-links">
               <a href="/how-vyrdict-scores.html" data-vyrdict-scores>How Scores Work</a>
               <a href="/editorial-policy.html">Editorial Policy</a>
+              <a href="/terms.html#affiliate-disclosure">Affiliate Disclosure</a>
               <a href="/privacy.html">Privacy</a>
               <a href="/terms.html">Terms</a>
               <a href="mailto:hello@vyrdict.com?subject=VYRDICT%20Security%20Report">Security Reporting</a>
@@ -96,6 +98,7 @@
           <span>© 2026 VYRDICT. All Rights Reserved.</span>
           <span>Independent viral-product discovery and editorial scoring.</span>
         </div>
+        <div class="vf-associate">As an Amazon Associate I earn from qualifying purchases.</div>
         <div class="vf-wordmark" aria-hidden="true">VYRDICT<span class="vf-logo-dot"></span></div>
       </div>`;
     document.body.appendChild(footer);
