@@ -34,17 +34,17 @@
   function ensureStyle(){
     if(document.getElementById(STYLE_ID))return;
     const st=document.createElement('style');st.id=STYLE_ID;
-    st.textContent=`#${DISCLOSURE_ID}{margin:12px 0 0;padding:10px 12px;border:1px solid var(--line,#d8cec4);border-radius:12px;background:#f8f3ed;color:#6d675f;font:500 10px/1.5 Arial,Helvetica,sans-serif}#${DISCLOSURE_ID} b{color:#171511;font-weight:900}#${DISCLOSURE_ID} a{color:#171511;font-weight:800;text-decoration:underline;text-underline-offset:2px}`;
+    st.textContent=`#${DISCLOSURE_ID}{margin:12px 0 0;padding:10px 12px;border:1px solid var(--line,#d8cec4);border-radius:12px;background:#f8f3ed;color:#6d675f;font:500 10px/1.5 Arial,Helvetica,sans-serif}#${DISCLOSURE_ID} b{color:#171511;font-weight:900}`;
     document.head?.appendChild(st);
   }
 
   function ensureDisclosure(block){
-    if(!block||block.querySelector(`#${DISCLOSURE_ID}`))return;
+    if(!block||document.getElementById(DISCLOSURE_ID))return;
     ensureStyle();
     const box=document.createElement('div');box.id=DISCLOSURE_ID;
     box.innerHTML='<b>Affiliate disclosure:</b> VYRDICT may earn a commission when you buy through retailer links. This never influences our scores or verdicts.';
     const list=block.querySelector('.retailers');
-    (list||block).insertAdjacentElement('afterend',box);
+    if(list)list.insertAdjacentElement('afterend',box);else block.appendChild(box);
   }
 
   function activeRows(data){
@@ -101,4 +101,5 @@
   addEventListener('popstate',schedule);
   addEventListener('hashchange',schedule);
   document.addEventListener('click',e=>{if(e.target?.closest?.('[data-product],.geo-choice'))setTimeout(schedule,30)},{capture:true,passive:true});
+  setInterval(()=>{if(slug())apply()},2000);
 })();
