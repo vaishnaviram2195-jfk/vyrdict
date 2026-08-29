@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictAffiliateRoutingV3)return;
-  window.__vyrdictAffiliateRoutingV3=1;
+  if(window.__vyrdictAffiliateRoutingV4)return;
+  window.__vyrdictAffiliateRoutingV4=1;
 
   const DETAIL='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-product-detail';
   const STYLE_ID='vyrdict-affiliate-style';
@@ -59,7 +59,7 @@
       const href=urlKey(a.dataset.vyrdictOriginalHref||a.getAttribute('href')||a.href);
       return href===normal||href===affiliate;
     });
-    if(hits.length)return hits;
+    if(hits.length)return hits.slice(0,1);
     const country=String(row.country_code||'').toUpperCase();
     hits=links.filter(a=>{
       const ac=linkCountry(a);
