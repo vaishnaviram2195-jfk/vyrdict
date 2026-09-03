@@ -62,6 +62,35 @@ jobs:
           print('Bundle and product-detail endpoints healthy')
           PY
 
+      - name: Verify SEO discovery and metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --retry 2 --retry-delay 2 --max-time 20 'https://vyrdict.com/robots.txt' -o /tmp/robots.txt
+          curl -fsS --retry 2 --retry-delay 2 --max-time 20 'https://vyrdict.com/sitemap.xml' -o /tmp/sitemap-index.xml
+          curl -fsS --retry 2 --retry-delay 2 --max-time 20 'https://vyrdict.com/api/sitemap' -o /tmp/sitemap.xml
+          curl -fsS --retry 2 --retry-delay 2 --max-time 20 'https://vyrdict.com/product/chomchom-roller/' -o /tmp/product-seo.html
+          curl -fsS --retry 2 --retry-delay 2 --max-time 20 'https://vyrdict.com/category/skincare/' -o /tmp/category-seo.html
+
+          grep -Fq 'Sitemap: https://vyrdict.com/sitemap.xml' /tmp/robots.txt
+          grep -Fq '<loc>https://vyrdict.com/api/sitemap</loc>' /tmp/sitemap-index.xml
+          grep -Fq 'https://vyrdict.com/product/' /tmp/sitemap.xml
+          grep -Fq 'https://vyrdict.com/category/' /tmp/sitemap.xml
+          grep -Fq '<link rel="canonical" href="https://vyrdict.com/product/chomchom-roller/">' /tmp/product-seo.html
+          grep -Fq 'application/ld+json' /tmp/product-seo.html
+          grep -Fq 'name="description"' /tmp/product-seo.html
+          grep -Fq 'index,follow' /tmp/product-seo.html
+          grep -Fq '<link rel="canonical" href="https://vyrdict.com/category/skincare/">' /tmp/category-seo.html
+          grep -Fq 'application/ld+json' /tmp/category-seo.html
+
+          python3 - <<'PY'
+          import re
+          xml=open('/tmp/sitemap.xml', encoding='utf-8').read()
+          urls=len(re.findall(r'<url>', xml))
+          print(f'Indexable sitemap URLs: {urls}')
+          assert urls >= 250, f'Sitemap unexpectedly small: {urls}'
+          PY
+
       - name: Check product review freshness
         shell: bash
         run: |
