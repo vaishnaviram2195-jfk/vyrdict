@@ -1,0 +1,95 @@
+name: VYRDICT Live Health
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vyrdict-live-health
+  cancel-in-progress: true
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify HTTPS certificate and homepage
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 20 openssl s_client -servername vyrdict.com -connect vyrdict.com:443 -verify_return_error </dev/null > /tmp/ssl.txt 2>&1 || true
+          if ! grep -Eq 'Verify return code: 0 \(ok\)|Verification: OK' /tmp/ssl.txt; then
+            cat /tmp/ssl.txt
+            echo 'TLS certificate validation failed for vyrdict.com' >&2
+            exit 1
+          fi
+
+          start=$(date +%s%3N)
+          curl -fsS --retry 2 --retry-delay 2 --max-time 20 'https://vyrdict.com/?health=github' -o /tmp/home.html
+          end=$(date +%s%3N)
+          ms=$((end-start))
+          echo "Homepage response: ${ms} ms"
+          grep -qi 'VYRDICT' /tmp/home.html
+          if [ "$ms" -gt 8000 ]; then
+            echo "Homepage exceeded 8s health budget: ${ms} ms" >&2
+            exit 1
+          fi
+
+      - name: Verify core public endpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --retry 2 --retry-delay 2 --max-time 20 \
+            'https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-bundle-fast?v=health' \
+            -o /tmp/bundle.json
+          curl -fsS --retry 2 --retry-delay 2 --max-time 20 \
+            'https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-product-detail?id=125' \
+            -o /tmp/detail.json
+          python3 - <<'PY'
+          import json
+          bundle=json.load(open('/tmp/bundle.json'))
+          detail=json.load(open('/tmp/detail.json'))
+          assert isinstance(bundle.get('html'), str) and len(bundle['html']) > 10000, 'bundle HTML missing/too small'
+          assert isinstance(detail.get('retailers'), list), 'product detail retailers missing'
+          assert isinstance(detail.get('evidence'), list), 'product detail evidence missing'
+          print('Bundle and product-detail endpoints healthy')
+          PY
+
+      - name: Check product review freshness
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --retry 2 --retry-delay 2 --max-time 20 \
+            'https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-freshness' \
+            -o /tmp/freshness.json
+          python3 - <<'PY'
+          import json, datetime
+          data=json.load(open('/tmp/freshness.json'))
+          rows=data.get('products') or []
+          now=datetime.datetime.now(datetime.timezone.utc)
+          overdue=[]
+          old=[]
+          for p in rows:
+              nr=p.get('next_review_at')
+              lv=p.get('last_verified_at')
+              if nr:
+                  d=datetime.datetime.fromisoformat(nr.replace('Z','+00:00'))
+                  if d < now:
+                      overdue.append(p.get('slug'))
+              if lv:
+                  d=datetime.datetime.fromisoformat(lv.replace('Z','+00:00'))
+                  if now-d > datetime.timedelta(days=14):
+                      old.append(p.get('slug'))
+          print(f'Products checked: {len(rows)}')
+          print(f'Older than 14 days: {len(old)}')
+          print(f'Actually overdue by next_review_at: {len(overdue)}')
+          if old:
+              print('::warning::Some products are older than 14 days; this is informational unless next_review_at is overdue.')
+          if overdue:
+              print('Overdue products:', ', '.join(overdue[:50]))
+              raise SystemExit('One or more products are past next_review_at')
+          PY
