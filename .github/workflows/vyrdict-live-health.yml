@@ -1,6 +1,9 @@
 name: VYRDICT Live Health
 
 on:
+  push:
+    paths:
+      - '.github/workflows/vyrdict-live-health.yml'
   schedule:
     - cron: '17 */6 * * *'
   workflow_dispatch:
