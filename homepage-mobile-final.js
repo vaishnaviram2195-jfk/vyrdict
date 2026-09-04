@@ -1,35 +1,46 @@
 (()=>{
-  if(window.__vyrdictMobileLegacyDisabledV2)return;
-  window.__vyrdictMobileLegacyDisabledV2=1;
+  if(window.__vyrdictMobileLegacyDisabledV3)return;
+  window.__vyrdictMobileLegacyDisabledV3=1;
 
-  // This file used to rewrite the homepage back to the legacy static mobile hero.
-  // It is intentionally retained as a compatibility shim because older cached
-  // homepage shells may still request /homepage-mobile-final.js?v=1.
+  // Compatibility rescue for older cached homepage shells. This file used to
+  // force the legacy static mobile homepage. It now does the opposite: remove
+  // legacy mobile overrides and load the current homepage modules.
   const isHome=()=>location.pathname==='/'||location.pathname==='';
 
   function cleanup(){
     document.getElementById('vyrdict-mobile-final-style')?.remove();
+    document.getElementById('vyrdict-mobile-current-static-layer')?.remove();
     document.querySelectorAll('.v-home-category-more').forEach(el=>el.remove());
     const hero=document.querySelector('.hero');
-    if(hero){
-      hero.classList.remove('vyrdict-current-static');
-      document.getElementById('vyrdict-mobile-current-static-layer')?.remove();
-    }
+    hero?.classList.remove('vyrdict-current-static');
+    try{
+      for(const k of Object.keys(localStorage)){
+        if(/^vyrdict:bundle-cache:v(?:15|16|17)$/.test(k))localStorage.removeItem(k);
+      }
+    }catch{}
   }
 
-  function loadCurrentHero(){
-    if(!isHome())return;
-    cleanup();
-    if(document.getElementById('vyrdict-hero-v9-mobile-rescue'))return;
+  function add(src,id){
+    if(document.getElementById(id))return;
     const s=document.createElement('script');
-    s.id='vyrdict-hero-v9-mobile-rescue';
-    s.src='/homepage-hero-variety.js?v=9-20260904-mobile-rescue';
+    s.id=id;
+    s.src=src;
     s.async=false;
     document.head.appendChild(s);
   }
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',loadCurrentHero,{once:true});
-  else loadCurrentHero();
-  addEventListener('pageshow',()=>setTimeout(loadCurrentHero,0));
-  addEventListener('popstate',()=>setTimeout(loadCurrentHero,20));
+  function rescue(){
+    if(location.hostname==='www.vyrdict.com'){
+      location.replace('https://vyrdict.com'+location.pathname+location.search+location.hash);
+      return;
+    }
+    if(!isHome())return;
+    cleanup();
+    add('/homepage-hero-variety.js?v=9-20260904-mobile-rescue','vyrdict-hero-v9-mobile-rescue');
+    add('/growth-retention.js?v=2-20260904-mobile-rescue','vyrdict-growth-v2-mobile-rescue');
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',rescue,{once:true});else rescue();
+  addEventListener('pageshow',()=>setTimeout(rescue,0));
+  addEventListener('popstate',()=>setTimeout(rescue,20));
 })();
