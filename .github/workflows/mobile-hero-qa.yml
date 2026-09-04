@@ -27,7 +27,7 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null
-      - name: Diagnose root and direct mobile shell
+      - name: Verify real Android homepage
         run: |
           mkdir -p qa-mobile-hero
           cat > qa-mobile-hero/check.js <<'NODE'
@@ -42,50 +42,45 @@ jobs:
               hasTouch:true,
               userAgent:'Mozilla/5.0 (Linux; Android 16; Pixel 9 Pro Build/BP2A.250705.008) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36'
             });
-            async function inspect(url,label){
-              const page=await context.newPage();
-              const errors=[];
-              page.on('pageerror',e=>errors.push(String(e)));
-              const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
-              await page.waitForTimeout(7000);
-              const state=await page.evaluate(()=>{
-                const hero=document.querySelector('.hero');
-                const stage=document.querySelector('.stage');
-                const layer=document.getElementById('vyrdict-hero-v8-layer');
-                const cs=stage?getComputedStyle(stage):null;
-                return {
-                  href:location.href,
-                  title:document.title,
-                  bodyText:(document.body?.innerText||'').slice(0,500),
-                  freshShell:window.__vyrdictMobileFreshShell===1,
-                  heroPresent:!!hero,
-                  heroClass:hero?.className||'',
-                  heroVersion:hero?.dataset?.vyrdictHeroVersion||'',
-                  currentHero:!!hero?.classList.contains('vyrdict-hero-v8'),
-                  legacyStatic:!!hero?.classList.contains('vyrdict-current-static'),
-                  stageVisibility:cs?.visibility||null,
-                  stageOpacity:cs?.opacity||null,
-                  layerPresent:!!layer,
-                  layerChildren:layer?.children?.length||0,
-                  oldStyle:!!document.getElementById('vyrdict-mobile-final-style'),
-                  scripts:[...document.scripts].map(s=>s.src).filter(Boolean).slice(-20)
-                };
-              });
-              state.status=response?.status()||null;
-              state.headers=response?await response.allHeaders():{};
-              state.errors=errors;
-              fs.writeFileSync(`qa-mobile-hero/${label}.json`,JSON.stringify(state,null,2));
-              await page.screenshot({path:`qa-mobile-hero/${label}.png`,fullPage:false});
-              console.log(label,state);
-              await page.close();
-              return state;
-            }
-            const root=await inspect('https://vyrdict.com/','root');
-            const direct=await inspect('https://vyrdict.com/mobile-home.html','direct');
-            if(!direct.freshShell)throw new Error('Direct mobile shell did not execute: '+JSON.stringify(direct));
-            if(!direct.currentHero||!direct.layerPresent||direct.layerChildren<1)throw new Error('Direct mobile shell hero failed: '+JSON.stringify(direct));
-            if(!root.freshShell)throw new Error('Mobile root rewrite not active: '+JSON.stringify(root));
-            if(!root.currentHero||!root.layerPresent||root.layerChildren<1)throw new Error('Mobile root current hero failed: '+JSON.stringify(root));
+            const page=await context.newPage();
+            const errors=[];
+            page.on('pageerror',e=>errors.push(String(e)));
+            const response=await page.goto('https://vyrdict.com/',{waitUntil:'domcontentloaded',timeout:60000});
+            await page.waitForTimeout(7000);
+            const state=await page.evaluate(()=>{
+              const hero=document.querySelector('.hero');
+              const stage=document.querySelector('.stage');
+              const layer=document.getElementById('vyrdict-hero-v8-layer');
+              const cs=stage?getComputedStyle(stage):null;
+              return {
+                href:location.href,
+                freshShell:window.__vyrdictMobileFreshShell===1,
+                heroPresent:!!hero,
+                heroClass:hero?.className||'',
+                heroVersion:hero?.dataset?.vyrdictHeroVersion||'',
+                currentHero:!!hero?.classList.contains('vyrdict-hero-v8'),
+                legacyStatic:!!hero?.classList.contains('vyrdict-current-static'),
+                stageVisibility:cs?.visibility||null,
+                stageOpacity:cs?.opacity||null,
+                layerPresent:!!layer,
+                layerChildren:layer?.children?.length||0,
+                oldStyle:!!document.getElementById('vyrdict-mobile-final-style'),
+                width:innerWidth
+              };
+            });
+            state.status=response?.status()||null;
+            state.headers=response?await response.allHeaders():{};
+            state.errors=errors;
+            fs.writeFileSync('qa-mobile-hero/root.json',JSON.stringify(state,null,2));
+            await page.screenshot({path:'qa-mobile-hero/root.png',fullPage:false});
+            console.log(state);
+            if(state.status!==200)throw new Error('Homepage returned '+state.status);
+            if(!state.freshShell)throw new Error('Mobile root fresh shell not active: '+JSON.stringify(state));
+            if(!state.currentHero)throw new Error('Current mobile hero missing: '+JSON.stringify(state));
+            if(state.legacyStatic)throw new Error('Legacy static hero active: '+JSON.stringify(state));
+            if(state.stageVisibility!=='hidden'||state.stageOpacity!=='0')throw new Error('Legacy stage still visible: '+JSON.stringify(state));
+            if(!state.layerPresent||state.layerChildren<1)throw new Error('Current animated product layer missing: '+JSON.stringify(state));
+            if(state.oldStyle)throw new Error('Legacy mobile style loaded: '+JSON.stringify(state));
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           NODE
