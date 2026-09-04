@@ -62,10 +62,10 @@ jobs:
                 layerPresent:!!layer,
                 layerChildren:layer?.children?.length||0,
                 oldStyle:!!document.getElementById('vyrdict-mobile-final-style'),
-                width:innerWidth,
-                errors
+                width:innerWidth
               };
             });
+            state.errors=errors;
             fs.writeFileSync('qa-mobile-hero/state.json',JSON.stringify(state,null,2));
             await page.screenshot({path:'qa-mobile-hero/mobile-home.png',fullPage:false});
             console.log(state);
