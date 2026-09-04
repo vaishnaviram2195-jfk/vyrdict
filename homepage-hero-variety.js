@@ -28,6 +28,7 @@
         isolation:isolate!important;
         overflow:hidden!important;
         background:transparent!important;
+        box-shadow:-100vw 0 0 100vw #d8d5d1,100vw 0 0 100vw #b7b4b1!important;
       }
       .hero.vyrdict-fullwidth-motion::before{
         content:'';
