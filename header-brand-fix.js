@@ -23,43 +23,41 @@
     return true;
   }
 
-  function boot(attempt=0){
-    if(fix()||attempt>=20)return;
-    setTimeout(()=>boot(attempt+1),120);
+  function removeLegacyMobile(){
+    document.getElementById('vyrdict-mobile-final-style')?.remove();
+    document.getElementById('vyrdict-mobile-current-static-layer')?.remove();
+    document.querySelector('.hero')?.classList.remove('vyrdict-current-static');
+    try{
+      for(const k of Object.keys(localStorage)){
+        if(/^vyrdict:bundle-cache:v(?:15|16|17)$/.test(k))localStorage.removeItem(k);
+      }
+    }catch{}
   }
+
+  function load(src,id){
+    if(document.getElementById(id))return;
+    const s=document.createElement('script');
+    s.id=id;
+    s.src=src;
+    s.defer=true;
+    document.head.appendChild(s);
+  }
+
+  function boot(attempt=0){
+    removeLegacyMobile();
+    fix();
+    if(location.hostname==='www.vyrdict.com'){
+      location.replace('https://vyrdict.com'+location.pathname+location.search+location.hash);
+      return;
+    }
+    if(location.pathname==='/'||location.pathname===''){
+      load('/homepage-hero-variety.js?v=9-20260904-mobilefix','vyrdict-current-hero-loader');
+      load('/growth-retention.js?v=2-20260904-mobilefix','vyrdict-current-growth-loader');
+    }
+    if(attempt<20&&!document.querySelector('header,nav'))setTimeout(()=>boot(attempt+1),120);
+  }
+
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>boot(),{once:true});else boot();
-  addEventListener('hashchange',()=>boot());
-  addEventListener('popstate',()=>boot());
-})();
-(()=>{
-  if(document.getElementById('vyrdict-home-simplify-loader'))return;
-  const s=document.createElement('script');
-  s.id='vyrdict-home-simplify-loader';
-  s.src='/homepage-simplify.js?v=7';
-  s.defer=true;
-  document.head.appendChild(s);
-})();
-(()=>{
-  if(document.getElementById('vyrdict-home-hero-variety-loader'))return;
-  const s=document.createElement('script');
-  s.id='vyrdict-home-hero-variety-loader';
-  s.src='/homepage-hero-variety.js?v=5';
-  s.defer=true;
-  document.head.appendChild(s);
-})();
-(()=>{
-  if(document.getElementById('vyrdict-mobile-final-loader'))return;
-  const s=document.createElement('script');
-  s.id='vyrdict-mobile-final-loader';
-  s.src='/homepage-mobile-final.js?v=1';
-  s.defer=true;
-  document.head.appendChild(s);
-})();
-(()=>{
-  if(document.getElementById('vyrdict-worth-show-less-loader'))return;
-  const s=document.createElement('script');
-  s.id='vyrdict-worth-show-less-loader';
-  s.src='/worth-show-less-fix.js?v=1';
-  s.defer=true;
-  document.head.appendChild(s);
+  addEventListener('pageshow',()=>setTimeout(removeLegacyMobile,0));
+  addEventListener('popstate',()=>setTimeout(boot,20));
 })();
