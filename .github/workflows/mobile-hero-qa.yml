@@ -8,6 +8,8 @@ on:
       - 'header-brand-fix.js'
       - 'growth-retention.js'
       - 'index.html'
+      - 'mobile-home.html'
+      - 'vercel.json'
       - '.github/workflows/mobile-hero-qa.yml'
   workflow_dispatch:
 
@@ -25,7 +27,7 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null
-      - name: Verify current hero on Android-sized viewport
+      - name: Verify current hero on normal Android homepage
         run: |
           mkdir -p qa-mobile-hero
           cat > qa-mobile-hero/check.js <<'NODE'
@@ -43,16 +45,17 @@ jobs:
             const page=await context.newPage();
             const errors=[];
             page.on('pageerror',e=>errors.push(String(e)));
-            await page.goto('https://vyrdict.com/?mobileHeroQA='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+            await page.goto('https://vyrdict.com/',{waitUntil:'domcontentloaded',timeout:60000});
             await page.locator('.hero').waitFor({state:'visible',timeout:20000});
-            await page.waitForTimeout(4500);
+            await page.waitForTimeout(5000);
             const state=await page.evaluate(()=>{
               const hero=document.querySelector('.hero');
               const stage=document.querySelector('.stage');
               const layer=document.getElementById('vyrdict-hero-v8-layer');
               const cs=stage?getComputedStyle(stage):null;
               return {
-                hostname:location.hostname,
+                href:location.href,
+                freshShell:window.__vyrdictMobileFreshShell===1,
                 heroClass:hero?.className||'',
                 heroVersion:hero?.dataset?.vyrdictHeroVersion||'',
                 currentHero:!!hero?.classList.contains('vyrdict-hero-v8'),
@@ -69,6 +72,7 @@ jobs:
             fs.writeFileSync('qa-mobile-hero/state.json',JSON.stringify(state,null,2));
             await page.screenshot({path:'qa-mobile-hero/mobile-home.png',fullPage:false});
             console.log(state);
+            if(!state.freshShell)throw new Error('Normal mobile root did not use fresh mobile shell: '+JSON.stringify(state));
             if(!state.currentHero)throw new Error('Current mobile hero class missing: '+JSON.stringify(state));
             if(state.legacyStatic)throw new Error('Legacy static mobile hero still active: '+JSON.stringify(state));
             if(state.stageVisibility!=='hidden')throw new Error('Legacy stage is visible: '+JSON.stringify(state));
