@@ -29,7 +29,7 @@
       .stage.vyrdict-motion-stage .b3{animation-duration:16s;animation-delay:-7s}
       .stage.vyrdict-motion-stage .spark{animation:vyrdictSparkPulse 4.8s ease-in-out infinite;transform-origin:center}
       .stage.vyrdict-motion-stage:after{content:'';position:absolute;inset:0;z-index:25;pointer-events:none;border-radius:inherit;background:linear-gradient(112deg,transparent 0%,transparent 42%,rgba(255,255,255,.16) 49%,transparent 56%,transparent 100%);transform:translateX(-130%);animation:vyrdictHeroSheen 13s cubic-bezier(.4,0,.2,1) infinite}
-      @keyframes vyrdictHeroFloat{0%{transform:translate3d(0,0,0) rotate(0) scale(1)}52%{transform:translate3d(calc(var(--vhm-x)*.45),calc(var(--vhm-y)*.55),0) rotate(calc(var(--vhm-r)*.45)) scale(1.006)}100%{transform:translate3d(var(--vhm-x),var(--vhm-y),0) rotate(var(--vhm-r)) scale(1)}}
+      @keyframes vyrdictHeroFloat{0%{transform:translate3d(0,0,0) rotate(0) scale(1)}100%{transform:translate3d(var(--vhm-x),var(--vhm-y),0) rotate(var(--vhm-r)) scale(1.006)}}
       @keyframes vyrdictBlobBreath{0%{transform:translate3d(-2px,2px,0) scale(.985);opacity:.82}100%{transform:translate3d(5px,-4px,0) scale(1.035);opacity:1}}
       @keyframes vyrdictSparkPulse{0%,100%{transform:scale(.96) rotate(-3deg);opacity:.78}45%{transform:scale(1.08) rotate(3deg);opacity:1}65%{transform:scale(1.02) rotate(0);opacity:.92}}
       @keyframes vyrdictHeroSheen{0%,72%{transform:translateX(-130%);opacity:0}76%{opacity:.75}91%{transform:translateX(130%);opacity:.45}100%{transform:translateX(130%);opacity:0}}
@@ -85,8 +85,7 @@
     if(!animate||REDUCED.matches||!slot.a.animate){change();return true}
     const out=slot.a.animate([{opacity:1,filter:'blur(0)',transform:'translate3d(0,0,0) scale(1)'},{opacity:0,filter:'blur(3px)',transform:'translate3d(0,8px,0) scale(.965)'}],{duration:310,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'});
     try{await out.finished}catch{}
-    change();
-    slot.a.getAnimations().forEach(x=>x.cancel());
+    out.cancel();change();
     slot.a.animate([{opacity:0,filter:'blur(3px)',transform:'translate3d(0,-7px,0) scale(.97)'},{opacity:1,filter:'blur(0)',transform:'translate3d(0,0,0) scale(1)'}],{duration:520,easing:'cubic-bezier(.16,1,.3,1)'});
     return true;
   }
@@ -129,8 +128,11 @@
     pool=buildPool();if(!pool.length){setTimeout(initialize,350);return true}
     const first=pool.slice(0,photos.length);await Promise.all(photos.map((slot,i)=>first[i]?setItem(slot,first[i],false):Promise.resolve(false)));
     poolCursor=photos.length%pool.length;
-    stage.addEventListener('pointerenter',()=>{hovered=true},{passive:true});stage.addEventListener('pointerleave',()=>{hovered=false;resetParallax()},{passive:true});stage.addEventListener('pointermove',parallax,{passive:true});
-    stage.addEventListener('focusin',()=>{focused=true});stage.addEventListener('focusout',()=>{focused=false});
+    if(!stage.dataset.vyrdictMotionBound){
+      stage.dataset.vyrdictMotionBound='1';
+      stage.addEventListener('pointerenter',()=>{hovered=true},{passive:true});stage.addEventListener('pointerleave',()=>{hovered=false;resetParallax()},{passive:true});stage.addEventListener('pointermove',parallax,{passive:true});
+      stage.addEventListener('focusin',()=>{focused=true});stage.addEventListener('focusout',()=>{focused=false});
+    }
     startTimer();return true;
   }
 
