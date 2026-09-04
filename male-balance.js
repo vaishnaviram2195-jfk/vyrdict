@@ -14,3 +14,4 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
   addEventListener('hashchange',()=>setTimeout(schedule,60));addEventListener('popstate',()=>setTimeout(schedule,60));
 })();
+(()=>{if(document.getElementById('vyrdict-current-screen-loader'))return;const s=document.createElement('script');s.id='vyrdict-current-screen-loader';s.src='/seen-on-screen-current.js?v=1';s.defer=true;document.head.appendChild(s)})();
