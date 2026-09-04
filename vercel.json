@@ -3,9 +3,6 @@
   "routes": [
     {
       "src": "^/$",
-      "has": [
-        { "type": "header", "key": "user-agent", "value": ".*(Android|iPhone|iPad|Mobile).*" }
-      ],
       "headers": {
         "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
         "Pragma": "no-cache",
