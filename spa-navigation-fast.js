@@ -22,6 +22,17 @@
     try{history.replaceState({...(history.state||{}),vyrdictReturnY:Math.round(scrollY)},'',location.href)}catch{}
   }
 
+  function lockVerifiedCount(){
+    if((location.pathname||'/')!=='/')return;
+    const candidates=[...document.querySelectorAll('button,a,[role="button"]')];
+    for(const el of candidates){
+      const text=String(el.textContent||'').replace(/\s+/g,' ').trim();
+      if(/^BROWSE\s+\d+\+\s+VERIFIED PRODUCTS$/i.test(text)||/^BROWSE\s+250\+\s+VERIFIED PRODUCTS$/i.test(text)){
+        el.textContent='BROWSE 250+ VERIFIED PRODUCTS';
+      }
+    }
+  }
+
   document.addEventListener('click',e=>{
     if(e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
     const t=e.target instanceof Element?e.target:null;if(!t)return;
@@ -38,4 +49,10 @@
     e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
     window.nav(dest);
   },true);
+
+  const applyCount=()=>{lockVerifiedCount();setTimeout(lockVerifiedCount,80);setTimeout(lockVerifiedCount,350)};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyCount,{once:true});else applyCount();
+  addEventListener('pageshow',applyCount);
+  addEventListener('popstate',applyCount);
+  new MutationObserver(()=>{clearTimeout(window.__vyrdictCountLockTimer);window.__vyrdictCountLockTimer=setTimeout(lockVerifiedCount,30)}).observe(document.documentElement,{childList:true,subtree:true});
 })();
