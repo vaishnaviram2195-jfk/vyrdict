@@ -8,6 +8,7 @@ module.exports=async function handler(req,res){
     const data=await r.json();const products=Array.isArray(data.products)?data.products:[];
     const staticPages=[
       ['https://vyrdict.com/','daily'],
+      ['https://vyrdict.com/about','monthly'],
       ['https://vyrdict.com/how-vyrdict-scores.html','monthly'],
       ['https://vyrdict.com/editorial-policy.html','monthly'],
       ['https://vyrdict.com/suggest-product.html','monthly'],
