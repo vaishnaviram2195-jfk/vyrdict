@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictBrandEntityV1)return;
-  window.__vyrdictBrandEntityV1=1;
+  if(window.__vyrdictBrandEntityV2)return;
+  window.__vyrdictBrandEntityV2=1;
   const D='VYRDICT is a viral product intelligence and discovery platform that tracks what is trending, separates hype from value, and helps shoppers decide what is actually worth buying.';
   document.title='VYRDICT — Viral Product Intelligence & Discovery';
   const meta=(sel,attr,val)=>{let el=document.querySelector(sel);if(!el){el=document.createElement('meta');for(const [k,v] of Object.entries(attr))el.setAttribute(k,v);document.head.appendChild(el)}el.setAttribute('content',val)};
@@ -25,11 +25,14 @@
       ]
     });document.head.appendChild(s)
   }
-  const addAbout=()=>{
-    if(location.pathname!=='/'||document.querySelector('[data-vyrdict-about-link="1"]'))return;
+  const addCompanyLinks=()=>{
+    if(location.pathname!=='/'||document.getElementById('vyrdict-company-links'))return;
     const foot=document.querySelector('footer')||document.querySelector('.footer');if(!foot)return;
-    const a=document.createElement('a');a.href='/about';a.dataset.vyrdictAboutLink='1';a.textContent='About VYRDICT';a.style.cssText='margin-left:12px;text-decoration:none;font-weight:800';foot.appendChild(a)
+    const nav=document.createElement('nav');nav.id='vyrdict-company-links';nav.setAttribute('aria-label','VYRDICT company');nav.style.cssText='display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-top:14px;padding-top:14px;border-top:1px solid rgba(23,21,17,.14);font-size:11px';
+    const links=[['About VYRDICT','/about'],['How VYRDICT Scores','/how-vyrdict-scores.html'],['Editorial Policy','/editorial-policy.html'],['Careers','/careers']];
+    for(const [label,href] of links){const a=document.createElement('a');a.href=href;a.textContent=label;a.style.cssText='color:inherit;text-decoration:none;font-weight:800';nav.appendChild(a)}
+    foot.appendChild(nav)
   };
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(addAbout,150),{once:true});else setTimeout(addAbout,150);
-  setTimeout(addAbout,900);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(addCompanyLinks,120),{once:true});else setTimeout(addCompanyLinks,120);
+  setTimeout(addCompanyLinks,700);setTimeout(addCompanyLinks,1600);
 })();
