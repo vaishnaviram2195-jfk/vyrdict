@@ -72,6 +72,14 @@
     }catch{return []}finally{clearTimeout(timer)}
   }
 
+  function release(){
+    const app=document.getElementById('app');
+    const layer=document.getElementById(LAYER_ID);
+    if(!app?.innerHTML?.trim()||!layer||layer.querySelectorAll('.vms-product').length<3)return;
+    document.documentElement.classList.add('vyrdict-ready');
+    requestAnimationFrame(()=>document.getElementById('vyrdict-bundle-loader')?.remove())
+  }
+
   function render(hero,stage,products){
     if(!hero||!stage||products.length<3||animatedReady())return false;
     addStyle();
@@ -92,6 +100,7 @@
       d.appendChild(img);layer.appendChild(d)
     });
     document.documentElement.dataset.vyrdictCurrentHero='static';
+    release();
     return true
   }
 
@@ -133,10 +142,10 @@
     observer.observe(target,{childList:true,subtree:true})
   }
 
-  const start=()=>{addStyle();watch();setTimeout(()=>boot(),80);setTimeout(()=>boot(),450);setTimeout(()=>boot(),900)};
+  const start=()=>{addStyle();watch();setTimeout(()=>boot(),40);setTimeout(()=>boot(),250);setTimeout(()=>boot(),650)};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
   addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(animatedReady()){cleanup();return}const {hero,stage}=heroParts();if(hero&&stage&&document.getElementById(LAYER_ID))sync(hero,stage);else boot()},80)},{passive:true});
-  addEventListener('pageshow',()=>setTimeout(()=>boot(),40));
-  addEventListener('popstate',()=>setTimeout(()=>boot(),40));
-  addEventListener('hashchange',()=>setTimeout(()=>boot(),40));
+  addEventListener('pageshow',()=>setTimeout(()=>boot(),30));
+  addEventListener('popstate',()=>setTimeout(()=>boot(),30));
+  addEventListener('hashchange',()=>setTimeout(()=>boot(),30));
 })();
