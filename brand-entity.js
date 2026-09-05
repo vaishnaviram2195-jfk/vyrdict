@@ -25,4 +25,11 @@
       ]
     });document.head.appendChild(s)
   }
+  const addAbout=()=>{
+    if(location.pathname!=='/'||document.querySelector('[data-vyrdict-about-link="1"]'))return;
+    const foot=document.querySelector('footer')||document.querySelector('.footer');if(!foot)return;
+    const a=document.createElement('a');a.href='/about';a.dataset.vyrdictAboutLink='1';a.textContent='About VYRDICT';a.style.cssText='margin-left:12px;text-decoration:none;font-weight:800';foot.appendChild(a)
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(addAbout,150),{once:true});else setTimeout(addAbout,150);
+  setTimeout(addAbout,900);
 })();
