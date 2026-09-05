@@ -52,6 +52,7 @@
       for(const p of all){if(p?.image_url&&/^https:\/\//i.test(String(p.image_url))&&!seen.has(p.slug)){out.push(p);seen.add(p.slug)}}
       if(out.length>=6)return out
     }catch{}
+    if(MOBILE.matches)return [];
     const imgs=[...stage.querySelectorAll('img')].map((i,n)=>({slug:`fallback-${n}`,image_url:i.currentSrc||i.src})).filter(x=>/^https?:\/\//i.test(x.image_url));
     return imgs
   }
