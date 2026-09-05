@@ -4,11 +4,9 @@
     {
       "src": "^/$",
       "headers": {
-        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
-        "Pragma": "no-cache",
-        "Expires": "0"
+        "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=86400"
       },
-      "dest": "/mobile-home.html"
+      "dest": "/index.html"
     },
     { "src": "/score-discovery/?$", "dest": "/api/score-discovery" },
     { "src": "/product/(?<slug>[^/]+)/?$", "dest": "/api/product-seo?slug=$slug" },
