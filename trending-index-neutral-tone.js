@@ -1,16 +1,18 @@
 (()=>{
-  if(window.__vyrdictTrendingNeutralToneV8)return;
-  window.__vyrdictTrendingNeutralToneV8=1;
+  if(window.__vyrdictTrendingNeutralToneV9)return;
+  window.__vyrdictTrendingNeutralToneV9=1;
 
-  const STYLE_ID='vyrdict-trending-neutral-tone-v8';
+  const STYLE_ID='vyrdict-trending-neutral-tone-v9';
   if(document.getElementById(STYLE_ID))return;
 
   const s=document.createElement('style');
   s.id=STYLE_ID;
   s.textContent=`
-    /* Keep the approved sage-to-lavender blend, but make the whole module
-       fit inside a hero-height surface. The claw machine becomes a wide
-       horizontal arcade cabinet so it visually matches the product reveal. */
+    /* Approved direction:
+       - restore the original vertical gray + VYRDICT-pink claw machine
+       - keep the sage-to-muted-lavender blend
+       - keep the whole Trending Index at the homepage hero height
+       - fit the machine and reveal copy INSIDE the colored section */
     .vyrdict-index-claw{
       --vti-sage:#d9e3d4;
       --vti-sage-mid:#dfe5db;
@@ -22,7 +24,7 @@
       box-sizing:border-box!important;
       height:var(--vti-section-h,520px)!important;
       min-height:0!important;
-      padding:24px 0 18px!important;
+      padding:22px 0 16px!important;
       overflow:hidden!important;
       background:linear-gradient(112deg,
         var(--vti-sage) 0%,
@@ -44,18 +46,19 @@
       grid-template-rows:auto auto minmax(0,1fr) auto!important;
       min-height:0!important;
     }
-    .vyrdict-index-claw .vti-head{margin-bottom:7px!important;align-items:end!important}
-    .vyrdict-index-claw .vti-kicker{color:#716961!important;margin-bottom:6px!important}
+
+    .vyrdict-index-claw .vti-head{margin-bottom:6px!important;align-items:end!important}
+    .vyrdict-index-claw .vti-kicker{color:#716961!important;margin-bottom:5px!important}
     .vyrdict-index-claw .vti-title{line-height:.96!important}
-    .vyrdict-index-claw .vti-sub{color:#625b55!important;margin-bottom:2px!important}
-    .vyrdict-index-claw .vti-cats{padding:1px 1px 8px!important;gap:7px!important;min-height:0!important}
+    .vyrdict-index-claw .vti-sub{color:#625b55!important;margin-bottom:1px!important}
+    .vyrdict-index-claw .vti-cats{padding:1px 1px 7px!important;gap:7px!important;min-height:0!important}
     .vyrdict-index-claw .vti-cat{
       background:var(--vti-pill)!important;
       border-color:var(--vti-line)!important;
       color:#5f5852!important;
       box-shadow:none!important;
       backdrop-filter:blur(3px);
-      padding:9px 13px!important;
+      padding:8px 12px!important;
     }
     .vyrdict-index-claw .vti-cat:hover{background:rgba(255,250,245,.92)!important;border-color:rgba(44,39,35,.19)!important}
     .vyrdict-index-claw .vti-cat.is-active{background:#24211f!important;border-color:#24211f!important;color:#fff!important;box-shadow:none!important}
@@ -80,70 +83,60 @@
       position:relative!important;
     }
 
-    /* Horizontal claw-machine cabinet. Same visual language and controls,
-       re-proportioned into a wide rectangle rather than a tall cabinet. */
+    /* Restore the original vertical cabinet dimensions/design from the core claw file.
+       Position it independently of layout height, then scale just enough to keep it contained. */
     .vyrdict-index-claw .vti-machine{
-      width:520px!important;
-      height:300px!important;
-      max-width:96%!important;
-      position:relative!important;
-      transform:none!important;
-      filter:drop-shadow(0 14px 18px rgba(71,65,62,.16))!important;
+      width:335px!important;
+      height:500px!important;
+      max-width:none!important;
+      position:absolute!important;
+      left:50%!important;
+      top:47%!important;
+      transform:translate(-50%,-50%) scale(.72)!important;
+      transform-origin:center center!important;
+      filter:drop-shadow(0 15px 18px rgba(71,65,62,.17))!important;
     }
-    .vyrdict-index-claw .vti-body{
-      clip-path:polygon(3% 0,97% 0,99% 5%,99% 94%,97% 100%,3% 100%,1% 94%,1% 5%)!important;
-    }
-    .vyrdict-index-claw .vti-topcap{
-      left:14px!important;right:14px!important;top:8px!important;height:38px!important;
-    }
-    .vyrdict-index-claw .vti-topcap:before,.vyrdict-index-claw .vti-topcap:after{bottom:-7px!important;height:7px!important;width:7px!important}
-    .vyrdict-index-claw .vti-topcap span{font-size:16px!important}
 
-    .vyrdict-index-claw .vti-window{
-      left:22px!important;right:22px!important;top:48px!important;height:174px!important;
-      border-left-width:5px!important;border-right-width:5px!important;border-bottom-width:6px!important;
-    }
-    .vyrdict-index-claw .vti-window:before{height:6px!important}
-    .vyrdict-index-claw .vti-post{width:4px!important}
-    .vyrdict-index-claw .vti-post.p1{left:9px!important}.vyrdict-index-claw .vti-post.p2{right:9px!important}
-    .vyrdict-index-claw .vti-track{left:18px!important;right:18px!important;top:10px!important;height:3px!important}
+    /* Explicitly restore every cabinet part that the horizontal experiment re-proportioned. */
+    .vyrdict-index-claw .vti-body{clip-path:polygon(7% 0,93% 0,96% 5%,96% 94%,91% 100%,9% 100%,4% 94%,4% 5%)!important}
+    .vyrdict-index-claw .vti-topcap{left:17px!important;right:17px!important;top:12px!important;height:50px!important}
+    .vyrdict-index-claw .vti-topcap:before,.vyrdict-index-claw .vti-topcap:after{bottom:-10px!important;width:8px!important;height:10px!important}
+    .vyrdict-index-claw .vti-topcap span{font-size:18px!important}
+    .vyrdict-index-claw .vti-window{left:28px!important;right:28px!important;top:63px!important;height:287px!important;border-left-width:6px!important;border-right-width:6px!important;border-bottom-width:8px!important}
+    .vyrdict-index-claw .vti-window:before{height:7px!important}
+    .vyrdict-index-claw .vti-post{width:5px!important}.vyrdict-index-claw .vti-post.p1{left:11px!important}.vyrdict-index-claw .vti-post.p2{right:11px!important}
+    .vyrdict-index-claw .vti-track{left:20px!important;right:20px!important;top:13px!important;height:3px!important}
+    .vyrdict-index-claw .vti-claw{top:11px!important;width:66px!important;height:150px!important}
+    .vyrdict-index-claw .vti-slider{width:26px!important;height:14px!important}
+    .vyrdict-index-claw .vti-cable{top:12px!important;height:calc(54px + var(--drop))!important}
+    .vyrdict-index-claw .vti-grabber{top:calc(63px + var(--drop))!important;width:54px!important;height:46px!important}
+    .vyrdict-index-claw .vti-grabber:before{width:22px!important;height:15px!important}
+    .vyrdict-index-claw .vti-arm{top:9px!important;width:19px!important;height:34px!important}
+    .vyrdict-index-claw .vti-products{left:12px!important;right:12px!important;bottom:41px!important;height:124px!important}
+    .vyrdict-index-claw .vti-product{bottom:9px!important;width:52px!important;height:100px!important}
+    .vyrdict-index-claw .vti-product.is-grabbed{transform:translate(-50%,-74px) scale(.92)!important}
+    .vyrdict-index-claw .vti-pebbles{height:47px!important}
+    .vyrdict-index-claw .vti-console{left:24px!important;right:24px!important;top:356px!important;height:103px!important}
+    .vyrdict-index-claw .vti-console-left{left:12px!important;top:11px!important;width:53%!important;height:76px!important}
+    .vyrdict-index-claw .vti-stick{left:22px!important;bottom:15px!important;width:25px!important;height:25px!important}
+    .vyrdict-index-claw .vti-stick:before{bottom:18px!important;width:4px!important;height:18px!important}
+    .vyrdict-index-claw .vti-stick:after{bottom:31px!important;width:13px!important;height:13px!important}
+    .vyrdict-index-claw .vti-console-buttons{left:70px!important;bottom:20px!important;gap:8px!important}
+    .vyrdict-index-claw .vti-console-buttons i{width:12px!important;height:12px!important}
+    .vyrdict-index-claw .vti-prize-slot{right:10px!important;top:9px!important;width:37%!important;height:80px!important;border-width:7px!important}
+    .vyrdict-index-claw .vti-prize-slot:after{left:10px!important;right:10px!important;top:11px!important;height:7px!important}
+    .vyrdict-index-claw .vti-footbar{left:15px!important;right:15px!important;bottom:15px!important;height:14px!important}
 
-    .vyrdict-index-claw .vti-claw{top:8px!important;width:60px!important;height:132px!important}
-    .vyrdict-index-claw .vti-slider{width:24px!important;height:12px!important}
-    .vyrdict-index-claw .vti-cable{top:10px!important;height:calc(34px + var(--drop))!important}
-    .vyrdict-index-claw .vti-grabber{top:calc(42px + var(--drop))!important;width:48px!important;height:42px!important}
-    .vyrdict-index-claw .vti-grabber:before{width:20px!important;height:13px!important}
-    .vyrdict-index-claw .vti-arm{top:8px!important;width:17px!important;height:31px!important}
-
-    .vyrdict-index-claw .vti-products{left:20px!important;right:20px!important;bottom:25px!important;height:76px!important}
-    .vyrdict-index-claw .vti-product{bottom:5px!important;width:46px!important;height:70px!important}
-    .vyrdict-index-claw .vti-product.is-grabbed{transform:translate(-50%,-50px) scale(.92)!important}
-    .vyrdict-index-claw .vti-pebbles{height:30px!important}
-
-    .vyrdict-index-claw .vti-console{
-      left:22px!important;right:22px!important;top:228px!important;height:56px!important;
-    }
-    .vyrdict-index-claw .vti-console-left{left:9px!important;top:7px!important;width:58%!important;height:40px!important}
-    .vyrdict-index-claw .vti-stick{left:18px!important;bottom:7px!important;width:20px!important;height:20px!important}
-    .vyrdict-index-claw .vti-stick:before{bottom:14px!important;height:13px!important;width:3px!important}
-    .vyrdict-index-claw .vti-stick:after{bottom:24px!important;width:11px!important;height:11px!important}
-    .vyrdict-index-claw .vti-console-buttons{left:58px!important;bottom:12px!important;gap:7px!important}
-    .vyrdict-index-claw .vti-console-buttons i{width:10px!important;height:10px!important}
-    .vyrdict-index-claw .vti-prize-slot{right:8px!important;top:6px!important;width:34%!important;height:42px!important;border-width:5px!important}
-    .vyrdict-index-claw .vti-prize-slot:after{left:8px!important;right:8px!important;top:7px!important;height:5px!important}
-    .vyrdict-index-claw .vti-footbar{left:14px!important;right:14px!important;bottom:7px!important;height:8px!important}
-
-    /* Product reveal is contained within the exact same vertical footprint. */
-    .vyrdict-index-claw .vti-panel-top{left:24px!important;right:24px!important;top:10px!important}
-    .vyrdict-index-claw .vti-reveal-link{inset:30px 18px 72px!important}
+    /* Keep the reveal large, but pull all copy up so nothing drops below the colored section. */
+    .vyrdict-index-claw .vti-panel-top{left:24px!important;right:24px!important;top:8px!important}
+    .vyrdict-index-claw .vti-reveal-link{inset:24px 18px 78px!important}
     .vyrdict-index-claw .vti-reveal-link img{width:88%!important;height:90%!important;object-fit:contain!important}
-    .vyrdict-index-claw .vti-panel-copy{left:26px!important;right:26px!important;bottom:8px!important}
-    .vyrdict-index-claw .vti-brand{margin-bottom:4px!important}
-    .vyrdict-index-claw .vti-name{font-size:clamp(23px,2.25vw,35px)!important;line-height:.98!important}
-    .vyrdict-index-claw .vti-open{margin-top:7px!important}
-    .vyrdict-index-claw .vti-placeholder{font-size:21px!important}
-
-    .vyrdict-index-claw .vti-foot{margin-top:5px!important;min-height:13px!important;align-items:end!important}
+    .vyrdict-index-claw .vti-panel-copy{left:26px!important;right:26px!important;bottom:7px!important}
+    .vyrdict-index-claw .vti-brand{margin-bottom:3px!important}
+    .vyrdict-index-claw .vti-name{font-size:clamp(22px,2.1vw,33px)!important;line-height:.98!important;max-width:96%!important}
+    .vyrdict-index-claw .vti-open{margin-top:5px!important}
+    .vyrdict-index-claw .vti-placeholder{font-size:20px!important}
+    .vyrdict-index-claw .vti-foot{margin-top:3px!important;min-height:12px!important;align-items:end!important}
 
     @media(max-width:760px){
       .vyrdict-index-claw{
@@ -153,10 +146,12 @@
         background:linear-gradient(155deg,var(--vti-sage) 0%,var(--vti-sage-mid) 38%,var(--vti-blend) 54%,var(--vti-lavender-mid) 72%,var(--vti-lavender) 100%)!important;
       }
       .vyrdict-index-claw .vti-wrap{width:min(100% - 24px,680px)!important;height:auto!important;display:block!important}
-      .vyrdict-index-claw .vti-grid{grid-template-columns:1fr!important;gap:12px!important;height:auto!important}
-      .vyrdict-index-claw .vti-machine-stage{height:270px!important}
-      .vyrdict-index-claw .vti-reveal-card{height:360px!important}
-      .vyrdict-index-claw .vti-machine{transform:scale(.64)!important;transform-origin:center center!important;max-width:none!important}
+      .vyrdict-index-claw .vti-grid{grid-template-columns:1fr!important;gap:10px!important;height:auto!important}
+      .vyrdict-index-claw .vti-machine-stage{height:430px!important}
+      .vyrdict-index-claw .vti-reveal-card{height:390px!important}
+      .vyrdict-index-claw .vti-machine{top:50%!important;transform:translate(-50%,-50%) scale(.80)!important}
+      .vyrdict-index-claw .vti-reveal-link{inset:38px 18px 88px!important}
+      .vyrdict-index-claw .vti-panel-copy{bottom:14px!important}
       .vyrdict-index-claw .vti-foot{margin-top:12px!important}
     }
   `;
