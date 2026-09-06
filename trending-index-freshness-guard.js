@@ -1,54 +1,59 @@
 (()=>{
-  if(window.__vyrdictTrendingFreshnessGuardV1)return;
-  window.__vyrdictTrendingFreshnessGuardV1=1;
+  if(window.__vyrdictTrendingFreshnessGuardV2)return;
+  window.__vyrdictTrendingFreshnessGuardV2=1;
 
   const ENDPOINT='vyrdict-weekly-rankings';
-  const MAX_AGE_MS=7*24*60*60*1000;
-  const MIN_VIRAL=90;
-  const MIN_MOMENTUM=90;
   const CATEGORIES=['Beauty','Beauty Tech','Books','Fashion','Fitness','Food & Drinks','Hair','Home','Kids & Baby','Kitchen','Makeup','Perfume','Pets','Shoes','Skincare','Stationery & Crafts','Tech','Toys & Collectibles','Travel','Wellness'];
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim();
   const originalFetch=window.fetch.bind(window);
 
-  const productOf=x=>x?.product||x?.products||x?.item||x||{};
-  const freshEnough=x=>{
-    const p=productOf(x);
-    const verified=Date.parse(p.last_verified_at||x?.last_verified_at||'');
-    const viral=Number(p.viral_score??x?.viral_score??0);
-    const momentum=Number(p.momentum_score??x?.momentum_score??0);
-    return Number.isFinite(verified) && verified>=(Date.now()-MAX_AGE_MS) && viral>=MIN_VIRAL && momentum>=MIN_MOMENTUM;
-  };
-  const catOf=x=>productOf(x)?.category||x?.category_label||x?.category||'';
   const sentinel=category=>({
     category,
     name:'',brand:'',slug:'',image_url:'',
-    last_verified_at:new Date().toISOString(),
-    viral_score:0,momentum_score:0,
+    viral_score:0,momentum_score:0,trend_score:0,
     __vyrdictFreshnessSentinel:true
   });
 
-  function guardedArray(arr){
-    const fresh=(Array.isArray(arr)?arr:[]).filter(freshEnough);
-    for(const category of CATEGORIES){
-      if(!fresh.some(x=>norm(catOf(x))===norm(category))) fresh.push(sentinel(category));
-    }
-    return fresh;
+  async function fetchFreshCategory(base,category){
+    const u=new URL(base,location.href);
+    u.searchParams.set('category',category);
+    u.searchParams.set('_fresh',String(Date.now()));
+    const r=await originalFetch(u.toString(),{cache:'no-store'});
+    if(!r.ok)return [];
+    const d=await r.json();
+    return Array.isArray(d?.products)?d.products:[];
+  }
+
+  async function buildFreshIndex(base){
+    const batches=await Promise.all(CATEGORIES.map(c=>fetchFreshCategory(base,c).catch(()=>[])));
+    const out=[];
+    const seen=new Set();
+    CATEGORIES.forEach((category,i)=>{
+      const rows=(batches[i]||[]).filter(p=>p&&norm(p.category)===norm(category));
+      if(!rows.length){out.push(sentinel(category));return}
+      for(const p of rows){
+        const key=p.slug||`${p.brand||''}:${p.name||''}`;
+        if(seen.has(key))continue;
+        seen.add(key);
+        out.push(p);
+      }
+    });
+    out.sort((a,b)=>Number(b.trend_score||0)-Number(a.trend_score||0));
+    return out;
   }
 
   window.fetch=async function(input,init){
-    const res=await originalFetch(input,init);
     const url=typeof input==='string'?input:(input?.url||'');
-    if(!String(url).includes(ENDPOINT))return res;
+    if(!String(url).includes(ENDPOINT))return originalFetch(input,init);
     try{
-      const data=await res.clone().json();
-      let out;
-      if(Array.isArray(data)) out=guardedArray(data);
-      else if(Array.isArray(data?.rankings)) out={...data,rankings:guardedArray(data.rankings)};
-      else if(Array.isArray(data?.data)) out={...data,data:guardedArray(data.data)};
-      else return res;
-      const headers=new Headers(res.headers);headers.delete('content-length');headers.set('content-type','application/json');
-      return new Response(JSON.stringify(out),{status:res.status,statusText:res.statusText,headers});
-    }catch{return res}
+      const fresh=await buildFreshIndex(String(url));
+      return new Response(JSON.stringify(fresh),{
+        status:200,
+        headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}
+      });
+    }catch{
+      return originalFetch(input,{...(init||{}),cache:'no-store'});
+    }
   };
 
   function updateEmptyCopy(){
