@@ -15,7 +15,7 @@
     const s=document.createElement('style');
     s.id='vyrdict-trending-claw-v8-style';
     s.textContent=`
-      .vyrdict-index-claw{--ink:#171511;--cream:#f4ede5;--paper:#fffaf5;--machine:#d9b7ae;--machine2:#c99996;--machine3:#eedbd3;--teal:#9fc8c6;--rose:#d98a9d;position:relative;overflow:hidden;background:linear-gradient(180deg,#f7f0eb,#efe3dc)!important;padding:60px 0 68px!important;border:0!important}
+      .vyrdict-index-claw{--ink:#171511;--cream:#f4ede5;--paper:#fffaf5;--machine:#d9b7ae;--machine2:#c99996;--machine3:#eedbd3;--teal:#9fc8c6;--rose:#d98a9d;--soft-blush:#f3e9e6;position:relative;overflow:hidden;background:var(--soft-blush)!important;padding:60px 0 68px!important;border:0!important}
       .vyrdict-index-claw .vti-wrap{width:min(1200px,calc(100% - 40px));margin:0 auto;position:relative;z-index:1}
       .vyrdict-index-claw .vti-head{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;margin-bottom:18px}
       .vyrdict-index-claw .vti-kicker{margin:0 0 9px;font:900 10px/1 Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#78675f}
@@ -28,7 +28,7 @@
 
       .vyrdict-index-claw .vti-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:stretch}
       .vyrdict-index-claw .vti-machine-stage,.vyrdict-index-claw .vti-reveal-card{height:540px;border-radius:28px;overflow:hidden;box-shadow:0 24px 60px rgba(71,49,40,.10)}
-      .vyrdict-index-claw .vti-machine-stage{display:grid;place-items:center;background:linear-gradient(145deg,rgba(255,250,245,.72),rgba(229,211,201,.62));position:relative}
+      .vyrdict-index-claw .vti-machine-stage{display:grid;place-items:center;background:var(--soft-blush);position:relative}
 
       .vyrdict-index-claw .vti-machine{position:relative;width:335px;height:500px;filter:drop-shadow(0 18px 18px rgba(69,47,39,.17));transform:translateY(1px)}
       .vyrdict-index-claw .vti-body{position:absolute;inset:0;background:linear-gradient(180deg,#dfbeb5 0%,#d7aaa7 66%,#ca9895 100%);clip-path:polygon(7% 0,93% 0,96% 5%,96% 94%,91% 100%,9% 100%,4% 94%,4% 5%);box-shadow:inset 0 1px 0 rgba(255,255,255,.62)}
@@ -65,7 +65,7 @@
       .vyrdict-index-claw .vti-prize-slot:after{content:'';position:absolute;left:10px;right:10px;top:11px;height:7px;background:rgba(77,49,43,.28);border-radius:7px}
       .vyrdict-index-claw .vti-footbar{position:absolute;left:15px;right:15px;bottom:15px;height:14px;background:#bd8382;z-index:9;border-radius:0 0 6px 6px}
 
-      .vyrdict-index-claw .vti-reveal-card{position:relative;background:linear-gradient(145deg,rgba(255,250,245,.72),rgba(229,211,201,.62));border:1px solid rgba(255,255,255,.72)}
+      .vyrdict-index-claw .vti-reveal-card{position:relative;background:var(--soft-blush);border:1px solid rgba(255,255,255,.72)}
       .vyrdict-index-claw .vti-panel-top{position:absolute;left:28px;right:28px;top:25px;display:flex;justify-content:space-between;z-index:4}.vyrdict-index-claw .vti-now,.vyrdict-index-claw .vti-panel-cat{font:900 8px/1 Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#a05f64}
       .vyrdict-index-claw .vti-reveal-link{position:absolute;inset:60px 25px 122px;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.88);transition:opacity .32s ease,transform .52s cubic-bezier(.18,.85,.2,1);z-index:2}.vyrdict-index-claw .vti-reveal-link.is-on{opacity:1;transform:scale(1)}.vyrdict-index-claw .vti-reveal-link img{width:82%;height:84%;object-fit:contain;filter:drop-shadow(0 25px 28px rgba(67,43,33,.18))}
       .vyrdict-index-claw .vti-panel-copy{position:absolute;left:30px;right:30px;bottom:27px;z-index:5;opacity:0;transform:translateY(8px);transition:.3s ease}.vyrdict-index-claw .vti-panel-copy.is-on{opacity:1;transform:none}.vyrdict-index-claw .vti-brand{display:block;margin-bottom:7px;font:900 8px/1 Arial,sans-serif;letter-spacing:.15em;text-transform:uppercase;color:#8f7770}.vyrdict-index-claw .vti-name{display:block;max-width:90%;font:400 clamp(28px,3vw,42px)/.98 Georgia,'Times New Roman',serif;letter-spacing:-.045em;color:#201916}.vyrdict-index-claw .vti-open{display:inline-flex;gap:8px;margin-top:12px;color:#201916;text-decoration:none;font:900 8px/1 Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;border-bottom:1px solid rgba(32,25,22,.55);padding-bottom:3px}
