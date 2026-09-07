@@ -47,6 +47,7 @@
     removeLegacyMobile();
     fix();
     load('/performance-monitor.js?v=1-20260907','vyrdict-performance-monitor-loader');
+    load('/conversion-optimization.js?v=1-20260907','vyrdict-conversion-optimization-loader');
     if(location.hostname==='www.vyrdict.com'){
       location.replace('https://vyrdict.com'+location.pathname+location.search+location.hash);
       return;
