@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictLiveHomeSectionsV1)return;
-  window.__vyrdictLiveHomeSectionsV1=1;
+  if(window.__vyrdictLiveHomeSectionsV2)return;
+  window.__vyrdictLiveHomeSectionsV2=1;
 
   const HOME_FEED='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-home-feed';
   const WEEKLY='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-weekly-rankings';
@@ -91,18 +91,53 @@
     return [...(rail?.children||[])].filter(el=>!el.matches('script,style,.vyrdict-featured-cta,.v-home-discovery-card,.v-skip-discovery-card,.vyrdict-weekly-cta-v8'));
   }
 
+  function showCard(card,on){
+    if(!card)return;
+    card.hidden=!on;
+    if(on)card.style.removeProperty('display');
+    else card.style.setProperty('display','none','important');
+  }
+
   function patchEditorial(section,products){
-    if(!section||!products?.length)return false;
+    if(!section)return false;
+    const list=(Array.isArray(products)?products:[]).filter(p=>p?.slug&&p?.image_url);
     const rail=section.querySelector('.rail,[data-rail]');
     if(!rail)return false;
-    const top=directCards(rail).slice(0,3);
-    if(top.length<3)return false;
-    products.slice(0,3).forEach((p,i)=>patchProduct(top[i],p));
+
+    const top=directCards(rail).filter(el=>el.querySelector('img')).slice(0,3);
     const extra=section.querySelector('.vyrdict-featured-extra-row');
+    const more=extra?directCards(extra).filter(el=>el.querySelector('img')):[];
+    const all=[...top,...more];
+    if(!all.length)return false;
+
+    all.forEach((card,i)=>{
+      const p=list[i];
+      if(p){showCard(card,true);patchProduct(card,p)}
+      else showCard(card,false);
+    });
+
+    const cta=rail.querySelector(':scope > .vyrdict-featured-cta');
+    const collapse=section.querySelector('.vyrdict-featured-collapse-v3');
+    const freshMore=Math.max(0,Math.min(more.length,list.length-top.length));
+    const expanded=section.dataset.vyrdictFeaturedExpanded==='1';
+
     if(extra){
-      const more=directCards(extra);
-      products.slice(3,3+more.length).forEach((p,i)=>patchProduct(more[i],p));
+      if(freshMore>0){
+        extra.hidden=!expanded;
+        if(cta)cta.hidden=expanded;
+        if(collapse)collapse.hidden=!expanded;
+      }else{
+        extra.hidden=true;
+        if(cta)cta.hidden=true;
+        if(collapse)collapse.hidden=true;
+        section.dataset.vyrdictFeaturedExpanded='0';
+      }
+    }else if(cta){
+      cta.hidden=true;
     }
+
+    section.hidden=list.length===0;
+    section.dataset.vyrdictLiveCount=String(list.length);
     section.dataset.vyrdictLiveSource='home-feed';
     section.dataset.vyrdictLiveUpdated=String(Date.now());
     return true;
@@ -124,7 +159,13 @@
       const d=await homeFeed(force);
       patchEditorial(worthSection(),Array.isArray(d?.worth)?d.worth:[]);
       patchEditorial(skipSection(),Array.isArray(d?.skip)?d.skip:[]);
-    }catch{}
+    }catch{
+      if(!feedCache){
+        const w=worthSection(),s=skipSection();
+        if(w)w.hidden=true;
+        if(s)s.hidden=true;
+      }
+    }
   }
 
   function selectedCategory(section){
@@ -185,6 +226,7 @@
     schedule(true);
     setTimeout(()=>schedule(true),500);
     setTimeout(()=>schedule(true),1500);
+    setTimeout(()=>schedule(true),15000);
     const target=document.getElementById('app')||document.body;
     if(target&&!observer){observer=new MutationObserver(()=>schedule(false));observer.observe(target,{childList:true,subtree:true})}
     setInterval(()=>{if(isHome()){refreshEditorial(true);refreshWeekly(true)}},300000);
