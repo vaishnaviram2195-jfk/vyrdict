@@ -1,13 +1,11 @@
 (()=>{
-  if(window.__vyrdictGrowthRetentionV2)return;
-  window.__vyrdictGrowthRetentionV2=1;
+  if(window.__vyrdictGrowthRetentionV3)return;
+  window.__vyrdictGrowthRetentionV3=1;
 
-  const HOME_FEED='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-home-feed';
   const SUGGEST='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-suggest-product';
   const NEWS='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-newsletter-subscribe';
-  const STYLE_ID='vyrdict-growth-retention-style-v2';
+  const STYLE_ID='vyrdict-growth-retention-style-v3';
   const MODULE_ID='vyrdict-growth-retention';
-  const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const isHome=()=>location.pathname==='/'||location.pathname==='';
   const emailOk=s=>!s||/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(s);
 
@@ -33,64 +31,9 @@
       #${MODULE_ID} .vgr-status.ok{color:#49624b}#${MODULE_ID} .vgr-status.err{color:#8b4f43}
       #${MODULE_ID} .vgr-consent{margin-top:10px;font-size:9px;line-height:1.45;color:#7b746d}
       #${MODULE_ID} .vgr-hp{position:absolute;left:-9999px;opacity:0;pointer-events:none}
-      .vyrdict-live-refreshed{position:relative}
-      .vyrdict-live-refreshed .vgr-fresh-badge{display:inline-flex;align-items:center;gap:6px;margin-left:9px;vertical-align:middle;border:1px solid #d8cec4;background:#fffdf8;border-radius:999px;padding:6px 8px;font:950 7px/1 Arial,Helvetica,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#6d675f}
-      .vyrdict-live-refreshed .vgr-fresh-badge:before{content:'';width:5px;height:5px;background:#d94d73;border-radius:50%}
       @media(max-width:900px){#${MODULE_ID} .vgr-request-form{grid-template-columns:1fr 1fr}#${MODULE_ID} .vgr-request-form button{grid-column:1/-1}}
       @media(max-width:760px){#${MODULE_ID}{width:min(100% - 28px,1180px);margin:26px auto 44px}#${MODULE_ID} .vgr-grid{grid-template-columns:1fr}#${MODULE_ID} .vgr-card{padding:22px;border-radius:24px;min-height:230px}#${MODULE_ID} .vgr-form,#${MODULE_ID} .vgr-request-form{display:flex;flex-direction:column;align-items:stretch}#${MODULE_ID} button{width:100%}}
     `;document.head.appendChild(s);
-  }
-
-  function sectionByText(words){
-    const wanted=words.map(norm);
-    const h=[...document.querySelectorAll('h1,h2,h3,h4')].find(x=>wanted.some(w=>norm(x.textContent).includes(w)));
-    return h?.closest('section')||h?.closest('.section')||null;
-  }
-  function slugFrom(node){
-    const a=node?.matches?.('a[href*="/product/"]')?node:node?.querySelector?.('a[href*="/product/"]');
-    const m=decodeURIComponent(a?.getAttribute('href')||'').match(/\/product\/([^/?#]+)/i);return m?.[1]||'';
-  }
-  function cardsFrom(parent){return parent?[...parent.children].filter(x=>slugFrom(x)):[]}
-
-  function reorderFeatured(section,list,primary=3){
-    if(!section||!Array.isArray(list)||!list.length)return false;
-    const rail=section.querySelector('.rail,[data-rail]');if(!rail)return false;
-    const extra=section.querySelector('.vyrdict-featured-extra-row');
-    const all=[...cardsFrom(rail),...cardsFrom(extra)];if(!all.length)return false;
-    const rank=new Map(list.map((x,i)=>[x.slug,i]));
-    all.sort((a,b)=>(rank.has(slugFrom(a))?rank.get(slugFrom(a)):9999)-(rank.has(slugFrom(b))?rank.get(slugFrom(b)):9999));
-    const cta=rail.querySelector(':scope > .vyrdict-featured-cta');
-    all.slice(0,primary).forEach(card=>rail.insertBefore(card,cta||null));
-    if(extra)all.slice(primary).forEach(card=>extra.appendChild(card));
-    section.classList.add('vyrdict-live-refreshed');
-    const head=section.querySelector('.head h2,.head h1,h2,h1');
-    if(head&&!head.parentElement?.querySelector('.vgr-fresh-badge'))head.insertAdjacentHTML('afterend','<span class="vgr-fresh-badge">live picks</span>');
-    return true;
-  }
-
-  function reorderViral(section,list){
-    if(!section||!Array.isArray(list)||!list.length)return false;
-    const rail=section.querySelector('.rail,[data-rail]');if(!rail)return false;
-    const cards=cardsFrom(rail);if(!cards.length)return false;
-    const rank=new Map(list.map((x,i)=>[x.slug,i]));
-    cards.sort((a,b)=>(rank.has(slugFrom(a))?rank.get(slugFrom(a)):9999)-(rank.has(slugFrom(b))?rank.get(slugFrom(b)):9999));
-    const controls=[...rail.children].filter(x=>!slugFrom(x));
-    cards.forEach((c,i)=>{c.hidden=i>=6;rail.insertBefore(c,controls[0]||null)});
-    section.classList.add('vyrdict-live-refreshed');
-    const head=section.querySelector('.head h2,.head h1,h2,h1');
-    if(head&&!head.parentElement?.querySelector('.vgr-fresh-badge'))head.insertAdjacentHTML('afterend','<span class="vgr-fresh-badge">live picks</span>');
-    return true;
-  }
-
-  async function refreshHome(){
-    if(!isHome())return;
-    try{
-      const r=await fetch(HOME_FEED,{cache:'no-store'});if(!r.ok)return;
-      const d=await r.json();
-      reorderViral(sectionByText(["what's trending now",'viral right now']),d.trending);
-      reorderFeatured(sectionByText(['actually worth the hype','worth the hype']),d.worth,3);
-      reorderFeatured(document.getElementById('skip-list')||sectionByText(['skip it','the skip list']),d.skip,3);
-    }catch{}
   }
 
   function mount(){
@@ -113,10 +56,7 @@
     return true;
   }
 
-  function boot(){
-    let tries=0;const go=()=>{const ok=mount();refreshHome();if(!ok&&tries++<20)setTimeout(go,120)};go();
-  }
+  function boot(){let tries=0;const go=()=>{if(mount())return;if(tries++<12)setTimeout(go,120)};go()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  addEventListener('popstate',()=>setTimeout(boot,40));addEventListener('hashchange',()=>setTimeout(boot,40));
-  setInterval(()=>{if(isHome())refreshHome()},15*60*1000);
+  addEventListener('popstate',()=>setTimeout(boot,40));
 })();
