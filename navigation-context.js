@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictNavigationContextV2)return;
-  window.__vyrdictNavigationContextV2=1;
+  if(window.__vyrdictNavigationContextV3)return;
+  window.__vyrdictNavigationContextV3=1;
 
   const STORE_PREFIX='vyrdict:return-context:v2:';
   const LAST_NAV_KEY='vyrdict:last-product-nav:v2';
@@ -10,6 +10,10 @@
   const navType=()=>{try{return performance.getEntriesByType('navigation')?.[0]?.type||''}catch{return ''}};
 
   try{history.scrollRestoration='manual'}catch{}
+  const directHomeBoot=onHome()&&navType()!=='back_forward';
+  if(directHomeBoot){
+    try{document.documentElement.style.setProperty('visibility','hidden')}catch{}
+  }
 
   function hardTop(){
     try{document.documentElement.style.scrollBehavior='auto'}catch{}
@@ -18,6 +22,13 @@
     try{document.documentElement.scrollTop=0}catch{}
     try{document.body.scrollTop=0}catch{}
     try{scrollTo(0,0)}catch{}
+  }
+
+  function revealDirectHome(){
+    if(!directHomeBoot)return;
+    hardTop();
+    requestAnimationFrame(()=>{hardTop();try{document.documentElement.style.removeProperty('visibility')}catch{}});
+    setTimeout(()=>{try{document.documentElement.style.removeProperty('visibility')}catch{}},180);
   }
 
   function cleanDirectHomeState(){
@@ -33,6 +44,7 @@
     requestAnimationFrame(hardTop);
   }
   cleanDirectHomeState();
+  revealDirectHome();
 
   const coreNav=typeof window.nav==='function'?window.nav.bind(window):null;
   const coreBack=typeof window.smartBack==='function'?window.smartBack.bind(window):null;
