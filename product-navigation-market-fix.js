@@ -1,9 +1,9 @@
 (()=>{
-  if(window.__vyrdictProductNavMarketV2)return;
-  window.__vyrdictProductNavMarketV2=1;
+  if(window.__vyrdictProductNavMarketV3)return;
+  window.__vyrdictProductNavMarketV3=1;
 
   const DETAIL='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-product-detail';
-  const STYLE_ID='vyrdict-product-nav-market-style-v2';
+  const STYLE_ID='vyrdict-product-nav-market-style-v3';
   const PANEL_CLASS='vyrdict-market-links-v2';
   const HOME_CLASS='vyrdict-product-home-v2';
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
@@ -86,7 +86,16 @@
       const list=document.createElement('div');list.className='vyrdict-market-list';
       const seen=new Set();const market=rows.filter(r=>r?.is_active!==false&&String(r?.country_code||'').toUpperCase()===code&&validUrl(r)).filter(r=>{const u=validUrl(r);if(seen.has(u))return false;seen.add(u);return true});
       if(market.length){
-        market.slice(0,3).forEach(r=>{const a=document.createElement('a');a.href=validUrl(r);a.target='_blank';a.rel='noopener sponsored';const left=document.createElement('span');left.textContent=String(r.retailer_name||'Shop');const arrow=document.createElement('span');arrow.textContent='↗';a.append(left,arrow);list.appendChild(a)})
+        market.slice(0,3).forEach(r=>{
+          const a=document.createElement('a');
+          a.className='retailer';
+          a.dataset.country=code;
+          a.dataset.vyrdictRetailerSource='market_panel';
+          a.href=validUrl(r);a.target='_blank';a.rel='noopener sponsored';
+          const left=document.createElement('span');left.textContent=String(r.retailer_name||'Shop');
+          const arrow=document.createElement('span');arrow.textContent='↗';
+          a.append(left,arrow);list.appendChild(a)
+        })
       }else{
         const m=document.createElement('div');m.className='vyrdict-market-missing';m.textContent='No verified direct retailer yet.';list.appendChild(m);
         const a=document.createElement('a');a.className='vyrdict-market-search';a.href=marketSearchUrl(code);a.target='_blank';a.rel='noopener';const left=document.createElement('span');left.textContent='Search current availability';const arrow=document.createElement('span');arrow.textContent='↗';a.append(left,arrow);list.appendChild(a)
