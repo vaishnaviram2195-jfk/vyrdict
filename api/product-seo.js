@@ -1,6 +1,6 @@
 const DATA='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-seo-product-data';
 
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]||c));
 const date=v=>{if(!v)return'';const d=new Date(v);return Number.isNaN(d.getTime())?'':d.toISOString().slice(0,10)};
 const http=v=>/^https?:\/\//i.test(String(v||''));
 const secureImage=v=>{const s=String(v||'').trim();if(/^https:\/\//i.test(s))return s;if(/^http:\/\//i.test(s))return s.replace(/^http:/i,'https:');return''};
@@ -87,7 +87,7 @@ module.exports=async function handler(req,res){
     if(isBook){if(brand)entity.author={'@type':'Person',name:brand}}else{
       entity.category=p.category||'';if(brand)entity.brand={'@type':'Brand',name:brand};
       if(pricedRetailers.length){
-        const offers=pricedRetailers.slice(0,3).map(r=>({'@type':'Offer',url:r.retailer_url,price:Number(r.price),priceCurrency:String(r.currency).toUpperCase(),availability:'https://schema.org/InStock',itemCondition:'https://schema.org/NewCondition',seller:{'@type':'Organization',name:r.retailer_name||'Retailer'}}));
+        const offers=pricedRetailers.slice(0,3).map(r=>({'@type':'Offer',url:r.retailer_url,price:Number(r.price),priceCurrency:String(r.currency).toUpperCase(),availability:'https://schema.org/InStock',itemCondition:'https://schema.org/NewCondition'}));
         entity.offers=offers.length===1?offers[0]:offers;
       }
     }
