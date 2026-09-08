@@ -1,6 +1,6 @@
 const DATA='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-seo-product-data';
 
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]||c));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c));
 const date=v=>{if(!v)return'';const d=new Date(v);return Number.isNaN(d.getTime())?'':d.toISOString().slice(0,10)};
 const http=v=>/^https?:\/\//i.test(String(v||''));
 const secureImage=v=>{const s=String(v||'').trim();if(/^https:\/\//i.test(s))return s;if(/^http:\/\//i.test(s))return s.replace(/^http:/i,'https:');return''};
