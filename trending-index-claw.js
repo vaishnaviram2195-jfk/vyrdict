@@ -1,13 +1,13 @@
 (()=>{
   try{
-    if(window.__vyrdictTrendingReferenceV4)return;
-    window.__vyrdictTrendingReferenceV4=1;
+    if(window.__vyrdictTrendingReferenceV5)return;
+    window.__vyrdictTrendingReferenceV5=1;
 
     const WEEKLY_ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-weekly-rankings';
     const CATEGORIES=['All','Beauty','Beauty Tech','Books','Fashion','Fitness','Food & Drinks','Hair','Home','Kids & Baby','Kitchen','Makeup','Perfume','Pets','Shoes','Skincare','Stationery & Crafts','Tech','Toys & Collectibles','Travel','Wellness'];
-    const STYLE_ID='vyrdict-trending-reference-v4-style';
+    const STYLE_ID='vyrdict-trending-reference-v5-style';
     const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim();
-    const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[m]));
     const isHome=()=>location.pathname==='/'||location.pathname==='';
 
     let section=null,products=[],weeklyRows=[],activeCategory='All',activeIndex=0;
@@ -25,6 +25,7 @@
       .vyrdict-index-gallery .vtg-kicker{margin:0 0 7px;font:900 9px/1 Arial,Helvetica,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#746d66}
       .vyrdict-index-gallery .vtg-title{margin:0;font:400 clamp(39px,4.7vw,63px)/.98 Georgia,'Times New Roman',serif;letter-spacing:-.05em;color:#171511}
       .vyrdict-index-gallery .vtg-sub{margin:9px auto 0;max-width:560px;font:500 13px/1.48 Arial,Helvetica,sans-serif;color:#69635d}
+      .vyrdict-index-gallery .vtg-freshness{margin:8px auto 0;font:800 9px/1.35 Arial,Helvetica,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#8a837c}
       .vyrdict-index-gallery .vtg-cats{display:flex;align-items:center;justify-content:flex-start;gap:21px;overflow-x:auto;padding:7px 6px 13px;margin:0 auto 0;scrollbar-width:none;overscroll-behavior-inline:contain}
       .vyrdict-index-gallery .vtg-cats::-webkit-scrollbar{display:none}
       .vyrdict-index-gallery .vtg-cat{position:relative;flex:0 0 auto;border:0;background:transparent!important;padding:7px 0 9px;color:#756f68;font:800 10px/1 Arial,Helvetica,sans-serif;letter-spacing:.045em;white-space:nowrap;cursor:pointer}
@@ -89,6 +90,9 @@
       .vyrdict-index-gallery .vtg-arrow:hover{background:rgba(247,243,237,.94);transform:scale(1.04)}
       .vyrdict-index-gallery .vtg-prev{left:12px}.vyrdict-index-gallery .vtg-next{right:12px}
       .vyrdict-index-gallery .vtg-count{position:absolute;z-index:7;left:50%;bottom:5px;transform:translateX(-50%);font:800 8px/1 Arial,Helvetica,sans-serif;letter-spacing:.13em;color:#716a63}
+      .vyrdict-index-gallery .vtg-empty{display:none;position:absolute;inset:0;align-items:center;justify-content:center;text-align:center;padding:40px;color:#6f6962;font:700 12px/1.55 Arial,Helvetica,sans-serif;letter-spacing:.01em}
+      .vyrdict-index-gallery .vtg-stage.is-empty .vtg-focus,.vyrdict-index-gallery .vtg-stage.is-empty .vtg-items,.vyrdict-index-gallery .vtg-stage.is-empty .vtg-arrow,.vyrdict-index-gallery .vtg-stage.is-empty .vtg-count{display:none!important}
+      .vyrdict-index-gallery .vtg-stage.is-empty .vtg-empty{display:flex}
 
       @media(max-width:800px){
         .vyrdict-index-gallery{padding:44px 0 24px!important}
@@ -96,6 +100,7 @@
         .vyrdict-index-gallery .vtg-head{text-align:left;padding:0 5px;margin-bottom:11px}
         .vyrdict-index-gallery .vtg-title{font-size:clamp(36px,11vw,50px)}
         .vyrdict-index-gallery .vtg-sub{margin-left:0;font-size:12px}
+        .vyrdict-index-gallery .vtg-freshness{margin-left:0;font-size:8px}
         .vyrdict-index-gallery .vtg-cats{gap:18px;padding-left:6px;padding-right:6px}
         .vyrdict-index-gallery .vtg-stage{height:440px;--step:245px;perspective:900px}
         .vyrdict-index-gallery .vtg-focus{top:8px;width:min(73vw,306px);height:397px;border-radius:32px}
@@ -123,18 +128,30 @@
       return document.getElementById('viral')||document.getElementById('trending-index')||[...document.querySelectorAll('section,.section')].find(el=>/what.?s trending now|weekly viral rankings|viral rankings/i.test(el.textContent||''))||null;
     }
 
-    function catalog(){
-      try{if(typeof S!=='undefined'&&Array.isArray(S.p)&&S.p.length)return S.p}catch{}
-      for(const key of ['vyrdict:catalog-cache:v5','vyrdict:catalog-cache:v4']){
-        try{const c=JSON.parse(localStorage.getItem(key)||'null');if(Array.isArray(c?.p)&&c.p.length)return c.p}catch{}
-      }
-      return [];
-    }
-
     function unwrapWeekly(x){
       if(!x)return null;
       const p=x.product||x.products||x.item||x;
       return p&&typeof p==='object'?{...p,weekly_rank:x.rank??x.weekly_rank??p.weekly_rank,trend_score:x.trend_score??p.trend_score}:null;
+    }
+
+    function trendMeta(){
+      return window.__vyrdictTrendingLiveData?.meta||null;
+    }
+
+    function freshnessText(){
+      const meta=trendMeta();
+      const days=Number(meta?.freshness_days||14);
+      let date='';
+      if(meta?.calculated_at){
+        const d=new Date(meta.calculated_at);
+        if(!Number.isNaN(d.getTime()))date=new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}).format(d);
+      }
+      return date?`Updated ${date} · ${days}-day trend window`:`${days}-day trend window`;
+    }
+
+    function refreshFreshness(){
+      const el=section?.querySelector('.vtg-freshness');
+      if(el)el.textContent=freshnessText();
     }
 
     async function getWeekly(){
@@ -143,17 +160,16 @@
         const r=await fetch(WEEKLY_ENDPOINT,{cache:'no-store'});
         if(!r.ok)return [];
         const d=await r.json();
-        const a=Array.isArray(d)?d:Array.isArray(d?.rankings)?d.rankings:Array.isArray(d?.data)?d.data:[];
+        const a=Array.isArray(d)?d:Array.isArray(d?.rankings)?d.rankings:Array.isArray(d?.data)?d.data:Array.isArray(d?.products)?d.products:[];
         weeklyRows=a.map(unwrapWeekly).filter(Boolean);
       }catch{}
       return weeklyRows;
     }
 
     function selectProducts(rows,cat){
-      const base=catalog().filter(p=>p&&p.slug&&p.image_url);
       const ranked=(rows||[]).filter(p=>p&&p.slug&&p.image_url);
       const wanted=cat==='All'?null:norm(cat),map=new Map();
-      [...ranked,...base].forEach(p=>{if(wanted&&norm(p.category)!==wanted)return;if(!map.has(p.slug))map.set(p.slug,p)});
+      ranked.forEach(p=>{if(wanted&&norm(p.category)!==wanted)return;if(!map.has(p.slug))map.set(p.slug,p)});
       const list=[...map.values()].sort((a,b)=>{
         const ar=Number(a.weekly_rank||9999),br=Number(b.weekly_rank||9999);
         if(ar!==br)return ar-br;
@@ -168,11 +184,12 @@
 
     function template(){
       return `<div class="vtg-wrap">
-        <div class="vtg-head"><p class="vtg-kicker">VYRDICT LIVE</p><h2 class="vtg-title">Trending Index</h2><p class="vtg-sub">Move through what’s getting attention now. Tap the product in focus for the full VYRDICT.</p></div>
+        <div class="vtg-head"><p class="vtg-kicker">VYRDICT LIVE</p><h2 class="vtg-title">Trending Index</h2><p class="vtg-sub">Move through what’s getting attention now. Tap the product in focus for the full VYRDICT.</p><p class="vtg-freshness">${esc(freshnessText())}</p></div>
         <div class="vtg-cats" role="tablist" aria-label="Trending product categories">${CATEGORIES.map(c=>`<button class="vtg-cat${c==='All'?' is-active':''}" type="button" role="tab" aria-selected="${c==='All'}" data-cat="${esc(c)}">${esc(c)}</button>`).join('')}</div>
         <div class="vtg-stage" aria-live="polite">
           <div class="vtg-focus" aria-hidden="true"><div class="vtg-focus-top"><span class="vtg-mark">VYRDICT</span><span class="vtg-focus-cat">ALL</span></div><div class="vtg-focus-bottom"><p class="vtg-brand">VYRDICT</p><p class="vtg-name">What’s trending now</p><span class="vtg-view">View →</span></div></div>
           <div class="vtg-items"></div>
+          <div class="vtg-empty">No products in this category currently meet the live Trending Index criteria.</div>
           <button class="vtg-arrow vtg-prev" type="button" aria-label="Previous trending product">←</button><button class="vtg-arrow vtg-next" type="button" aria-label="Next trending product">→</button><div class="vtg-count" aria-hidden="true"></div>
         </div>
       </div>`;
@@ -240,8 +257,16 @@
       }catch(e){animating=false;positionItems();scheduleAuto(2600)}
     }
 
+    function renderEmpty(cat){
+      const stage=section?.querySelector('.vtg-stage'),box=section?.querySelector('.vtg-items'),empty=section?.querySelector('.vtg-empty');
+      if(box)box.replaceChildren();
+      if(stage)stage.classList.add('is-empty');
+      if(empty)empty.textContent=`No products in ${cat==='All'?'the index':cat} currently meet the live Trending Index criteria.`;
+    }
+
     function buildItems(){
       const box=section?.querySelector('.vtg-items');if(!box)return;
+      section.querySelector('.vtg-stage')?.classList.remove('is-empty');
       box.replaceChildren();
       products.forEach((p,i)=>{
         const b=document.createElement('button');b.type='button';b.className='vtg-item';b.dataset.i=String(i);
@@ -263,9 +288,10 @@
         clearTimers();animating=false;activeCategory=cat;activeIndex=0;
         section.querySelectorAll('.vtg-cat').forEach(b=>{const on=b.dataset.cat===cat;b.classList.toggle('is-active',on);b.setAttribute('aria-selected',String(on));if(on)b.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'})});
         const rows=await getWeekly();const next=selectProducts(rows,cat);
-        if(!next.length){scheduleAuto();return}
-        products=next;buildItems();
-      }catch{scheduleAuto()}
+        products=next;
+        if(!next.length){renderEmpty(cat);return}
+        buildItems();
+      }catch{renderEmpty(cat)}
     }
 
     function bind(){
@@ -278,6 +304,7 @@
       stage?.addEventListener('pointerup',e=>{if(downX==null)return;const dx=e.clientX-downX;downX=null;if(Math.abs(dx)>42)advance(dx<0?1:-1,true)});
       addEventListener('resize',()=>requestAnimationFrame(positionItems),{passive:true});
       document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')scheduleAuto(700);else clearTimeout(autoTimer)});
+      window.addEventListener('vyrdict:trending-data',refreshFreshness);
     }
 
     async function mount(){
@@ -287,9 +314,8 @@
       const initial=selectProducts(rows,'All');
       if(initial.length<2)return false;
       addStyle();
-      // Build off-DOM first; only replace the existing section after the enhancement is complete.
       const shell=document.createElement('section');shell.className='section vyrdict-index-gallery';shell.id='trending-index';shell.innerHTML=template();
-      old.replaceWith(shell);section=shell;products=initial;bind();buildItems();
+      old.replaceWith(shell);section=shell;products=initial;bind();buildItems();refreshFreshness();
       return true;
     }
 
