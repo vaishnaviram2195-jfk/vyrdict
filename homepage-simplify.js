@@ -1,11 +1,36 @@
 (()=>{
-  if(window.__vyrdictHomeSimplifyV14)return;
-  window.__vyrdictHomeSimplifyV14=1;
+  if(window.__vyrdictHomeSimplifyV15)return;
+  window.__vyrdictHomeSimplifyV15=1;
 
   const STYLE_ID='vyrdict-home-simplify-style';
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const isHome=()=>location.pathname==='/'||location.pathname==='';
+  const isMobile=()=>matchMedia('(max-width:760px)').matches;
   let mutationTimer=0,categoryGuard=null,guarding=false;
+
+  function guardInitialHomeTop(){
+    let nav='';
+    try{nav=performance.getEntriesByType('navigation')?.[0]?.type||''}catch{}
+    if(!isHome()||!isMobile()||nav==='back_forward')return;
+    try{history.scrollRestoration='manual'}catch{}
+    let active=true;
+    const pin=()=>{
+      if(!active)return;
+      try{window.scrollTo({left:0,top:0,behavior:'auto'})}catch{window.scrollTo(0,0)}
+      document.documentElement.scrollTop=0;
+      if(document.body)document.body.scrollTop=0;
+    };
+    const stop=()=>{active=false};
+    pin();
+    requestAnimationFrame(pin);
+    [40,120,260,420].forEach(ms=>setTimeout(pin,ms));
+    addEventListener('touchstart',stop,{passive:true,once:true});
+    addEventListener('pointerdown',stop,{passive:true,once:true});
+    addEventListener('wheel',stop,{passive:true,once:true});
+    addEventListener('keydown',stop,{once:true});
+    setTimeout(stop,520);
+  }
+  guardInitialHomeTop();
 
   function addStyle(){
     if(document.getElementById(STYLE_ID))return;
