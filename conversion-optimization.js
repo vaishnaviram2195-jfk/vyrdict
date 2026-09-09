@@ -1,8 +1,8 @@
 (()=>{
-  if(window.__vyrdictConversionOptimizationV1)return;
-  window.__vyrdictConversionOptimizationV1=1;
+  if(window.__vyrdictConversionOptimizationV2)return;
+  window.__vyrdictConversionOptimizationV2=1;
 
-  const STYLE_ID='vyrdict-conversion-optimization-style-v1';
+  const STYLE_ID='vyrdict-conversion-optimization-style-v2';
   const HERO_ID='vyrdict-product-conversion-cta';
   const BUY_NOTE='vyrdict-buy-priority-note';
   const onProduct=()=>/^\/product\/[^/]+\/?$/i.test(location.pathname||'');
@@ -12,21 +12,48 @@
     if(document.getElementById(STYLE_ID))return;
     const s=document.createElement('style');s.id=STYLE_ID;s.textContent=`
       #${HERO_ID}{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 14px}
-      #${HERO_ID} .vyrdict-conversion-button{appearance:none;border:1px solid #171511;border-radius:999px;background:#171511;color:#fff;padding:13px 17px;font:950 10px/1 Arial,Helvetica,sans-serif;letter-spacing:.065em;text-transform:uppercase;cursor:pointer;white-space:nowrap;box-shadow:none}
+      #${HERO_ID} .vyrdict-conversion-button{appearance:none;border:1px solid #171511;border-radius:999px;background:#171511;color:#fff;padding:13px 17px;font:950 10px/1 Arial,Helvetica,sans-serif;letter-spacing:.065em;text-transform:uppercase;cursor:pointer;white-space:nowrap;box-shadow:none;position:relative;overflow:hidden;transform-origin:center}
       #${HERO_ID} .vyrdict-conversion-button:hover{opacity:.88}
       #${HERO_ID} .vyrdict-conversion-button:focus-visible{outline:3px solid rgba(230,95,114,.28);outline-offset:3px}
+      #${HERO_ID} .vyrdict-conversion-button:after{content:'';position:absolute;inset:-35% auto -35% -45%;width:34%;transform:skewX(-18deg);background:linear-gradient(90deg,transparent,rgba(230,95,114,.38),rgba(255,255,255,.2),transparent);opacity:0;pointer-events:none}
       #${HERO_ID} .vyrdict-conversion-copy{font:11px/1.45 Arial,Helvetica,sans-serif;color:#746c64;max-width:250px}
       #where-to-buy.vyrdict-buy-priority{scroll-margin-top:22px}
       #where-to-buy.vyrdict-buy-priority .vyrdict-buy-priority-note{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:0 0 12px;padding:9px 11px;border:1px solid rgba(23,21,17,.12);border-radius:14px;background:#f8f3ed;color:#6d675f;font:800 9px/1.35 Arial,Helvetica,sans-serif;letter-spacing:.035em}
       #where-to-buy.vyrdict-buy-priority .vyrdict-buy-priority-note b{color:#171511;text-transform:uppercase;letter-spacing:.07em;font-weight:950}
       #where-to-buy.vyrdict-buy-priority .retailer{min-height:42px}
-      @media(max-width:700px){#${HERO_ID}{align-items:stretch;gap:8px;margin-top:16px}#${HERO_ID} .vyrdict-conversion-button{width:100%;min-height:45px}#${HERO_ID} .vyrdict-conversion-copy{max-width:none;width:100%;font-size:10px}}
+      @keyframes vyrdictCtaPopNudge{0%,100%{transform:translateX(0) scale(1)}16%{transform:translateX(0) scale(1.035)}30%{transform:translateX(-3px) scale(1.035)}44%{transform:translateX(3px) scale(1.035)}58%{transform:translateX(-1px) scale(1.025)}74%{transform:translateX(0) scale(1.015)}}
+      @keyframes vyrdictCtaSheen{0%{left:-45%;opacity:0}18%{opacity:.8}72%{opacity:.7}100%{left:116%;opacity:0}}
+      @media(max-width:700px){
+        #${HERO_ID}{align-items:stretch;gap:8px;margin-top:16px}
+        #${HERO_ID} .vyrdict-conversion-button{width:100%;min-height:45px}
+        #${HERO_ID} .vyrdict-conversion-copy{max-width:none;width:100%;font-size:10px}
+        #${HERO_ID} .vyrdict-conversion-button.vyrdict-cta-attention{animation:vyrdictCtaPopNudge 900ms cubic-bezier(.2,.8,.2,1) both;box-shadow:0 8px 24px rgba(23,21,17,.13)}
+        #${HERO_ID} .vyrdict-conversion-button.vyrdict-cta-attention:after{animation:vyrdictCtaSheen 850ms ease-out both}
+      }
+      @media(prefers-reduced-motion:reduce){#${HERO_ID} .vyrdict-conversion-button.vyrdict-cta-attention,#${HERO_ID} .vyrdict-conversion-button.vyrdict-cta-attention:after{animation:none!important}}
     `;document.head.appendChild(s)
   }
 
   function send(name,extra={}){try{window.VyrdictAnalytics?.send?.(name,extra)}catch{}}
-
   function buyBlock(){return document.getElementById('where-to-buy')}
+
+  function armAttention(btn){
+    if(!btn||btn.dataset.vyrdictAttentionArmed==='1')return;
+    btn.dataset.vyrdictAttentionArmed='1';
+    let mobile=false,reduced=false;
+    try{mobile=matchMedia('(max-width:700px)').matches;reduced=matchMedia('(prefers-reduced-motion: reduce)').matches}catch{}
+    if(!mobile||reduced)return;
+    const pulse=()=>{
+      if(!btn.isConnected||btn.dataset.vyrdictAttentionDone==='1')return;
+      btn.classList.remove('vyrdict-cta-attention');
+      void btn.offsetWidth;
+      btn.classList.add('vyrdict-cta-attention');
+      setTimeout(()=>btn.classList.remove('vyrdict-cta-attention'),1000);
+    };
+    setTimeout(pulse,700);
+    setTimeout(pulse,6500);
+    btn.addEventListener('click',()=>{btn.dataset.vyrdictAttentionDone='1';btn.classList.remove('vyrdict-cta-attention')},{once:true});
+  }
 
   function prioritizeBuy(){
     if(!onProduct())return false;
@@ -50,7 +77,7 @@
     const buy=buyBlock(),host=heroHost();if(!buy||!host)return false;
     style();
     let box=document.getElementById(HERO_ID);
-    if(box&&host.contains(box))return true;
+    if(box&&host.contains(box)){armAttention(box.querySelector('.vyrdict-conversion-button'));return true}
     box?.remove();box=document.createElement('div');box.id=HERO_ID;
     const btn=document.createElement('button');btn.type='button';btn.className='vyrdict-conversion-button';btn.textContent='See where to buy';btn.setAttribute('aria-label','See verified retailer options');
     const copy=document.createElement('span');copy.className='vyrdict-conversion-copy';copy.textContent='Jump to current retailer options for Canada and the U.S.';
@@ -59,6 +86,7 @@
     const scores=host.querySelector('.scores,.scoreRow,[data-vyrdict-scores]');
     const summary=host.querySelector('.summary,.lead,.description,p');
     if(scores)scores.insertAdjacentElement('afterend',box);else if(summary)summary.insertAdjacentElement('beforebegin',box);else host.appendChild(box);
+    armAttention(btn);
     return true;
   }
 
