@@ -1,6 +1,8 @@
 (()=>{
   if(window.__vyrdictCategoryFailsafeV2)return;
   window.__vyrdictCategoryFailsafeV2=1;
+  document.documentElement.classList.add('vyrdict-ready');
+  document.getElementById('vyrdict-server-home-preboot')?.remove();
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const labels=new Set(['see more categories','show fewer categories','browse more categories','browse more category','browse fewer categories']);
   const isHome=()=>location.pathname==='/'||location.pathname==='';
