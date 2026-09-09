@@ -1,11 +1,11 @@
 (()=>{
-  if(window.__vyrdictMobileCurrentHeroV2)return;
-  window.__vyrdictMobileCurrentHeroV2=1;
+  if(window.__vyrdictMobileCurrentHeroV3)return;
+  window.__vyrdictMobileCurrentHeroV3=1;
 
   const HOME=()=>location.pathname==='/'||location.pathname==='';
   const MOBILE=matchMedia('(max-width:700px)');
   const FEED='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-home-feed';
-  const STYLE_ID='vyrdict-mobile-current-hero-style-v2';
+  const STYLE_ID='vyrdict-mobile-current-hero-style-v3';
   const LAYER_ID='vyrdict-mobile-current-static-layer';
   let busy=false,observer=null,resizeTimer=0;
 
@@ -19,6 +19,7 @@
     const s=document.createElement('style');
     s.id=STYLE_ID;
     s.textContent=`
+      @media(max-width:700px){.hero .stage{visibility:hidden!important;opacity:0!important;pointer-events:none!important}}
       .hero.vyrdict-current-static{position:relative!important;isolation:isolate!important;overflow:visible!important;background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important}
       .hero.vyrdict-current-static::before{content:'';position:absolute;z-index:0;top:0;left:50%;width:calc(100vw + 6px);height:var(--vyrdict-static-hero-h,520px);transform:translateX(-50%);pointer-events:none;background:radial-gradient(ellipse at 78% 38%,rgba(52,49,47,.22),transparent 37%),radial-gradient(ellipse at 42% 72%,rgba(255,255,255,.20),transparent 34%),linear-gradient(108deg,#d8d5d1 0%,#d0cdca 33%,#c3c0bd 67%,#b7b4b1 100%)}
       .hero.vyrdict-current-static::after{content:'';position:absolute;z-index:2;top:0;left:50%;width:calc(100vw + 6px);height:var(--vyrdict-static-hero-h,520px);transform:translateX(-50%);pointer-events:none;background:linear-gradient(90deg,rgba(218,215,211,.96) 0%,rgba(214,211,207,.91) 32%,rgba(205,202,198,.63) 50%,rgba(193,190,187,.13) 73%,transparent 100%)}
@@ -48,17 +49,8 @@
     hero.style.setProperty('--vyrdict-static-hero-h',`${Math.max(430,Math.ceil(bottom-hr.top+28))}px`)
   }
 
-  function stageProducts(stage){
-    const out=[],seen=new Set();
-    for(const img of stage?.querySelectorAll('img')||[]){
-      const src=img.currentSrc||img.src;
-      if(/^https?:\/\//i.test(src)&&!seen.has(src)){out.push({image_url:src});seen.add(src)}
-    }
-    return out
-  }
-
   async function liveProducts(){
-    const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),1300);
+    const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),2200);
     try{
       const r=await fetch(FEED,{cache:'no-store',signal:ctrl.signal});
       if(!r.ok)throw 0;
@@ -117,8 +109,6 @@
     const {hero,stage}=heroParts();if(!hero||!stage)return false;
     busy=true;
     try{
-      const immediate=stageProducts(stage);
-      if(immediate.length>=3)render(hero,stage,immediate);
       const live=await liveProducts();
       if(animatedReady()){cleanup();return true}
       if(live.length>=3)render(hero,stage,live);
@@ -129,7 +119,7 @@
   function boot(attempt=0){
     if(!HOME()||!MOBILE.matches){cleanup();return}
     if(animatedReady()){cleanup();return}
-    ensure().then(ok=>{if(!ok&&attempt<30)setTimeout(()=>boot(attempt+1),100)})
+    ensure().then(ok=>{if(!ok&&attempt<30)setTimeout(()=>boot(attempt+1),120)})
   }
 
   function watch(){
@@ -142,10 +132,10 @@
     observer.observe(target,{childList:true,subtree:true})
   }
 
-  const start=()=>{addStyle();watch();setTimeout(()=>boot(),40);setTimeout(()=>boot(),250);setTimeout(()=>boot(),650)};
+  const start=()=>{addStyle();watch();setTimeout(()=>boot(),20);setTimeout(()=>boot(),300);setTimeout(()=>boot(),900)};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
   addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(animatedReady()){cleanup();return}const {hero,stage}=heroParts();if(hero&&stage&&document.getElementById(LAYER_ID))sync(hero,stage);else boot()},80)},{passive:true});
-  addEventListener('pageshow',()=>setTimeout(()=>boot(),30));
-  addEventListener('popstate',()=>setTimeout(()=>boot(),30));
-  addEventListener('hashchange',()=>setTimeout(()=>boot(),30));
+  addEventListener('pageshow',()=>setTimeout(()=>boot(),20));
+  addEventListener('popstate',()=>setTimeout(()=>boot(),20));
+  addEventListener('hashchange',()=>setTimeout(()=>boot(),20));
 })();
