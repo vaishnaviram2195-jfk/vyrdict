@@ -1,10 +1,10 @@
 (()=>{
-  if(window.__vyrdictMobileHomeSectionGuardV2)return;
-  window.__vyrdictMobileHomeSectionGuardV2=1;
+  if(window.__vyrdictMobileHomeSectionGuardV3)return;
+  window.__vyrdictMobileHomeSectionGuardV3=1;
 
   const HOME=()=>location.pathname==='/'||location.pathname==='';
   const MOBILE=()=>matchMedia('(max-width:760px)').matches;
-  let observer=null,timer=0;
+  let observer=null,timer=0,trendForceAt=0,trendForceSeq=0;
 
   function load(src,id){
     if(document.getElementById(id))return;
@@ -13,20 +13,37 @@
     document.head.appendChild(s);
   }
 
-  function removeLegacyTrendSections(){
-    if(!HOME()||!MOBILE())return;
+  function legacyTrendSections(){
     const current=document.querySelector('.vyrdict-index-gallery,#trending-index.vyrdict-index-gallery');
+    const found=new Set();
     document.querySelectorAll('#viral,.weekly-ranking,.weekly-rankings,[data-section="weekly-ranking"],[data-section="weekly-rankings"]').forEach(el=>{
-      if(el&&el!==current)el.remove();
+      if(el&&el!==current)found.add(el.closest('section')||el);
     });
-    document.querySelectorAll('section,div').forEach(el=>{
-      if(el===current||current?.contains(el))return;
-      const txt=(el.querySelector('h1,h2,h3')?.textContent||'').trim().toLowerCase();
-      if(txt==='weekly viral rankings.'||txt==='weekly viral rankings'){
-        const section=el.closest('section')||el;
-        if(section!==current)section.remove();
-      }
+    document.querySelectorAll('section').forEach(sec=>{
+      if(sec===current||current?.contains(sec))return;
+      const match=[...sec.querySelectorAll('h1,h2,h3')].some(h=>
+        (h.textContent||'').trim().toLowerCase().replace(/\.$/,'')==='weekly viral rankings'
+      );
+      if(match)found.add(sec);
     });
+    return [...found].filter(el=>el&&el!==current);
+  }
+
+  function concealLegacyTrend(){
+    if(!HOME()||!MOBILE())return;
+    if(document.querySelector('.vyrdict-index-gallery'))return;
+    legacyTrendSections().forEach(el=>{
+      if(el.dataset.vyrdictLegacyTrendPending==='1')return;
+      el.dataset.vyrdictLegacyTrendPending='1';
+      el.style.setProperty('display','none','important');
+    });
+  }
+
+  function cleanupLegacyAfterCurrent(){
+    const current=document.querySelector('.vyrdict-index-gallery,#trending-index.vyrdict-index-gallery');
+    if(!current)return false;
+    legacyTrendSections().forEach(el=>el.remove());
+    return true;
   }
 
   function healthySkip(sec){
@@ -53,44 +70,38 @@
     load('/skip-cta-fix.js?v=2-20260909-mobilefix','vyrdict-mobile-skip-cta-current');
   }
 
+  function forceTrending(){
+    if(cleanupLegacyAfterCurrent())return;
+    const legacy=legacyTrendSections();
+    if(!legacy.length)return;
+    concealLegacyTrend();
+    const now=Date.now();
+    if(now-trendForceAt<650)return;
+    trendForceAt=now;
+    trendForceSeq++;
+    try{delete window.__vyrdictTrendingReferenceV5}catch{window.__vyrdictTrendingReferenceV5=0}
+    const s=document.createElement('script');
+    s.id=`vyrdict-mobile-trending-force-${trendForceSeq}`;
+    s.src=`/trending-index-claw.js?v=6-20260909-mobileforce-${trendForceSeq}`;
+    s.defer=true;
+    document.head.appendChild(s);
+  }
+
   function ensureTrending(){
-    if(document.querySelector('.vyrdict-index-gallery')){
-      removeLegacyTrendSections();
-      return;
-    }
-    load('/trending-index-claw.js?v=5-20260909-mobilefix','vyrdict-mobile-trending-current');
-  }
-
-  function suppressOldHeroFlash(){
-    if(!HOME()||!MOBILE())return;
-    const hero=document.querySelector('.hero');
-    if(!hero)return;
-    hero.classList.add('vyrdict-mobile-hero-booting');
-    const reveal=()=>hero.classList.remove('vyrdict-mobile-hero-booting');
-    if(document.querySelector('[data-vyrdict-current-hero],.vyrdict-current-hero,.hero-current'))reveal();
-    else setTimeout(reveal,1200);
-  }
-
-  function injectBootStyle(){
-    if(document.getElementById('vyrdict-mobile-home-boot-style'))return;
-    const st=document.createElement('style');
-    st.id='vyrdict-mobile-home-boot-style';
-    st.textContent='@media(max-width:760px){.hero.vyrdict-mobile-hero-booting .stage img,.hero.vyrdict-mobile-hero-booting .stage picture{visibility:hidden!important}}';
-    document.head.appendChild(st);
+    if(cleanupLegacyAfterCurrent())return;
+    concealLegacyTrend();
+    forceTrending();
   }
 
   function apply(){
     if(!HOME()||!MOBILE())return;
-    injectBootStyle();
-    suppressOldHeroFlash();
     ensureTrending();
-    removeLegacyTrendSections();
     restoreSkip();
   }
 
   function schedule(){
-    clearTimeout(timer);timer=setTimeout(apply,20);
-    [100,250,500,900,1500,2500,4000].forEach(ms=>setTimeout(apply,ms));
+    clearTimeout(timer);timer=setTimeout(apply,10);
+    [80,180,350,700,1200,2000,3200,5000].forEach(ms=>setTimeout(apply,ms));
   }
 
   function watch(){
@@ -100,13 +111,13 @@
     observer=new MutationObserver(()=>{
       if(!HOME()||!MOBILE())return;
       clearTimeout(timer);timer=setTimeout(()=>{
-        removeLegacyTrendSections();restoreSkip();ensureTrending();
-      },40);
+        ensureTrending();restoreSkip();
+      },35);
     });
-    observer.observe(target,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','style','class']});
+    observer.observe(target,{childList:true,subtree:true});
   }
 
-  const start=()=>{injectBootStyle();watch();schedule()};
+  const start=()=>{watch();schedule()};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
   addEventListener('pageshow',schedule);
   addEventListener('popstate',schedule);
