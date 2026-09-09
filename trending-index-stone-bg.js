@@ -11,8 +11,8 @@
     /* Trending Index background only. Keep all existing layout, cards and interactions unchanged. */
     .vyrdict-index-gallery,
     .vyrdict-index-claw{
-      --stone:#ECE7DF!important;
-      background:#ECE7DF!important;
+      --stone:#F2F1ED!important;
+      background:#F2F1ED!important;
       background-image:none!important;
     }
   `;
