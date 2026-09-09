@@ -1,7 +1,5 @@
-const fs=require('fs');
-const path=require('path');
 const BUNDLE='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-bundle-fast?v=18';
-const mem={desktop:null,mobile:null};
+let mem=null;
 
 function patch(html){
   html=String(html||'')
@@ -22,32 +20,32 @@ function patch(html){
 
   const preboot='<style id="vyrdict-server-home-preboot">html,body{background:#f4ede5}.hero .stage{visibility:hidden!important}</style>';
   const categoryCleanup='<script id="vyrdict-category-count-cleanup">(()=>{function clean(){document.querySelectorAll("[data-category]").forEach(el=>{for(const n of el.childNodes){if(n.nodeType===3&&/\\s*[·•]\\s*\\d+\\s*$/.test(n.textContent||""))n.textContent=(n.textContent||"").replace(/\\s*[·•]\\s*\\d+\\s*$/,"")}})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",clean,{once:true});else clean();setTimeout(clean,350);addEventListener("popstate",()=>setTimeout(clean,50))})();<\/script>';
-  const enhancements='<script src="/navigation-context.js?v=3-20260907" defer><\/script><script src="/navigation-guard.js?v=1" defer><\/script><script src="/homepage-simplify.js?v=14" defer><\/script><script src="/category-expander-failsafe.js?v=1" defer><\/script><script src="/product-fast.js?v=8" defer><\/script><script src="/analytics.js?v=perf-4" defer><\/script><script src="/product-detail-consistency.js?v=3" defer><\/script><script src="/product-card-alignment.js?v=2" defer><\/script><script src="/top-nav-section-fix.js?v=3" defer><\/script><script src="/homepage-hero-variety.js?v=8" defer><\/script><script src="/mobile-current-hero.js?v=1" defer><\/script><script src="/home-featured-rows.js?v=6" defer><\/script><script src="/worth-show-less-fix.js?v=3" defer><\/script><script src="/weekly-ranking-expand.js?v=31-20260907" defer><\/script><script src="/social-links-fix.js?v=7" defer><\/script><script src="/skip-list-reliable.js?v=1" defer><\/script>';
+  const enhancements='<script src="/navigation-context.js?v=3-20260907" defer><\/script><script src="/navigation-guard.js?v=1" defer><\/script><script src="/homepage-simplify.js?v=14" defer><\/script><script src="/category-expander-failsafe.js?v=1" defer><\/script><script src="/product-fast.js?v=8" defer><\/script><script src="/analytics.js?v=perf-4" defer><\/script><script src="/product-detail-consistency.js?v=3" defer><\/script><script src="/product-card-alignment.js?v=2" defer><\/script><script src="/top-nav-section-fix.js?v=3" defer><\/script><script src="/homepage-hero-variety.js?v=8" defer><\/script><script src="/mobile-current-hero.js?v=1" defer><\/script><script src="/home-featured-rows.js?v=6" defer><\/script><script src="/worth-show-less-fix.js?v=3" defer><\/script><script src="/weekly-ranking-expand.js?v=31-20260907" defer><\/script><script src="/social-links-fix.js?v=7" defer><\/script><script src="/skip-list-reliable.js?v=1" defer><\/script><script src="/trending-index-claw.js?v=4-20260909" defer><\/script>';
   if(html.includes('</head>'))html=html.replace('</head>',preboot+'</head>');
   if(html.includes('</body>'))html=html.replace('</body>',categoryCleanup+enhancements+'</body>');
   return html;
 }
 
-async function getBundle(mode,ua){
+async function getBundle(){
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),8000);
   try{
-    const r=await fetch(BUNDLE,{headers:{accept:'application/json','user-agent':ua||''},cache:'no-store',signal:controller.signal});
+    // Deliberately do not forward the visitor User-Agent. The homepage markup
+    // must be identical on mobile and desktop; responsive behavior belongs in CSS/JS.
+    const r=await fetch(BUNDLE,{headers:{accept:'application/json'},cache:'no-store',signal:controller.signal});
     if(!r.ok)throw new Error(`bundle ${r.status}`);
     const d=await r.json();
     if(!d?.html)throw new Error('bundle missing html');
     const html=patch(d.html);
-    mem[mode]={html,ts:Date.now()};
+    mem={html,ts:Date.now()};
     return html;
   }finally{clearTimeout(timer)}
 }
 
 module.exports=async function handler(req,res){
-  const ua=String(req.headers['user-agent']||'');
-  const mode=/android|iphone|ipad|ipod|mobile|pixel/i.test(ua)?'mobile':'desktop';
   let html;
-  try{html=await getBundle(mode,ua)}catch(e){
-    if(mem[mode]?.html)html=mem[mode].html;
+  try{html=await getBundle()}catch(e){
+    if(mem?.html)html=mem.html;
     else{
       res.setHeader('Content-Type','text/html; charset=utf-8');
       res.setHeader('Cache-Control','no-store');
@@ -55,7 +53,6 @@ module.exports=async function handler(req,res){
     }
   }
   res.setHeader('Content-Type','text/html; charset=utf-8');
-  res.setHeader('Cache-Control','public, max-age=0, s-maxage=120, stale-while-revalidate=86400, must-revalidate');
-  res.setHeader('Vary','User-Agent');
+  res.setHeader('Cache-Control','public, max-age=0, s-maxage=60, stale-while-revalidate=120, must-revalidate');
   return res.status(200).send(html);
 };
