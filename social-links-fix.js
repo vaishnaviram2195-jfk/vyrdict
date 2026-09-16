@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictSocialLinksV7)return;
-  window.__vyrdictSocialLinksV7=1;
+  if(window.__vyrdictSocialLinksV8)return;
+  window.__vyrdictSocialLinksV8=1;
   const TIKTOK_URL='https://www.tiktok.com/@vyrdict';
   const SNOOPY_STICKER_URL='https://about.starbucks.com/uploads/2026/08/PeanutsMerchFall2026-02995-1024x710.jpg';
   let timer=0;
@@ -22,29 +22,64 @@
     const s=document.createElement('style');
     s.id='vyrdict-editorial-sticker-style';
     s.textContent=`
-      .vyrdict-editorial-with-sticker{position:relative!important}
-      .vyrdict-snoopy-sticker{position:absolute;right:18px;top:18px;width:92px;height:92px;object-fit:cover;object-position:52% 38%;border-radius:999px;border:3px solid #fff;box-shadow:0 8px 22px rgba(34,27,20,.15);background:#fff;z-index:3;pointer-events:none;user-select:none}
-      @media(max-width:700px){.vyrdict-snoopy-sticker{width:66px;height:66px;right:12px;top:12px;border-width:2px;box-shadow:0 6px 16px rgba(34,27,20,.14)}}
+      .vyrdict-editorial-sticker-panel{position:relative!important}
+      .vyrdict-snoopy-sticker{position:absolute;right:16px;top:14px;width:72px;height:72px;object-fit:cover;object-position:52% 38%;border-radius:999px;border:3px solid #fff;box-shadow:0 6px 16px rgba(34,27,20,.14);background:#fff;z-index:4;pointer-events:none;user-select:none}
+      @media(max-width:700px){.vyrdict-snoopy-sticker{width:56px;height:56px;right:10px;top:10px;border-width:2px;box-shadow:0 5px 12px rgba(34,27,20,.12)}}
     `;
     document.head.appendChild(s);
   }
 
   function norm(v){return String(v||'').toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim()}
+
+  function findEditorialPanel(){
+    const nodes=[...document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,div')];
+    const labels=nodes.filter(el=>{const t=norm(el.textContent);return t.includes("why it's trending now")||t.includes('why its trending now')});
+    if(!labels.length)return null;
+    labels.sort((a,b)=>norm(a.textContent).length-norm(b.textContent).length);
+    const label=labels[0];
+
+    let current=label;
+    let leftPanel=null;
+    for(let i=0;i<10&&current?.parentElement;i++){
+      const parent=current.parentElement;
+      const pt=norm(parent.textContent);
+      if(pt.includes('starbucks')&&pt.includes('snoopy')&&pt.includes("what we're watching")){
+        leftPanel=current;
+        break;
+      }
+      current=parent;
+    }
+
+    if(leftPanel){
+      const lt=norm(leftPanel.textContent);
+      if(lt.includes('starbucks')&&lt.includes('snoopy')&&!lt.includes("what we're watching"))return leftPanel;
+    }
+
+    const headline=nodes.find(el=>norm(el.textContent).includes('starbucks just made snoopy the main character of fall'));
+    if(headline){
+      let candidate=headline;
+      for(let i=0;i<7&&candidate?.parentElement;i++){
+        const parent=candidate.parentElement;
+        const pt=norm(parent.textContent);
+        if(pt.includes("what we're watching"))break;
+        candidate=parent;
+      }
+      if(candidate&&candidate!==document.body&&candidate!==document.documentElement)return candidate;
+    }
+    return null;
+  }
+
   function patchEditorialSticker(){
     if(location.pathname!=='/'&&location.pathname!=='')return;
-    if(document.querySelector('.vyrdict-snoopy-sticker'))return;
-    const candidates=[...document.querySelectorAll('h1,h2,h3,h4,h5,p,span,div')];
-    const label=candidates.find(el=>{const t=norm(el.textContent);return t.includes("why it's trending now")||t.includes('why its trending now')});
-    if(!label)return;
-    let root=label;
-    for(let i=0;i<7&&root;i++,root=root.parentElement){
-      const t=norm(root.textContent);
-      if(t.includes('starbucks')&&t.includes('snoopy'))break;
-    }
-    if(!root)root=label.parentElement;
-    if(!root||root===document.body||root===document.documentElement)return;
+    const panel=findEditorialPanel();
+    if(!panel)return;
+
+    document.querySelectorAll('.vyrdict-snoopy-sticker').forEach(el=>{if(el.parentElement!==panel)el.remove()});
+    document.querySelectorAll('.vyrdict-editorial-sticker-panel').forEach(el=>{if(el!==panel)el.classList.remove('vyrdict-editorial-sticker-panel')});
+
+    if(panel.querySelector(':scope > .vyrdict-snoopy-sticker'))return;
     addEditorialStickerStyle();
-    root.classList.add('vyrdict-editorial-with-sticker');
+    panel.classList.add('vyrdict-editorial-sticker-panel');
     const img=document.createElement('img');
     img.className='vyrdict-snoopy-sticker';
     img.src=SNOOPY_STICKER_URL;
@@ -52,7 +87,7 @@
     img.setAttribute('aria-hidden','true');
     img.decoding='async';
     img.loading='eager';
-    root.appendChild(img);
+    panel.appendChild(img);
   }
 
   function queue(delay=80){clearTimeout(timer);timer=setTimeout(()=>{patchTikTokLinks();patchEditorialSticker()},delay)}
