@@ -1,8 +1,8 @@
 (()=>{
-  if(window.__vyrdictSocialLinksV8)return;
-  window.__vyrdictSocialLinksV8=1;
+  if(window.__vyrdictSocialLinksV9)return;
+  window.__vyrdictSocialLinksV9=1;
   const TIKTOK_URL='https://www.tiktok.com/@vyrdict';
-  const SNOOPY_STICKER_URL='https://about.starbucks.com/uploads/2026/08/PeanutsMerchFall2026-02995-1024x710.jpg';
+  const SNOOPY_STICKER_URL='https://about.starbucks.com/uploads/2026/09/PeanutsMerchFall2026-03031-scaled.jpg';
   let timer=0;
 
   function patchTikTokLinks(root=document){
@@ -23,8 +23,8 @@
     s.id='vyrdict-editorial-sticker-style';
     s.textContent=`
       .vyrdict-editorial-sticker-panel{position:relative!important}
-      .vyrdict-snoopy-sticker{position:absolute;right:16px;top:14px;width:72px;height:72px;object-fit:cover;object-position:52% 38%;border-radius:999px;border:3px solid #fff;box-shadow:0 6px 16px rgba(34,27,20,.14);background:#fff;z-index:4;pointer-events:none;user-select:none}
-      @media(max-width:700px){.vyrdict-snoopy-sticker{width:56px;height:56px;right:10px;top:10px;border-width:2px;box-shadow:0 5px 12px rgba(34,27,20,.12)}}
+      .vyrdict-snoopy-sticker{position:absolute;right:20px;top:18px;width:132px;height:132px;object-fit:cover;object-position:54% 48%;border-radius:999px;border:4px solid #fff;box-shadow:0 10px 24px rgba(34,27,20,.16);background:#fff;z-index:4;pointer-events:none;user-select:none}
+      @media(max-width:700px){.vyrdict-snoopy-sticker{width:88px;height:88px;right:12px;top:12px;border-width:3px;box-shadow:0 7px 17px rgba(34,27,20,.14)}}
     `;
     document.head.appendChild(s);
   }
