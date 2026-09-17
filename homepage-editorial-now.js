@@ -1,9 +1,9 @@
 (()=>{
-  if(window.__vyrdictStoriesV2)return;
-  window.__vyrdictStoriesV2=1;
+  if(window.__vyrdictStoriesV3)return;
+  window.__vyrdictStoriesV3=1;
 
   const ID='vyrdict-editorial-now';
-  const STYLE_ID='vyrdict-stories-style-v2';
+  const STYLE_ID='vyrdict-stories-style-v3';
   const FEED='/api/stories?limit=4';
   const isHome=()=>location.pathname==='/'||location.pathname==='';
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -29,53 +29,41 @@
     const style=document.createElement('style');
     style.id=STYLE_ID;
     style.textContent=`
-#${ID}{background:#f4ede5;padding:18px 20px 34px;box-sizing:border-box}
-#${ID} .v-stories-shell{width:min(1160px,100%);margin:0 auto;border-top:1px solid rgba(23,21,17,.22);padding-top:22px}
-#${ID} .v-stories-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:22px}
-#${ID} .v-stories-kicker{margin:0 0 8px;font:950 9px/1 Arial,Helvetica,sans-serif;letter-spacing:.15em;text-transform:uppercase;color:#d95070}
-#${ID} .v-stories-head h2{margin:0;font:500 clamp(34px,4.2vw,52px)/.96 Georgia,'Times New Roman',serif;letter-spacing:-.045em;color:#171511}
-#${ID} .v-stories-head p{max-width:360px;margin:0 0 3px;font:12px/1.55 Arial,Helvetica,sans-serif;color:#746d65;text-align:right}
-#${ID} .v-stories-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.75fr);gap:28px;align-items:start}
-#${ID} .v-story-lead{min-width:0}
-#${ID} .v-story-image{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#e7ded4}
-#${ID} .v-story-meta{margin:15px 0 9px;font:900 9px/1.35 Arial,Helvetica,sans-serif;letter-spacing:.095em;text-transform:uppercase;color:#817970}
-#${ID} .v-story-lead h3{margin:0;max-width:780px;font:500 clamp(31px,4vw,48px)/1 Georgia,'Times New Roman',serif;letter-spacing:-.045em;color:#171511}
-#${ID} .v-story-dek{margin:14px 0 0;max-width:770px;font:14px/1.65 Arial,Helvetica,sans-serif;color:#655e57}
-#${ID} .v-story-source{display:inline-flex;align-items:center;margin-top:15px;color:#171511;text-decoration:none;border-bottom:1px solid rgba(23,21,17,.42);padding-bottom:2px;font:900 9px/1.2 Arial,Helvetica,sans-serif;letter-spacing:.075em;text-transform:uppercase}
-#${ID} .v-story-source:hover{opacity:.62}
-#${ID} .v-story-side{border-top:1px solid rgba(23,21,17,.18)}
-#${ID} .v-story-small{display:grid;grid-template-columns:112px minmax(0,1fr);gap:15px;padding:16px 0;border-bottom:1px solid rgba(23,21,17,.18);color:#171511;text-decoration:none;align-items:start}
-#${ID} .v-story-small img{width:112px;height:86px;object-fit:cover;background:#e7ded4}
-#${ID} .v-story-small .v-story-meta{margin:0 0 7px;font-size:8px}
-#${ID} .v-story-small h3{margin:0;font:500 21px/1.08 Georgia,'Times New Roman',serif;letter-spacing:-.025em;color:#171511}
-#${ID} .v-story-small:hover h3{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
-#${ID} .v-stories-grid.is-solo{grid-template-columns:1fr}
-#${ID} .v-stories-grid.is-solo .v-story-lead{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(280px,.78fr);gap:30px;align-items:end}
-#${ID} .v-stories-grid.is-solo .v-story-copy{padding:0 0 6px}
-#${ID} .v-stories-grid.is-solo .v-story-image{aspect-ratio:16/10}
+#${ID}{background:#f4ede5;padding:10px 20px 16px;box-sizing:border-box}
+#${ID} .v-story-strip{width:min(1160px,100%);margin:0 auto;border-top:1px solid rgba(23,21,17,.2);border-bottom:1px solid rgba(23,21,17,.14);padding:13px 0;display:grid;grid-template-columns:150px minmax(0,1fr);gap:20px;align-items:center}
+#${ID} .v-story-brand{align-self:stretch;display:flex;flex-direction:column;justify-content:center;border-right:1px solid rgba(23,21,17,.14);padding-right:18px}
+#${ID} .v-story-kicker{margin:0 0 6px;font:950 8px/1 Arial,Helvetica,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#d95070}
+#${ID} .v-story-brand h2{margin:0;font:500 23px/1 Georgia,'Times New Roman',serif;letter-spacing:-.035em;color:#171511}
+#${ID} .v-story-row{display:grid;grid-template-columns:124px minmax(0,1fr) minmax(220px,.65fr);gap:18px;align-items:center;min-width:0}
+#${ID} .v-story-image{display:block;width:124px;height:82px;object-fit:cover;background:#e7ded4}
+#${ID} .v-story-main{min-width:0}
+#${ID} .v-story-meta{margin:0 0 6px;font:900 8px/1.25 Arial,Helvetica,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#817970;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#${ID} .v-story-title{margin:0;font:500 clamp(20px,2.1vw,28px)/1.05 Georgia,'Times New Roman',serif;letter-spacing:-.03em;color:#171511}
+#${ID} .v-story-action{display:inline-flex;margin-top:7px;color:#171511;text-decoration:none;border-bottom:1px solid rgba(23,21,17,.38);padding-bottom:1px;font:900 8px/1.2 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+#${ID} .v-story-action:hover{opacity:.62}
+#${ID} .v-story-more{border-left:1px solid rgba(23,21,17,.14);padding-left:17px;display:grid;gap:8px;min-width:0}
+#${ID} .v-story-more-label{font:950 7px/1 Arial,Helvetica,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#a09991}
+#${ID} .v-story-mini{display:block;color:#171511;text-decoration:none;font:600 12px/1.3 Arial,Helvetica,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#${ID} .v-story-mini:hover{text-decoration:underline;text-underline-offset:2px}
+#${ID} .v-story-row.is-solo{grid-template-columns:124px minmax(0,1fr)}
 @media(max-width:860px){
-  #${ID} .v-stories-grid{grid-template-columns:1fr;gap:24px}
-  #${ID} .v-story-side{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;border-top:0}
-  #${ID} .v-story-small{display:block;padding:0;border-bottom:0}
-  #${ID} .v-story-small img{width:100%;height:auto;aspect-ratio:4/3;margin-bottom:10px}
-  #${ID} .v-story-small h3{font-size:18px}
-  #${ID} .v-stories-grid.is-solo .v-story-lead{grid-template-columns:1fr;gap:18px}
+  #${ID} .v-story-strip{grid-template-columns:130px minmax(0,1fr);gap:16px}
+  #${ID} .v-story-row{grid-template-columns:106px minmax(0,1fr)}
+  #${ID} .v-story-image{width:106px;height:76px}
+  #${ID} .v-story-more{display:none}
+  #${ID} .v-story-title{font-size:21px}
 }
 @media(max-width:640px){
-  #${ID}{padding:12px 14px 25px}
-  #${ID} .v-stories-shell{padding-top:18px}
-  #${ID} .v-stories-head{display:block;margin-bottom:17px}
-  #${ID} .v-stories-head h2{font-size:38px}
-  #${ID} .v-stories-head p{display:none}
-  #${ID} .v-story-image{aspect-ratio:4/3}
-  #${ID} .v-story-meta{margin-top:12px}
-  #${ID} .v-story-lead h3{font-size:34px;line-height:1.01}
-  #${ID} .v-story-dek{font-size:14px;line-height:1.58}
-  #${ID} .v-story-side{display:block;border-top:1px solid rgba(23,21,17,.18)}
-  #${ID} .v-story-small{display:grid;grid-template-columns:104px minmax(0,1fr);gap:13px;padding:14px 0;border-bottom:1px solid rgba(23,21,17,.18)}
-  #${ID} .v-story-small img{width:104px;height:80px;aspect-ratio:auto;margin:0}
-  #${ID} .v-story-small h3{font-size:19px}
-  #${ID} .v-stories-grid.is-solo .v-story-copy{padding:0}
+  #${ID}{padding:7px 14px 11px}
+  #${ID} .v-story-strip{display:block;padding:11px 0}
+  #${ID} .v-story-brand{border-right:0;padding:0 0 9px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:12px}
+  #${ID} .v-story-kicker{margin:0;font-size:7px}
+  #${ID} .v-story-brand h2{font-size:19px}
+  #${ID} .v-story-row,#${ID} .v-story-row.is-solo{grid-template-columns:94px minmax(0,1fr);gap:12px}
+  #${ID} .v-story-image{width:94px;height:68px}
+  #${ID} .v-story-meta{font-size:7px;margin-bottom:5px}
+  #${ID} .v-story-title{font-size:18px;line-height:1.05;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  #${ID} .v-story-action{font-size:7px;margin-top:6px}
 }
 `;
     document.head.appendChild(style);
@@ -86,42 +74,23 @@
   }
 
   function meta(story){
-    const parts=[story.category,dateLabel(story.published_at)].filter(Boolean);
-    return parts.join('  ·  ');
+    return [story.category,dateLabel(story.published_at)].filter(Boolean).join(' · ');
   }
 
   function href(story){return story.instagram_url||story.source_url||''}
 
-  function leadMarkup(story){
-    const source=story.source_url&&story.source_label?`<a class="v-story-source" data-vyrdict-story="${esc(story.slug)}" href="${esc(story.source_url)}" target="_blank" rel="noopener noreferrer">Source: ${esc(story.source_label)} ↗</a>`:'';
-    return `<article class="v-story-lead">
-      <img class="v-story-image" src="${esc(story.image_url)}" alt="${esc(story.image_alt||story.headline)}" loading="eager" decoding="async">
-      <div class="v-story-copy">
-        <div class="v-story-meta">${esc(meta(story))}</div>
-        <h3>${esc(story.headline)}</h3>
-        ${story.dek?`<p class="v-story-dek">${esc(story.dek)}</p>`:''}
-        ${source}
-      </div>
-    </article>`;
-  }
-
-  function smallMarkup(story){
-    const url=href(story);
-    const body=`<img src="${esc(story.image_url)}" alt="${esc(story.image_alt||story.headline)}" loading="lazy" decoding="async"><div><div class="v-story-meta">${esc(meta(story))}</div><h3>${esc(story.headline)}</h3></div>`;
-    return url?`<a class="v-story-small" data-vyrdict-story="${esc(story.slug)}" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${body}</a>`:`<article class="v-story-small">${body}</article>`;
-  }
-
   function markup(){
     const lead=stories[0]||FALLBACK[0];
     const rest=stories.slice(1,4);
-    return `<div class="v-stories-shell">
-      <header class="v-stories-head">
-        <div><p class="v-stories-kicker">THE INTERNET, EDITED</p><h2>VYRDICT Stories</h2></div>
-        <p>Fresh drops, collabs and culture moments worth knowing about right now.</p>
-      </header>
-      <div class="v-stories-grid ${rest.length?'':'is-solo'}">
-        ${leadMarkup(lead)}
-        ${rest.length?`<div class="v-story-side" aria-label="More VYRDICT stories">${rest.map(smallMarkup).join('')}</div>`:''}
+    const leadUrl=href(lead);
+    const action=leadUrl?`<a class="v-story-action" data-vyrdict-story="${esc(lead.slug)}" href="${esc(leadUrl)}" target="_blank" rel="noopener noreferrer">Read story ↗</a>`:'';
+    const more=rest.length?`<div class="v-story-more" aria-label="More VYRDICT stories"><div class="v-story-more-label">Also trending</div>${rest.map(s=>{const u=href(s);const body=esc(s.headline);return u?`<a class="v-story-mini" data-vyrdict-story="${esc(s.slug)}" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${body}</a>`:`<span class="v-story-mini">${body}</span>`}).join('')}</div>`:'';
+    return `<div class="v-story-strip">
+      <div class="v-story-brand"><p class="v-story-kicker">THE INTERNET, EDITED</p><h2>VYRDICT Stories</h2></div>
+      <div class="v-story-row ${rest.length?'':'is-solo'}">
+        <img class="v-story-image" src="${esc(lead.image_url)}" alt="${esc(lead.image_alt||lead.headline)}" loading="eager" decoding="async">
+        <div class="v-story-main"><div class="v-story-meta">${esc(meta(lead))}</div><h3 class="v-story-title">${esc(lead.headline)}</h3>${action}</div>
+        ${more}
       </div>
     </div>`;
   }
