@@ -6,12 +6,12 @@ module.exports=async function handler(req,res){
     const requested=Number(req.query?.limit||4);
     const limit=Math.max(1,Math.min(Number.isFinite(requested)?requested:4,8));
     const qs=new URLSearchParams({
-      select:'id,slug,headline,dek,category,image_url,image_alt,source_label,source_url,instagram_url,published_at',
+      select:'id,slug,headline,dek,category,image_url,image_alt,source_label,source_url,instagram_url,published_at,is_featured',
       is_active:'eq.true',
       status:'eq.published',
       published_at:`lte.${new Date().toISOString()}`,
       image_url:'not.is.null',
-      order:'published_at.desc',
+      order:'is_featured.desc,published_at.desc',
       limit:String(limit)
     });
     const r=await fetch(`${SB}?${qs}`,{
