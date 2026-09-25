@@ -19,6 +19,7 @@
     { "src": "/about/?$", "dest": "/about.html" },
     { "src": "/vti-image", "dest": "/api/vti-image" },
     { "src": "/score-discovery/?$", "dest": "/api/score-discovery" },
+    { "src": "/product/oura-ring-4/?$", "dest": "/api/product-seo?slug=oura-ring-5" },
     { "src": "/product/(?<slug>[^/]+)/?$", "dest": "/api/product-seo?slug=$slug" },
     { "src": "/category/(?<slug>[^/]+)/?$", "dest": "/api/category-seo?slug=$slug" },
     { "src": "/category/?$", "dest": "/index.html" },
