@@ -8,6 +8,11 @@ module.exports=async function handler(req,res){
     const data=await r.json();const products=Array.isArray(data.products)?data.products:[];
     const staticPages=[
       ['https://vyrdict.com/','daily'],
+      ['https://vyrdict.com/viral-10/','daily'],
+      ['https://vyrdict.com/edit/nightstand-essentials/','weekly'],
+      ['https://vyrdict.com/battle/dyson-airwrap-vs-shark-flexstyle/','weekly'],
+      ['https://vyrdict.com/collection/celebrity-effect/','daily'],
+      ['https://vyrdict.com/collection/seen-on-screen/','daily'],
       ['https://vyrdict.com/about','monthly'],
       ['https://vyrdict.com/how-vyrdict-scores.html','monthly'],
       ['https://vyrdict.com/editorial-policy.html','monthly'],
