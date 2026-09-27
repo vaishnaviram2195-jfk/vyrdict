@@ -12,9 +12,10 @@
     {
       "src": "^/$",
       "headers": {
-        "Cache-Control": "public, max-age=0, s-maxage=60, stale-while-revalidate=120, must-revalidate"
+        "Cache-Control": "no-store, max-age=0, must-revalidate",
+        "CDN-Cache-Control": "no-store"
       },
-      "dest": "/api/home"
+      "dest": "/api/home-stable"
     },
     { "src": "/about/?$", "dest": "/about.html" },
     { "src": "/vti-image", "dest": "/api/vti-image" },
