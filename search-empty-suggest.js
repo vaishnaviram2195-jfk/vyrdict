@@ -22,16 +22,21 @@
   }
 
   const clean=s=>String(s||'').replace(/^['“”\"]+|['“”\"]+$/g,'').trim();
+  const isSearchPage=()=>/^\/search\/?$/i.test(location.pathname)||/^#\/search(?:[/?]|$)/i.test(location.hash);
   function queryFromPage(){
-    const h=[...document.querySelectorAll('h1,h2')].find(x=>{
-      const r=x.getBoundingClientRect();
-      return r.width>0&&r.height>0&&r.top<700;
-    });
-    if(h){const t=clean(h.textContent);if(t&&t.length<170&&!/verified search/i.test(t))return t;}
+    const params=new URLSearchParams(location.search);
+    const query=params.get('q')||params.get('query')||params.get('search');
+    if(query)return clean(query);
     const hash=decodeURIComponent(location.hash||'');
     let m=hash.match(/#\/search\/(.+)$/i);if(m)return clean(m[1]);
     m=hash.match(/[?&](?:q|query|search)=([^&]+)/i);if(m)return clean(m[1]);
     return '';
+  }
+
+  function refineSavedEmpty(){
+    if(!/^\/saved\/?$/i.test(location.pathname))return;
+    const empty=findEmpty();
+    if(empty)empty.textContent='Nothing saved yet. Tap ♡ on a product to add it to your shortlist.';
   }
 
   function findEmpty(){
@@ -48,6 +53,11 @@
   }
 
   function mount(){
+    if(!isSearchPage()){
+      document.getElementById(CARD_ID)?.remove();
+      refineSavedEmpty();
+      return false;
+    }
     const empty=findEmpty();
     if(!empty){removeIfNotEmpty();return false;}
     let card=document.getElementById(CARD_ID);

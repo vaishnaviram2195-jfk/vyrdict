@@ -22,7 +22,6 @@
     { "src": "/viral-10/?$", "dest": "/api/removed-growth" },
     { "src": "/edit/nightstand-essentials/?$", "dest": "/api/removed-growth" },
     { "src": "/battle/dyson-airwrap-vs-shark-flexstyle/?$", "dest": "/api/removed-growth" },
-    { "src": "/collection/(?:celebrity-effect|seen-on-screen)/?$", "dest": "/api/removed-growth" },
     { "src": "/product/oura-ring-4/?$", "dest": "/api/product-legacy-redirect?to=oura-ring-5" },
     { "src": "/product/(?<slug>[^/]+)/?$", "dest": "/api/product-seo?slug=$slug" },
     { "src": "/category/(?<slug>[^/]+)/?$", "dest": "/api/category-seo?slug=$slug" },
