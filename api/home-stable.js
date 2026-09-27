@@ -1,6 +1,6 @@
 const homeHandler=require('./home');
 
-const REV='20260927-home-motion-4';
+const REV='20260927-home-motion-5';
 const SCRIPT_REVISIONS=[
   ['/spa-navigation-fast.js?v=1-20260905-perf',`/spa-navigation-fast.js?v=${REV}`],
   ['/homepage-simplify.js?v=14',`/homepage-simplify.js?v=${REV}`],
