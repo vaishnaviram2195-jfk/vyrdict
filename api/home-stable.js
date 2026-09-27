@@ -1,6 +1,6 @@
 const homeHandler=require('./home');
 
-const REV='20260927-home-motion-5';
+const REV='20260927-home-motion-6';
 const SCRIPT_REVISIONS=[
   ['/spa-navigation-fast.js?v=1-20260905-perf',`/spa-navigation-fast.js?v=${REV}`],
   ['/homepage-simplify.js?v=14',`/homepage-simplify.js?v=${REV}`],
@@ -34,13 +34,44 @@ body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!impor
   const guard=`<script id="vyrdict-home-revision-${REV}">(()=>{
     window.__VYRDICT_HOME_REV='${REV}';
     try{for(const k of Object.keys(localStorage)){if(/^vyrdict:(?:bundle-cache|home|hero|homepage)/i.test(k))localStorage.removeItem(k)}}catch{}
+    const onHome=()=>location.pathname==='/'||location.pathname==='';
     const mark=()=>{
-      if(location.pathname!=='/'&&location.pathname!=='')return;
+      if(!onHome())return;
       document.body?.classList.add('vyrdict-home-current');
     };
-    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
-    addEventListener('pageshow',()=>setTimeout(mark,20));
-    addEventListener('popstate',()=>setTimeout(mark,20));
+    const holdMotion=()=>{
+      if(!onHome())return;
+      const hero=document.querySelector('.hero.vyrdict-hero-v8');
+      if(!hero)return;
+      document.getElementById('vyrdict-mobile-current-static-layer')?.remove();
+      document.getElementById('vyrdict-mobile-motion-layer')?.remove();
+      document.getElementById('vyrdict-mobile-hero-primary-layer')?.remove();
+      hero.classList.remove('vyrdict-current-static','vyrdict-fullwidth-motion');
+      if(document.documentElement.dataset.vyrdictCurrentHero==='static')delete document.documentElement.dataset.vyrdictCurrentHero;
+      if(!document.getElementById('vyrdict-hero-v8-layer')){
+        const layer=document.createElement('div');
+        layer.id='vyrdict-hero-v8-layer';
+        layer.dataset.bootstrap='${REV}';
+        hero.appendChild(layer);
+      }
+    };
+    const start=()=>{
+      mark();
+      const began=Date.now();
+      const timer=setInterval(()=>{
+        if(!onHome()||Date.now()-began>8000){clearInterval(timer);return}
+        holdMotion();
+      },40);
+      setTimeout(holdMotion,0);
+      setTimeout(holdMotion,80);
+      setTimeout(holdMotion,250);
+      setTimeout(holdMotion,700);
+      setTimeout(holdMotion,1600);
+      setTimeout(holdMotion,3200);
+    };
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+    addEventListener('pageshow',()=>setTimeout(start,20));
+    addEventListener('popstate',()=>setTimeout(start,20));
   })();<\/script>`;
 
   if(html.includes('<html')&&!html.includes('data-vyrdict-home-rev=')){
