@@ -1,6 +1,6 @@
 const homeHandler=require('./home');
 
-const REV='20260927-home-stable-2';
+const REV='20260927-home-restored-3';
 const SCRIPT_REVISIONS=[
   ['/spa-navigation-fast.js?v=1-20260905-perf',`/spa-navigation-fast.js?v=${REV}`],
   ['/homepage-simplify.js?v=14',`/homepage-simplify.js?v=${REV}`],
@@ -20,48 +20,26 @@ function currentHomePatch(input){
 
   const css=`<style id="vyrdict-home-stable-${REV}">
 html,body{background:#f4ede5}
-body.vyrdict-home-calm .hero h1{font-size:clamp(42px,5vw,68px)!important;line-height:.94!important;letter-spacing:-.045em!important}
-body.vyrdict-home-calm .section .head h2{font-size:clamp(32px,3.65vw,46px)!important;line-height:1!important;letter-spacing:-.04em!important}
-body.vyrdict-home-calm .section .head h3{font-size:clamp(26px,3vw,38px)!important;line-height:1.03!important}
-body.vyrdict-home-calm .hero .stage .p4,
-body.vyrdict-home-calm .hero .stage .p5,
-body.vyrdict-home-calm .hero .stage .p6,
-body.vyrdict-home-calm .hero .stage .sticker.eyes,
-body.vyrdict-home-calm .hero .stage .sticker.flag,
-body.vyrdict-home-calm #vyrdict-hero-v8-layer,
-body.vyrdict-home-calm #vyrdict-mobile-current-static-layer,
-body.vyrdict-home-calm #vyrdict-mobile-motion-layer,
-body.vyrdict-home-calm #vyrdict-mobile-hero-primary-layer,
-body.vyrdict-home-calm .vyrdict-screen-match{display:none!important}
-body:not(.vyrdict-home-calm) .hero h1{font-size:clamp(38px,4.4vw,58px)!important;line-height:.98!important;letter-spacing:-.035em!important}
+body.vyrdict-home-current .hero h1{font-size:clamp(42px,5vw,68px)!important;line-height:.94!important;letter-spacing:-.045em!important}
+body.vyrdict-home-current .section .head h2{font-size:clamp(32px,3.65vw,46px)!important;line-height:1!important;letter-spacing:-.04em!important}
+body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!important;line-height:1.03!important}
 @media(max-width:700px){
-  body.vyrdict-home-calm .hero h1{font-size:clamp(38px,10.5vw,50px)!important;line-height:.96!important}
-  body.vyrdict-home-calm .section .head h2{font-size:clamp(28px,8.5vw,36px)!important;line-height:1!important}
-  body.vyrdict-home-calm .section .head h3{font-size:clamp(24px,7vw,32px)!important}
-  body:not(.vyrdict-home-calm) .hero h1{font-size:clamp(34px,9vw,46px)!important}
+  body.vyrdict-home-current .hero h1{font-size:clamp(38px,10.5vw,50px)!important;line-height:.96!important}
+  body.vyrdict-home-current .section .head h2{font-size:clamp(28px,8.5vw,36px)!important;line-height:1!important}
+  body.vyrdict-home-current .section .head h3{font-size:clamp(24px,7vw,32px)!important}
 }
 </style>`;
 
   const guard=`<script id="vyrdict-home-revision-${REV}">(()=>{
     window.__VYRDICT_HOME_REV='${REV}';
     try{for(const k of Object.keys(localStorage)){if(/^vyrdict:(?:bundle-cache|home|hero|homepage)/i.test(k))localStorage.removeItem(k)}}catch{}
-    const clean=()=>{
+    const mark=()=>{
       if(location.pathname!=='/'&&location.pathname!=='')return;
-      document.body?.classList.add('vyrdict-home-calm');
-      document.querySelectorAll('#vyrdict-hero-v8-layer,#vyrdict-mobile-current-static-layer,#vyrdict-mobile-motion-layer,#vyrdict-mobile-hero-primary-layer,.vyrdict-screen-match').forEach(n=>n.remove());
-      document.querySelectorAll('.hero .stage .p4,.hero .stage .p5,.hero .stage .p6,.hero .stage .sticker.eyes,.hero .stage .sticker.flag').forEach(n=>{n.style.setProperty('display','none','important')});
-      for(const el of [...document.querySelectorAll('section,div,aside')]){
-        const t=(el.textContent||'').replace(/\s+/g,' ').trim();
-        if((/VYRDICT Discovery/i.test(t)&&/Go deeper than the feed/i.test(t))||(/^Go deeper than the feed/i.test(t)&&t.length<500)){
-          const parent=el.closest('section')||el;
-          if(parent&&!parent.classList.contains('hero'))parent.remove();
-        }
-      }
+      document.body?.classList.add('vyrdict-home-current');
     };
-    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',clean,{once:true});else clean();
-    [60,180,420,900,1600].forEach(ms=>setTimeout(clean,ms));
-    addEventListener('pageshow',()=>setTimeout(clean,20));
-    addEventListener('popstate',()=>setTimeout(clean,20));
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
+    addEventListener('pageshow',()=>setTimeout(mark,20));
+    addEventListener('popstate',()=>setTimeout(mark,20));
   })();<\/script>`;
 
   if(html.includes('<html')&&!html.includes('data-vyrdict-home-rev=')){
