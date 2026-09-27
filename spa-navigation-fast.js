@@ -1,9 +1,42 @@
 (()=>{
-  if(window.__vyrdictSpaNavigationFastV1)return;
-  window.__vyrdictSpaNavigationFastV1=1;
+  if(window.__vyrdictSpaNavigationFastV2)return;
+  window.__vyrdictSpaNavigationFastV2=1;
 
+  const INITIAL_PATH=location.pathname||'/';
+  const INITIAL_NON_HOME=INITIAL_PATH!=='/'&&INITIAL_PATH!=='';
   const normPath=p=>{try{return new URL(p,location.href).pathname}catch{return String(p||'')}};
   const onProduct=()=>/^\/product\/[^/]+\/?$/i.test(location.pathname||'');
+  const isHome=()=>location.pathname==='/'||location.pathname==='';
+  const needsCompactTitle=()=>/^\/(?:collection(?:\/|$)|saved\/?$|search\/?$)/i.test(location.pathname||'');
+
+  function installStabilityCss(){
+    if(document.getElementById('vyrdict-route-stability-v2'))return;
+    const s=document.createElement('style');
+    s.id='vyrdict-route-stability-v2';
+    s.textContent=`
+      #vyrdict-growth-entry{display:none!important}
+      html[data-vyrdict-compact-title="1"] body h1{font-size:clamp(36px,4vw,54px)!important;line-height:.98!important;letter-spacing:-.045em!important}
+      html[data-vyrdict-home="1"] #vyrdict-hero-v8-layer,
+      html[data-vyrdict-home="1"] #vyrdict-mobile-current-static-layer,
+      html[data-vyrdict-home="1"] #vyrdict-mobile-motion-layer,
+      html[data-vyrdict-home="1"] #vyrdict-mobile-hero-primary-layer{display:none!important}
+      html[data-vyrdict-home="1"] body .hero .stage .p4,
+      html[data-vyrdict-home="1"] body .hero .stage .p5,
+      html[data-vyrdict-home="1"] body .hero .stage .p6{display:none!important}
+      @media(max-width:700px){html[data-vyrdict-compact-title="1"] body h1{font-size:clamp(34px,10vw,44px)!important;line-height:1!important}}
+    `;
+    document.head.appendChild(s);
+  }
+
+  function syncRouteUi(){
+    installStabilityCss();
+    document.documentElement.dataset.vyrdictHome=isHome()?'1':'0';
+    document.documentElement.dataset.vyrdictCompactTitle=needsCompactTitle()?'1':'0';
+    // This section was an unapproved experiment. Hide/remove any copy that may
+    // still be alive in an older cached SPA session.
+    const growth=document.getElementById('vyrdict-growth-entry');
+    if(growth)growth.style.setProperty('display','none','important');
+  }
 
   function productDest(target){
     if(!target||onProduct())return '';
@@ -23,7 +56,7 @@
   }
 
   function lockVerifiedCount(){
-    if((location.pathname||'/')!=='/')return;
+    if(!isHome())return;
     const candidates=[...document.querySelectorAll('button,a,[role="button"]')];
     for(const el of candidates){
       const text=String(el.textContent||'').replace(/\s+/g,' ').trim();
@@ -33,14 +66,22 @@
     }
   }
 
+  function hardHome(){
+    if(isHome())return false;
+    location.assign('/');
+    return true;
+  }
+
   document.addEventListener('click',e=>{
     if(e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
     const t=e.target instanceof Element?e.target:null;if(!t)return;
 
     const home=t.closest?.('[data-vyrdict-home="1"]');
-    if(home&&typeof window.nav==='function'){
+    const anchor=t.closest?.('a[href]');
+    const sameOriginHome=anchor&&anchor.target!=='_blank'&&!anchor.hasAttribute('download')&&normPath(anchor.href)==='/';
+    if((home||sameOriginHome)&&!isHome()){
       e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-      try{window.nav('/')}catch{history.pushState({vyrdict:true,from:location.pathname+location.search},'','/');window.route?.()}
+      hardHome();
       return;
     }
 
@@ -50,9 +91,28 @@
     window.nav(dest);
   },true);
 
-  const applyCount=()=>{lockVerifiedCount();setTimeout(lockVerifiedCount,80);setTimeout(lockVerifiedCount,350)};
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyCount,{once:true});else applyCount();
-  addEventListener('pageshow',applyCount);
-  addEventListener('popstate',applyCount);
-  new MutationObserver(()=>{clearTimeout(window.__vyrdictCountLockTimer);window.__vyrdictCountLockTimer=setTimeout(lockVerifiedCount,30)}).observe(document.documentElement,{childList:true,subtree:true});
+  const apply=()=>{
+    syncRouteUi();
+    lockVerifiedCount();
+    setTimeout(()=>{syncRouteUi();lockVerifiedCount()},80);
+    setTimeout(()=>{syncRouteUi();lockVerifiedCount()},350);
+  };
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
+  addEventListener('pageshow',apply);
+  addEventListener('popstate',()=>{
+    syncRouteUi();
+    // Collection/saved/search pages are served by the generic SPA shell. If a
+    // browser-back transition reaches Home from one of those shells, reload the
+    // canonical Home endpoint so an older homepage snapshot cannot resurface.
+    if(INITIAL_NON_HOME&&isHome()){
+      location.replace('/');
+      return;
+    }
+    apply();
+  });
+  new MutationObserver(()=>{
+    clearTimeout(window.__vyrdictRouteStabilityTimer);
+    window.__vyrdictRouteStabilityTimer=setTimeout(()=>{syncRouteUi();lockVerifiedCount()},30);
+  }).observe(document.documentElement,{childList:true,subtree:true});
 })();
