@@ -1,11 +1,12 @@
 const homeHandler=require('./home');
 
-const REV='20260927-home-restored-3';
+const REV='20260927-home-motion-4';
 const SCRIPT_REVISIONS=[
   ['/spa-navigation-fast.js?v=1-20260905-perf',`/spa-navigation-fast.js?v=${REV}`],
   ['/homepage-simplify.js?v=14',`/homepage-simplify.js?v=${REV}`],
   ['/homepage-editorial-now.js?v=2-20260917',`/homepage-editorial-now.js?v=${REV}`],
   ['/homepage-hero-variety.js?v=8',`/homepage-hero-variety.js?v=${REV}`],
+  ['/mobile-current-hero.js?v=1',`/mobile-current-hero.js?v=${REV}`],
   ['/mobile-current-hero.js?v=3-20260909',`/mobile-current-hero.js?v=${REV}`],
   ['/home-featured-rows.js?v=6',`/home-featured-rows.js?v=${REV}`],
   ['/weekly-ranking-expand.js?v=32-20260909',`/weekly-ranking-expand.js?v=${REV}`],
