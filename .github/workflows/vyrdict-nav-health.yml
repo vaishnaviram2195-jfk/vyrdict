@@ -9,6 +9,7 @@ on:
       - 'navigation-guard.js'
       - 'api/home.js'
       - 'api/home-stable.js'
+      - 'vercel.json'
   workflow_dispatch:
 
 permissions:
@@ -21,7 +22,7 @@ concurrency:
 jobs:
   nav:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 10
     steps:
       - name: Install Playwright Chromium
         run: |
@@ -34,28 +35,31 @@ jobs:
         run: |
           cat > nav-check.js <<'JS'
           const { chromium } = require('playwright');
+          const HOME='https://vyrdict.com/';
           (async()=>{
             const browser=await chromium.launch({headless:true});
             const page=await browser.newPage({viewport:{width:1440,height:1000}});
-            page.on('console',m=>console.log('BROWSER:',m.type(),m.text()));
             page.on('pageerror',e=>console.log('PAGEERROR:',e.message));
-            await page.goto('https://vyrdict.com/?nav-health='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+            async function loadHome(){
+              await page.goto(HOME+'?nav-health='+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
+              await page.waitForTimeout(2600);
+            }
+            await loadHome();
             console.log('HOME',page.url(),await page.title());
             const nav=await page.locator('header a, header button, nav a, nav button, [data-nav]').evaluateAll(els=>els.map(e=>({tag:e.tagName,text:(e.textContent||'').replace(/\s+/g,' ').trim(),href:e.getAttribute('href'),dataNav:e.getAttribute('data-nav'),id:e.id,cls:e.className})).filter(x=>/explore|categories|culture|account|save/i.test(x.text)));
             console.log('NAV',JSON.stringify(nav,null,2));
-            const ids=await page.locator('[id]').evaluateAll(els=>els.map(e=>({id:e.id,text:(e.textContent||'').replace(/\s+/g,' ').trim().slice(0,100)})).filter(x=>/explore|categor|culture|account|save/i.test(x.id+' '+x.text)).slice(0,80));
-            console.log('TARGETS',JSON.stringify(ids,null,2));
+            const targets=await page.locator('[id],section,.section,[data-section]').evaluateAll(els=>els.map(e=>({tag:e.tagName,id:e.id,dataSection:e.getAttribute('data-section'),cls:e.className,text:(e.textContent||'').replace(/\s+/g,' ').trim().slice(0,140)})).filter(x=>/viral|trend|explore|categor|culture|account|save/i.test((x.id||'')+' '+(x.dataSection||'')+' '+(x.cls||'')+' '+x.text)).slice(0,120));
+            console.log('TARGETS',JSON.stringify(targets,null,2));
             for(const label of ['Explore','Categories','Culture','Account','Saves']){
-              await page.goto('https://vyrdict.com/?nav-health='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+              await loadHome();
               const loc=page.locator('header a, header button, nav a, nav button, [data-nav]').filter({hasText:new RegExp('^\\s*'+label+'\\s*','i')}).first();
               console.log('CHECK',label,'count',await loc.count());
               if(!await loc.count())continue;
-              console.log('BEFORE',label,page.url(),await loc.getAttribute('href'));
+              console.log('BEFORE',label,page.url(),await loc.getAttribute('href'),await loc.getAttribute('data-nav'));
               try{await loc.click({timeout:8000});}catch(e){console.log('CLICKERR',label,e.message.split('\n')[0]);continue}
-              await page.waitForTimeout(1800);
-              console.log('AFTER',label,page.url());
-              console.log('SCROLL',label,await page.evaluate(()=>Math.round(scrollY)));
-              console.log('VISIBLE',label,await page.locator('body').innerText().then(t=>t.slice(0,700).replace(/\n/g,' | ')));
+              await page.waitForTimeout(1600);
+              console.log('AFTER',label,page.url(),'scroll',await page.evaluate(()=>Math.round(scrollY)));
+              console.log('TEXT',label,(await page.locator('body').innerText()).slice(0,900).replace(/\n/g,' | '));
             }
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
