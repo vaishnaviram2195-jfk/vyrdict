@@ -1,0 +1,62 @@
+name: VYRDICT Navigation Health
+
+on:
+  push:
+    paths:
+      - '.github/workflows/vyrdict-nav-health.yml'
+      - 'top-nav-section-fix.js'
+      - 'navigation-context.js'
+      - 'navigation-guard.js'
+      - 'api/home.js'
+      - 'api/home-stable.js'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vyrdict-nav-health
+  cancel-in-progress: true
+
+jobs:
+  nav:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Install Playwright Chromium
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+
+      - name: Inspect live homepage navigation
+        shell: bash
+        run: |
+          cat > /tmp/nav-check.js <<'JS'
+          const { chromium } = require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const page=await browser.newPage({viewport:{width:1440,height:1000}});
+            page.on('console',m=>console.log('BROWSER:',m.type(),m.text()));
+            page.on('pageerror',e=>console.log('PAGEERROR:',e.message));
+            await page.goto('https://vyrdict.com/?nav-health='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+            console.log('HOME',page.url(),await page.title());
+            const nav=await page.locator('header a, header button, nav a, nav button, [data-nav]').evaluateAll(els=>els.map(e=>({tag:e.tagName,text:(e.textContent||'').replace(/\s+/g,' ').trim(),href:e.getAttribute('href'),dataNav:e.getAttribute('data-nav'),id:e.id,cls:e.className})).filter(x=>/explore|categories|culture|account|save/i.test(x.text)));
+            console.log('NAV',JSON.stringify(nav,null,2));
+            const ids=await page.locator('[id]').evaluateAll(els=>els.map(e=>({id:e.id,text:(e.textContent||'').replace(/\s+/g,' ').trim().slice(0,100)})).filter(x=>/explore|categor|culture|account|save/i.test(x.id+' '+x.text)).slice(0,80));
+            console.log('TARGETS',JSON.stringify(ids,null,2));
+            for(const label of ['Explore','Categories','Culture','Account','Saves']){
+              await page.goto('https://vyrdict.com/?nav-health='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+              const loc=page.locator('header a, header button, nav a, nav button, [data-nav]').filter({hasText:new RegExp('^\\s*'+label+'\\s*','i')}).first();
+              console.log('CHECK',label,'count',await loc.count());
+              if(!await loc.count())continue;
+              console.log('BEFORE',label,page.url(),await loc.getAttribute('href'));
+              try{await loc.click({timeout:8000});}catch(e){console.log('CLICKERR',label,e.message.split('\n')[0]);continue}
+              await page.waitForTimeout(1800);
+              console.log('AFTER',label,page.url());
+              console.log('VISIBLE',label,await page.locator('body').innerText().then(t=>t.slice(0,500).replace(/\n/g,' | ')));
+            }
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node /tmp/nav-check.js
