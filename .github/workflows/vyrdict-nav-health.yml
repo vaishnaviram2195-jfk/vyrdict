@@ -32,7 +32,7 @@ jobs:
       - name: Inspect live homepage navigation
         shell: bash
         run: |
-          cat > /tmp/nav-check.js <<'JS'
+          cat > nav-check.js <<'JS'
           const { chromium } = require('playwright');
           (async()=>{
             const browser=await chromium.launch({headless:true});
@@ -54,9 +54,10 @@ jobs:
               try{await loc.click({timeout:8000});}catch(e){console.log('CLICKERR',label,e.message.split('\n')[0]);continue}
               await page.waitForTimeout(1800);
               console.log('AFTER',label,page.url());
-              console.log('VISIBLE',label,await page.locator('body').innerText().then(t=>t.slice(0,500).replace(/\n/g,' | ')));
+              console.log('SCROLL',label,await page.evaluate(()=>Math.round(scrollY)));
+              console.log('VISIBLE',label,await page.locator('body').innerText().then(t=>t.slice(0,700).replace(/\n/g,' | ')));
             }
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
-          node /tmp/nav-check.js
+          node nav-check.js
