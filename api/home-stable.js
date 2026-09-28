@@ -1,6 +1,6 @@
 const homeHandler=require('./home');
 
-const REV='20260928-nav-7';
+const REV='20260928-nav-8';
 const SCRIPT_REVISIONS=[
   ['/navigation-context.js?v=3-20260907',`/navigation-context.js?v=${REV}`],
   ['/navigation-guard.js?v=1',`/navigation-guard.js?v=${REV}`],
@@ -34,9 +34,9 @@ body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!impor
 }
 </style>`;
 
-  // Put the primary-nav owner in the head so its capture listener is registered
-  // before the generic product/category routers injected near </body>.
-  const navBootstrap=`<script src="/top-nav-section-fix.js?v=${REV}" defer><\/script>`;
+  // Synchronous on purpose: register the primary-nav capture listener before
+  // any inline bundle router can claim those same header clicks.
+  const navBootstrap=`<script src="/top-nav-section-fix.js?v=${REV}"><\/script>`;
 
   const guard=`<script id="vyrdict-home-revision-${REV}">(()=>{
     window.__VYRDICT_HOME_REV='${REV}';
