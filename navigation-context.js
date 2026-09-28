@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictNavigationContextV3)return;
-  window.__vyrdictNavigationContextV3=1;
+  if(window.__vyrdictNavigationContextV4)return;
+  window.__vyrdictNavigationContextV4=1;
 
   const STORE_PREFIX='vyrdict:return-context:v2:';
   const LAST_NAV_KEY='vyrdict:last-product-nav:v2';
@@ -116,6 +116,51 @@
     requestAnimationFrame(hardTop);
   }
 
+  function homeNavKind(target){
+    const a=target?.closest?.('a,button');
+    if(!a)return null;
+    const text=norm(a.textContent||'');
+    const href=String(a.getAttribute?.('href')||'').toLowerCase();
+    if(text==='explore'||href==='/#viral'||href==='#viral'||href==='/#explore'||href==='#explore')return 'explore';
+    if(text==='categories'||href==='/#categories'||href==='#categories')return 'categories';
+    if(text==='culture'||href==='/#culture'||href==='#culture')return 'culture';
+    return null;
+  }
+
+  function findHomeTarget(kind){
+    if(kind==='explore')return document.getElementById('viral')||document.getElementById('trending-index')||document.querySelector('[data-section="viral"],.vyrdict-index-gallery');
+    if(kind==='categories')return document.getElementById('categories')||document.querySelector('[data-section="categories"],#browse-by-category,.browse-by-category');
+    if(kind==='culture')return document.getElementById('culture')||document.querySelector('[data-section="culture"],.culture-section');
+    return null;
+  }
+
+  function scrollHome(kind,attempt=0){
+    const target=findHomeTarget(kind);
+    if(!target){
+      if(attempt<30)setTimeout(()=>scrollHome(kind,attempt+1),120);
+      return false;
+    }
+    const y=Math.max(0,target.getBoundingClientRect().top+window.scrollY-92);
+    window.scrollTo({top:y,left:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+    try{history.replaceState(history.state,'',location.pathname+location.search)}catch{}
+    return true;
+  }
+
+  function hardDestination(target){
+    const a=target?.closest?.('a[href]');
+    if(!a)return null;
+    const raw=a.getAttribute('href')||'';
+    if(!raw)return null;
+    try{
+      const u=new URL(raw,location.href);
+      if(u.origin!==location.origin)return null;
+      if(u.pathname==='/account.html')return '/account.html';
+      if(u.pathname==='/saved' || u.pathname==='/saved/')return '/saved';
+      if(/\.html$/i.test(u.pathname))return u.pathname+u.search+u.hash;
+    }catch{}
+    return null;
+  }
+
   function destination(target){
     if(!target||target.closest?.('input,textarea,select,option'))return null;
     const product=target.closest?.('[data-product]');
@@ -167,6 +212,22 @@
   document.addEventListener('click',e=>{
     if(e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
     const target=e.target;
+
+    const kind=homeNavKind(target);
+    if(kind){
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      if(onHome())scrollHome(kind);
+      else location.assign('/#'+(kind==='explore'?'viral':kind));
+      return;
+    }
+
+    const hard=hardDestination(target);
+    if(hard){
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      location.assign(hard);
+      return;
+    }
+
     if(isBackTarget(target)&&onProduct()){
       const ctx=currentProductContext();
       if(ctx&&history.length>1){
@@ -204,11 +265,25 @@
     else requestAnimationFrame(hardTop);
   },true);
 
+  function handleInitialHomeHash(){
+    if(!onHome())return;
+    const h=(location.hash||'').toLowerCase();
+    if(h==='#viral'||h==='#explore')scrollHome('explore');
+    else if(h==='#categories')scrollHome('categories');
+    else if(h==='#culture')scrollHome('culture');
+  }
+
   addEventListener('pageshow',()=>{
     if(onHome()&&navType()!=='back_forward'){
-      hardTop();
-      requestAnimationFrame(hardTop);
-      setTimeout(hardTop,80);
+      if(location.hash) setTimeout(handleInitialHomeHash,80);
+      else{
+        hardTop();
+        requestAnimationFrame(hardTop);
+        setTimeout(hardTop,80);
+      }
     }
   },true);
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(handleInitialHomeHash,80),{once:true});
+  else setTimeout(handleInitialHomeHash,80);
 })();
