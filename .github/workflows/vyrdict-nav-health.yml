@@ -36,7 +36,7 @@ jobs:
           cat > nav-check.js <<'JS'
           const { chromium } = require('playwright');
           const HOME='https://vyrdict.com/';
-          const REV='20260928-nav-7';
+          const REV='20260928-nav-8';
           const assert=(ok,msg)=>{if(!ok)throw new Error(msg)};
 
           (async()=>{
