@@ -46,6 +46,7 @@
     addStyle();
     const section=findSection();
     if(!section)return false;
+    if(section.dataset.skipExpanded==='1')return true;
     const rail=section.querySelector('.rail,[data-rail]');
     if(!rail)return false;
 
@@ -76,6 +77,7 @@
       card.innerHTML='<span class="v-skip-discovery-top"><span class="v-skip-discovery-dot"></span>Keep scrolling</span><span class="v-skip-discovery-copy"><h3>More hype to skip</h3><p>See what else is getting attention without earning the spend.</p></span><span class="v-skip-discovery-action"><span>See all skips</span><span class="v-skip-discovery-arrow">→</span></span>';
       items[2].insertAdjacentElement('afterend',card);
       card.addEventListener('click',()=>{
+        section.dataset.skipExpanded='1';
         items.forEach(el=>{
           el.hidden=false;
           el.style.removeProperty('display');
@@ -89,6 +91,7 @@
           collapse.className='v-skip-collapse';
           collapse.textContent='Show less';
           collapse.addEventListener('click',()=>{
+            delete section.dataset.skipExpanded;
             items.forEach((el,i)=>{
               if(i>=3){
                 el.hidden=true;

@@ -1,7 +1,8 @@
 const homeHandler=require('./home');
 
-const REV='20260928-nav-8';
+const REV='20260929-nav-9';
 const SCRIPT_REVISIONS=[
+  ['/product-navigation-market-fix.js?v=3-20260907',`/product-navigation-market-fix.js?v=${REV}`],
   ['/navigation-context.js?v=3-20260907',`/navigation-context.js?v=${REV}`],
   ['/navigation-guard.js?v=1',`/navigation-guard.js?v=${REV}`],
   ['/top-nav-section-fix.js?v=3',`/top-nav-section-fix.js?v=${REV}`],
@@ -20,6 +21,7 @@ const SCRIPT_REVISIONS=[
 
 function currentHomePatch(input){
   let html=String(input||'');
+  html=html.replaceAll('/site-footer.js?v=', '/site-footer.js?rev='+REV+'&v=');
   for(const [from,to] of SCRIPT_REVISIONS)html=html.replaceAll(from,to);
 
   const css=`<style id="vyrdict-home-stable-${REV}">

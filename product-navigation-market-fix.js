@@ -121,7 +121,7 @@
 
   document.addEventListener('click',e=>{
     const t=e.target;if(!(t instanceof Element))return;
-    const home=t.closest('[data-vyrdict-home="1"]');
+    const home=t.closest('a[data-vyrdict-home="1"],button[data-vyrdict-home="1"]');
     if(home){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();location.replace('/');return}
     const c=t.closest('a,button,[role="button"]');if(!c)return;
     const text=norm(c.textContent||c.getAttribute('aria-label')||'');

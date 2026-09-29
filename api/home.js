@@ -3,6 +3,9 @@ let mem=null;
 
 function patch(html){
   html=String(html||'')
+    .replaceAll('match(//functions/v1/([^/]+)/)', 'match(/\\/functions\\/v1\\/([^/]+)/)')
+    .replaceAll('match(/^/product/([^/?#]+)/i)', 'match(/^\\/product\\/([^/?#]+)/i)')
+    .replaceAll('match(/#/product/([^?#]+)/i)', 'match(/#\\/product\\/([^?#]+)/i)')
     .replaceAll('🚩 THE SKIP LIST','🚩 VIRAL ≠ WORTH IT')
     .replaceAll('<h2>Viral ≠ worth it.</h2>','<h2>The Skip List.</h2>')
     .replaceAll('WHAT THE INTERNET CAN’T STOP TALKING ABOUT THIS WEEK','WHAT’S TRENDING NOW')

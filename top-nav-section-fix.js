@@ -8,6 +8,8 @@
   const PRIMARY='data-vyrdict-topnav';
 
   function kindFrom(el){
+    const footer=el?.getAttribute('data-vf-action');
+    if(footer)return ({weekly:'explore',categories:'categories',skip:'skip',saved:'saves'})[footer]||'';
     const t=norm(el?.textContent);
     if(t==='explore')return 'explore';
     if(t==='categories')return 'categories';
@@ -27,6 +29,7 @@
         if(kind==='explore')el.setAttribute('href','/#explore');
         else if(kind==='categories')el.setAttribute('href','/#categories');
         else if(kind==='culture')el.setAttribute('href','/#culture');
+        else if(kind==='skip')el.setAttribute('href','/#skip-list');
         else if(kind==='account')el.setAttribute('href','/account.html');
         else if(kind==='saves')el.setAttribute('href','/saved');
       }
@@ -49,6 +52,7 @@
   }
 
   function findTarget(kind){
+    if(kind==='skip')return document.getElementById('skip-list');
     const els=candidates();
     if(kind==='explore'){
       return document.getElementById('trending-index')
@@ -97,7 +101,7 @@
       return;
     }
     if(!isHome()){
-      location.assign('/#'+kind);
+      location.assign('/#'+(kind==='skip'?'skip-list':kind));
       return;
     }
     scrollToKind(kind);
@@ -122,7 +126,8 @@
   function handleInitial(){
     if(!isHome())return;
     const h=(location.hash||'').toLowerCase();
-    if(h==='#explore')scrollToKind('explore');
+    if(h==='#skip-list')scrollToKind('skip');
+    else if(h==='#explore')scrollToKind('explore');
     else if(h==='#categories')scrollToKind('categories');
     else if(h==='#culture')scrollToKind('culture');
   }

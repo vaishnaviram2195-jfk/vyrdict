@@ -76,7 +76,7 @@
     if(e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
     const t=e.target instanceof Element?e.target:null;if(!t)return;
 
-    const home=t.closest?.('[data-vyrdict-home="1"]');
+    const home=t.closest?.('a[data-vyrdict-home="1"],button[data-vyrdict-home="1"]');
     const anchor=t.closest?.('a[href]');
     const sameOriginHome=anchor&&anchor.target!=='_blank'&&!anchor.hasAttribute('download')&&normPath(anchor.href)==='/';
     if((home||sameOriginHome)&&!isHome()){

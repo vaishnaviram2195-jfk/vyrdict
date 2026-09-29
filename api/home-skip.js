@@ -5,13 +5,12 @@ module.exports=async function handler(req,res){
   try{
     const cutoff=new Date(Date.now()-30*24*60*60*1000).toISOString();
     const qs=new URLSearchParams({
-      select:'id,slug,brand,name,category,viral_score,worth_score,verdict,viral_status,image_url',
+      select:'id,slug,brand,name,category,viral_score,worth_score,verdict,viral_status,image_url,last_verified_at',
       is_active:'eq.true',
       evidence_status:'eq.verified',
       viral_score:'gte.90',
       worth_score:'lt.70',
       verdict:'in.(Skip,Overhyped)',
-      last_verified_at:`gte.${cutoff}`,
       image_url:'not.is.null',
       order:'viral_score.desc,worth_score.asc',
       limit:'12'
