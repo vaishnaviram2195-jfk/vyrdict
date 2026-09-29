@@ -6,6 +6,12 @@
     s.textContent=`
       .vyrdict-header-wordmark{display:inline-flex!important;align-items:flex-end!important;gap:.055em!important}
       .vyrdict-header-mark{display:inline-block!important;width:.18em!important;height:.18em!important;background:#d94d73!important;border-radius:0!important;flex:0 0 auto!important;transform:translateY(-.24em)!important}
+      body.v-luiza-chrome .vyrdict-header-wordmark,
+      body.v-luiza-chrome .vyrdict-header-wordmark span{color:#f5f5f5!important}
+      body.v-luiza-chrome .vyrdict-header-mark{
+        background:linear-gradient(115deg,#777 0%,#f6f6f6 24%,#999 43%,#fff 58%,#878787 76%,#ececec 100%)!important;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 0 7px rgba(255,255,255,.16)!important;
+      }
     `;
     document.head.appendChild(s);
   }
