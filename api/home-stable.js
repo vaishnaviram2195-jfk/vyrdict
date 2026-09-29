@@ -1,6 +1,6 @@
 const homeHandler=require('./home');
 
-const REV='20260929-nav-9';
+const REV='20260929-nav-10';
 const SCRIPT_REVISIONS=[
   ['/product-navigation-market-fix.js?v=3-20260907',`/product-navigation-market-fix.js?v=${REV}`],
   ['/navigation-context.js?v=3-20260907',`/navigation-context.js?v=${REV}`],

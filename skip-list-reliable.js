@@ -9,8 +9,10 @@
   async function products(){try{const r=await fetch('/api/home-skip',{cache:'no-store'});if(!r.ok)throw 0;const d=await r.json();return Array.isArray(d.products)?d.products:[]}catch{return[]}}
   async function mount(){
     if(!home()||document.getElementById('skip-list'))return true;
-    const culture=findCulture();if(!culture)return false;
+    if(!findCulture())return false;
     const p=await products();
+    if(!home())return true;
+    const culture=findCulture();if(!culture||!culture.isConnected)return false;
     if(document.getElementById('skip-list'))return true;
     const sec=document.createElement('section');sec.id='skip-list';sec.className='section skiplist';sec.innerHTML='<div class="shell"><div class="head"><div><div class="skipflag">🚩 VIRAL ≠ WORTH IT</div><h2>The Skip List.</h2></div><p>The products dominating your feed that the VYRDICT scores say are better skipped — high hype, weak actual value.</p></div><div class="rail">'+(p.length?p.map(card).join(''):'<p>No products currently meet the Skip List criteria. Check back for the next review.</p>')+'</div></div>';
     culture.before(sec);return true;
@@ -18,4 +20,6 @@
   function boot(){let n=0;const go=async()=>{if(await mount())return;if(n++<100)setTimeout(go,200)};go()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   addEventListener('popstate',()=>setTimeout(boot,50));
+  const watch=()=>{const app=document.getElementById('app');if(app)new MutationObserver(()=>boot()).observe(app,{childList:true})};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watch,{once:true});else watch();
 })();
