@@ -8,11 +8,4 @@
     el.classList.remove('v-editorial-dark','v-editorial-blush','v-editorial-paper');
   });
   window.__vyrdictEditorialIsamayaV1=1;
-  if(!window.__vyrdictLuizaChromeV1&&!document.getElementById('vyrdict-luiza-chrome-cache-bridge')){
-    const s=document.createElement('script');
-    s.id='vyrdict-luiza-chrome-cache-bridge';
-    s.src='/luiza-chrome-theme.js?v=1-20260929';
-    s.defer=true;
-    document.head.appendChild(s);
-  }
 })();
