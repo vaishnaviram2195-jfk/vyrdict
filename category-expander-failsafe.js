@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictCategoryFailsafeV6)return;
-  window.__vyrdictCategoryFailsafeV6=1;
+  if(window.__vyrdictCategoryFailsafeV7)return;
+  window.__vyrdictCategoryFailsafeV7=1;
 
   document.documentElement.classList.add('vyrdict-ready');
   document.getElementById('vyrdict-server-home-preboot')?.remove();
@@ -36,6 +36,7 @@
     'they-already-have-everything':'They Already Have Everything'
   };
   const giftSlugs=new Set(giftFilters.map(x=>x[0]));
+  const GIFT_DATA_REV='gift-refresh-2026-09-29-1';
   let timer=0,rootObserver=null,categoryObserver=null;
 
   function currentGiftSlug(){
@@ -46,10 +47,22 @@
     return giftSlugs.has(slug)?slug:'';
   }
 
+  function refreshGiftCatalogOnce(){
+    if(!currentGiftSlug())return false;
+    try{
+      const k='vyrdict:gift-data-rev';
+      if(localStorage.getItem(k)===GIFT_DATA_REV)return false;
+      localStorage.setItem(k,GIFT_DATA_REV);
+      localStorage.removeItem('vyrdict:catalog-cache:v5');
+      location.reload();
+      return true;
+    }catch{return false}
+  }
+
   function installStyle(){
-    if(document.getElementById('vyrdict-category-expander-order-v6'))return;
+    if(document.getElementById('vyrdict-category-expander-order-v7'))return;
     const style=document.createElement('style');
-    style.id='vyrdict-category-expander-order-v6';
+    style.id='vyrdict-category-expander-order-v7';
     style.textContent=`
       body.vyrdict-home-calm .v-home-category-details[open]{display:flex!important;flex-direction:column!important;align-items:flex-start!important;width:100%!important}
       body.vyrdict-home-calm .v-home-category-details[open]>.v-home-category-extra{order:1!important;width:100%!important;margin-top:0!important;margin-bottom:12px!important}
@@ -121,8 +134,8 @@
     const details=container.querySelector('.v-home-category-details');
     const summary=details?.querySelector(':scope > summary');
     if(details&&summary){
-      if(!summary.dataset.vyrdictFailsafeV6){
-        summary.dataset.vyrdictFailsafeV6='1';
+      if(!summary.dataset.vyrdictFailsafeV7){
+        summary.dataset.vyrdictFailsafeV7='1';
         summary.addEventListener('click',e=>{
           e.preventDefault();
           e.stopImmediatePropagation();
@@ -218,6 +231,7 @@
   function scheduleApply(delay=30){clearTimeout(timer);timer=setTimeout(applyAll,delay)}
 
   function boot(){
+    if(refreshGiftCatalogOnce())return;
     applyAll();
     [80,200,450,900,1600,2800,4500,7000].forEach(ms=>setTimeout(applyAll,ms));
     const root=document.getElementById('app')||document.body||document.documentElement;
