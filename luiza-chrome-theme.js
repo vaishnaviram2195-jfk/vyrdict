@@ -13,4 +13,12 @@
     try{delete root.__vLuizaObserver}catch{}
   }
   window.__vyrdictLuizaChromeV1=1;
+
+  if(!window.__vyrdictVisitorContextV1&&!document.getElementById('vyrdict-visitor-context-loader')){
+    const s=document.createElement('script');
+    s.id='vyrdict-visitor-context-loader';
+    s.src='/visitor-context.js?v=1-20260929';
+    s.async=false;
+    document.head.appendChild(s);
+  }
 })();
