@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictCategoryFailsafeV2)return;
-  window.__vyrdictCategoryFailsafeV2=1;
+  if(window.__vyrdictCategoryFailsafeV3)return;
+  window.__vyrdictCategoryFailsafeV3=1;
   document.documentElement.classList.add('vyrdict-ready');
   document.getElementById('vyrdict-server-home-preboot')?.remove();
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
@@ -8,9 +8,9 @@
   const isHome=()=>location.pathname==='/'||location.pathname==='';
   let observer=null,timer=0;
   function installStyle(){
-    if(document.getElementById('vyrdict-category-expander-order-v2'))return;
+    if(document.getElementById('vyrdict-category-expander-order-v3'))return;
     const style=document.createElement('style');
-    style.id='vyrdict-category-expander-order-v2';
+    style.id='vyrdict-category-expander-order-v3';
     style.textContent=`
       body.vyrdict-home-calm .v-home-category-details[open]{display:flex!important;flex-direction:column!important;align-items:flex-start!important;width:100%!important}
       body.vyrdict-home-calm .v-home-category-details[open]>.v-home-category-extra{order:1!important;width:100%!important;margin-top:0!important;margin-bottom:12px!important}
@@ -22,6 +22,20 @@
     const byId=document.getElementById('categories');if(byId)return byId;
     const h=[...document.querySelectorAll('h1,h2,h3,h4')].find(x=>norm(x.textContent).includes('browse by category'));
     return h?.closest('section')||h?.closest('.section')||null;
+  }
+  function ensureGifts(container){
+    let gift=container?.querySelector?.('[data-collection="gifts"]');
+    if(gift)return gift;
+    if(!container)return null;
+    gift=document.createElement('button');
+    gift.type='button';
+    gift.className='category vyrdict-gifts-category';
+    gift.dataset.collection='gifts';
+    gift.setAttribute('aria-label','Browse Gifts');
+    gift.textContent='🎁 Gifts';
+    const details=container.querySelector('.v-home-category-details');
+    if(details)container.insertBefore(gift,details);else container.appendChild(gift);
+    return gift;
   }
   function removeExtraControls(sec,keep){
     const nodes=[...sec.querySelectorAll('button,a,summary,[role="button"],[data-category],.v-home-category-more,.v-home-category-details')];
@@ -50,12 +64,14 @@
     if(!isHome())return false;
     installStyle();
     const sec=section(),container=sec?.querySelector('.categories');if(!sec||!container)return false;
+    ensureGifts(container);
     let details=container.querySelector('.v-home-category-details');
-    if(!details)return false;
+    if(!details)return true;
     container.querySelectorAll('.v-home-category-details').forEach((d,i)=>{if(i>0)d.remove()});
     details=container.querySelector('.v-home-category-details');
     const summary=details?.querySelector(':scope > summary');if(!summary)return false;
     removeExtraControls(sec,summary);
+    ensureGifts(container);
     if(!summary.dataset.vyrdictFailsafe){
       summary.dataset.vyrdictFailsafe='1';
       summary.addEventListener('click',e=>{
