@@ -61,7 +61,7 @@
       load('/homepage-news-desk.js?v=1-20260929-vogue','vyrdict-home-news-desk-loader');
       load('/homepage-remove-worth.js?v=1-20260929','vyrdict-home-remove-worth-loader');
       load('/homepage-remove-bottom-categories.js?v=1-20260929','vyrdict-home-remove-bottom-categories-loader');
-      load('/homepage-culture-trio.js?v=3-20260930-seamless','vyrdict-home-culture-trio-loader');
+      load('/homepage-culture-trio.js?v=4-20260930-ikeaquality','vyrdict-home-culture-trio-loader');
       load('/homepage-signal-landscape.js?v=3-20260930-trimmed','vyrdict-home-signal-landscape-loader');
       load('/homepage-moment-top.js?v=6-20260930-liveviral','vyrdict-home-moment-top-loader');
       load('/homepage-heading-scale.js?v=1-20260930','vyrdict-home-heading-scale-loader');
