@@ -1,12 +1,13 @@
 (()=>{
-  if(window.__vyrdictEditorialBootstrapV3)return;
-  window.__vyrdictEditorialBootstrapV3=1;
+  if(window.__vyrdictEditorialBootstrapV4)return;
+  window.__vyrdictEditorialBootstrapV4=1;
   const isHome=()=>location.pathname==='/'||location.pathname==='';
   if(!isHome())return;
 
   const BRIDGE_ID='vyrdict-editorial-product-bridge';
-  const SCRIPT_ID='vyrdict-editorial-reference-force-v3';
-  const LEGACY_ID='vyrdict-editorial-legacy-force-v3';
+  const SCRIPT_ID='vyrdict-editorial-reference-force-v4';
+  const LEGACY_ID='vyrdict-editorial-legacy-force-v4';
+  const POLISH_ID='vyrdict-editorial-polish-v1';
   const FALLBACK=[
     {slug:'coach-tabby-shoulder-bag-20',name:'Tabby Shoulder Bag 20',brand:'Coach',image_url:'https://www.houseoffraser.co.uk/images/imgzoom/70/70618101_xxl.jpg'},
     {slug:'ray-ban-rb3025-aviator-classic',name:'RB3025 Aviator Classic',brand:'Ray-Ban',image_url:'https://images.ray-ban.com/is/image/RayBan/8056597259811_0001.png?impolicy=SEO_4x3'},
@@ -51,34 +52,34 @@
     (document.getElementById('app')||document.body).appendChild(wrap);
   }
 
-  function loadLegacyGuard(){
-    if(document.getElementById(LEGACY_ID))return;
-    const s=document.createElement('script');
-    s.id=LEGACY_ID;
-    s.src='/homepage-editorial-legacy-guard.js?v=5-20260929-remount';
-    s.defer=true;
-    (document.head||document.documentElement).appendChild(s);
+  function addScript(src,id){
+    if(document.getElementById(id))return;
+    const s=document.createElement('script');s.id=id;s.src=src;s.defer=true;(document.head||document.documentElement).appendChild(s);
   }
+
+  function loadLegacyGuard(){addScript('/homepage-editorial-legacy-guard.js?v=6-20260929-polish',LEGACY_ID)}
+  function loadPolish(){addScript('/homepage-editorial-polish.js?v=1-20260929-polish',POLISH_ID)}
 
   function mount(force=false){
     if(!isHome())return;
-    if(document.getElementById('vyrdict-editorial-home')&&!force)return;
+    if(document.getElementById('vyrdict-editorial-home')&&!force){loadPolish();return}
     bridgeProducts();
     window.__vyrdictHomepageEditorialRefV1=0;
     document.getElementById(SCRIPT_ID)?.remove();
     const s=document.createElement('script');
     s.id=SCRIPT_ID;
-    s.src='/homepage-editorial-reference.js?v=6-20260929-remount&t='+Date.now();
+    s.src='/homepage-editorial-reference.js?v=7-20260929-polish&t='+Date.now();
     s.defer=true;
     (document.head||document.documentElement).appendChild(s);
     loadLegacyGuard();
+    loadPolish();
   }
 
   let missingSince=0,lastForce=0;
   function ensure(){
     if(!isHome())return;
     const root=document.getElementById('vyrdict-editorial-home');
-    if(root){missingSince=0;return;}
+    if(root){missingSince=0;loadPolish();return;}
     const now=Date.now();
     if(!missingSince)missingSince=now;
     if(now-missingSince>100&&now-lastForce>650){lastForce=now;mount(true)}
