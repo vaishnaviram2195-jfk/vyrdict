@@ -1,25 +1,36 @@
 (()=>{
-  if(window.__vyrdictMomentTopV3)return;
-  window.__vyrdictMomentTopV3=1;
+  if(window.__vyrdictMomentTopV4)return;
+  window.__vyrdictMomentTopV4=1;
   if((location.pathname||'/')!=='/')return;
 
   const ROOT='vyrdict-editorial-home';
-  const STYLE_ID='ve-moment-top-style-v3';
+  const STYLE_ID='ve-moment-top-style-v4';
+  let rotationTimer=null;
+  let rotationFrame=null;
 
   function style(){
     document.getElementById('ve-moment-top-style')?.remove();
+    document.getElementById('ve-moment-top-style-v3')?.remove();
     if(document.getElementById(STYLE_ID))return;
     const s=document.createElement('style');
     s.id=STYLE_ID;
     s.textContent=`
-      /* Keep the cinematic opener, but shift it from near-black to muted gray. */
       #${ROOT} > .ve-hero{display:none!important}
       #${ROOT} > .ve-motion{margin:0!important;background:#8d908c!important}
       #${ROOT} > .ve-motion .ve-motion-img{
+        animation:none!important;
+        opacity:0!important;
+        transition:opacity 1.45s cubic-bezier(.22,.61,.36,1)!important;
         filter:saturate(.62) brightness(.78) contrast(.92)!important;
+        transform:scale(1.045)!important;
+        will-change:opacity!important;
       }
+      #${ROOT} > .ve-motion .ve-motion-img:first-child{opacity:1!important}
       #${ROOT} > .ve-motion:after{
         background:linear-gradient(180deg,rgba(112,115,111,.14) 10%,rgba(82,85,81,.56) 100%)!important;
+      }
+      @media(prefers-reduced-motion:reduce){
+        #${ROOT} > .ve-motion .ve-motion-img{transition:none!important}
       }
     `;
     document.head.appendChild(s);
@@ -34,6 +45,47 @@
     if(description)description.textContent='A rotating edit of the products everyone is talking about right now. VYRDICT cuts through the hype to show what deserves the attention — and what’s actually worth buying.';
   }
 
+  function smoothRotation(motion){
+    const frame=motion.querySelector('.ve-motion-frame');
+    const images=[...motion.querySelectorAll('.ve-motion-img')];
+    if(!frame||images.length<2)return;
+    if(rotationFrame===frame&&frame.dataset.veSmoothRotation==='1')return;
+
+    if(rotationTimer)clearInterval(rotationTimer);
+    rotationTimer=null;
+    rotationFrame=frame;
+    frame.dataset.veSmoothRotation='1';
+
+    images.forEach((img,i)=>{
+      img.style.setProperty('animation','none','important');
+      img.style.setProperty('opacity',i===0?'1':'0','important');
+    });
+
+    // Preload every background before starting the slideshow so no image flashes
+    // while the browser is fetching the next visual.
+    const waits=images.map(el=>{
+      const bg=el.style.backgroundImage||getComputedStyle(el).backgroundImage||'';
+      const m=bg.match(/url\(["']?(.*?)["']?\)/i);
+      if(!m||!m[1])return Promise.resolve();
+      return new Promise(resolve=>{
+        const im=new Image();
+        im.onload=im.onerror=()=>resolve();
+        im.src=m[1];
+      });
+    });
+
+    Promise.all(waits).then(()=>{
+      if(rotationFrame!==frame)return;
+      let active=0;
+      rotationTimer=setInterval(()=>{
+        const next=(active+1)%images.length;
+        images[next].style.setProperty('opacity','1','important');
+        images[active].style.setProperty('opacity','0','important');
+        active=next;
+      },9000);
+    });
+  }
+
   function apply(){
     const root=document.getElementById(ROOT);
     if(!root)return false;
@@ -43,6 +95,7 @@
 
     style();
     alignCopy(motion);
+    smoothRotation(motion);
 
     if(root.firstElementChild!==motion)root.insertBefore(motion,root.firstElementChild);
 
