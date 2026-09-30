@@ -26,7 +26,10 @@
   function removeLegacyMobile(){
     document.getElementById('vyrdict-mobile-final-style')?.remove();
     document.getElementById('vyrdict-mobile-current-static-layer')?.remove();
-    document.querySelector('.hero')?.classList.remove('vyrdict-current-static');
+    document.getElementById('vyrdict-mobile-motion-layer')?.remove();
+    document.getElementById('vyrdict-mobile-hero-primary-layer')?.remove();
+    document.getElementById('vyrdict-hero-v8-layer')?.remove();
+    document.querySelector('.hero')?.classList.remove('vyrdict-current-static','vyrdict-fullwidth-motion','vyrdict-hero-v8');
     try{
       for(const k of Object.keys(localStorage)){
         if(/^vyrdict:bundle-cache:v(?:15|16|17)$/.test(k))localStorage.removeItem(k);
@@ -56,14 +59,13 @@
       return;
     }
     if(location.pathname==='/'||location.pathname===''){
-      load('/homepage-hero-variety.js?v=9-20260904-mobilefix','vyrdict-current-hero-loader');
-      load('/growth-retention.js?v=2-20260904-mobilefix','vyrdict-current-growth-loader');
       load('/homepage-news-desk.js?v=1-20260929-vogue','vyrdict-home-news-desk-loader');
       load('/homepage-remove-worth.js?v=1-20260929','vyrdict-home-remove-worth-loader');
       load('/homepage-remove-bottom-categories.js?v=1-20260929','vyrdict-home-remove-bottom-categories-loader');
       load('/homepage-culture-trio.js?v=4-20260930-ikeaquality','vyrdict-home-culture-trio-loader');
-      load('/homepage-signal-landscape.js?v=4-20260930-mutedgray','vyrdict-home-signal-landscape-loader');
-      load('/homepage-moment-top.js?v=6-20260930-liveviral','vyrdict-home-moment-top-loader');
+      load('/homepage-culture-horizontal.js?v=1-20260930-swipe','vyrdict-home-culture-horizontal-loader');
+      load('/homepage-signal-landscape.js?v=5-20260930-darkgray','vyrdict-home-signal-landscape-loader');
+      load('/homepage-moment-top.js?v=7-20260930-stable','vyrdict-home-moment-top-loader');
       load('/homepage-heading-scale.js?v=1-20260930','vyrdict-home-heading-scale-loader');
       load('/homepage-seamless-spacing.js?v=1-20260930','vyrdict-home-seamless-spacing-loader');
       load('/homepage-detail-tuning.js?v=2-20260930-fullbleed','vyrdict-home-detail-tuning-loader');
@@ -73,5 +75,4 @@
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>boot(),{once:true});else boot();
   addEventListener('pageshow',()=>setTimeout(removeLegacyMobile,0));
-  addEventListener('popstate',()=>setTimeout(boot,20));
 })();
