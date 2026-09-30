@@ -1,33 +1,34 @@
 (()=>{
-  if(window.__vyrdictMomentTopV4)return;
-  window.__vyrdictMomentTopV4=1;
+  if(window.__vyrdictMomentTopV5)return;
+  window.__vyrdictMomentTopV5=1;
   if((location.pathname||'/')!=='/')return;
 
   const ROOT='vyrdict-editorial-home';
-  const STYLE_ID='ve-moment-top-style-v4';
+  const STYLE_ID='ve-moment-top-style-v5';
   let rotationTimer=null;
   let rotationFrame=null;
 
   function style(){
     document.getElementById('ve-moment-top-style')?.remove();
     document.getElementById('ve-moment-top-style-v3')?.remove();
+    document.getElementById('ve-moment-top-style-v4')?.remove();
     if(document.getElementById(STYLE_ID))return;
     const s=document.createElement('style');
     s.id=STYLE_ID;
     s.textContent=`
       #${ROOT} > .ve-hero{display:none!important}
-      #${ROOT} > .ve-motion{margin:0!important;background:#8d908c!important}
+      #${ROOT} > .ve-motion{margin:0!important;background:#686b68!important}
       #${ROOT} > .ve-motion .ve-motion-img{
         animation:none!important;
         opacity:0!important;
         transition:opacity 1.45s cubic-bezier(.22,.61,.36,1)!important;
-        filter:saturate(.62) brightness(.78) contrast(.92)!important;
+        filter:saturate(.60) brightness(.73) contrast(.94)!important;
         transform:scale(1.045)!important;
         will-change:opacity!important;
       }
       #${ROOT} > .ve-motion .ve-motion-img:first-child{opacity:1!important}
       #${ROOT} > .ve-motion:after{
-        background:linear-gradient(180deg,rgba(112,115,111,.14) 10%,rgba(82,85,81,.56) 100%)!important;
+        background:linear-gradient(180deg,rgba(88,92,89,.18) 10%,rgba(50,53,51,.62) 100%)!important;
       }
       @media(prefers-reduced-motion:reduce){
         #${ROOT} > .ve-motion .ve-motion-img{transition:none!important}
@@ -61,8 +62,6 @@
       img.style.setProperty('opacity',i===0?'1':'0','important');
     });
 
-    // Preload every background before starting the slideshow so no image flashes
-    // while the browser is fetching the next visual.
     const waits=images.map(el=>{
       const bg=el.style.backgroundImage||getComputedStyle(el).backgroundImage||'';
       const m=bg.match(/url\(["']?(.*?)["']?\)/i);
