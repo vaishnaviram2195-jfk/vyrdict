@@ -1,6 +1,17 @@
 (()=>{
-  if(window.__vyrdictNavigationGuardV8)return;
-  window.__vyrdictNavigationGuardV8=1;
+  if(window.__vyrdictNavigationGuardV9)return;
+  window.__vyrdictNavigationGuardV9=1;
+
+  const TYPE_REV='20260930-editorial-type-15';
+  function installTypography(){
+    if(document.getElementById('vyrdict-typography-polish-v2')||document.querySelector('script[data-vyrdict-type-polish="2"]'))return;
+    const s=document.createElement('script');
+    s.src='/site-typography-polish.js?v='+TYPE_REV;
+    s.defer=true;
+    s.dataset.vyrdictTypePolish='2';
+    (document.head||document.documentElement).appendChild(s);
+  }
+  installTypography();
 
   const COVER_ID='vyrdict-route-cover';
   const SCORE_ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-seo-product-data';
@@ -295,6 +306,7 @@
   function settleHistory(){
     hardTop();
     removeCover();
+    installTypography();
     installCategoryCardLayout();
     scheduleScoreRepair();
     requestAnimationFrame(()=>requestAnimationFrame(hardTop));
@@ -312,11 +324,12 @@
 
   addEventListener('pageshow',()=>{
     installStableLoadingPaint();
+    installTypography();
     settleHistory();
   },true);
 
   const observeApp=()=>{const app=document.getElementById('app');if(app)new MutationObserver(()=>scheduleScoreRepair()).observe(app,{childList:true,subtree:true})};
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{observeApp();installCategoryCardLayout();scheduleScoreRepair();removeCover()},{once:true});else{observeApp();installCategoryCardLayout();scheduleScoreRepair();removeCover()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{observeApp();installTypography();installCategoryCardLayout();scheduleScoreRepair();removeCover()},{once:true});else{observeApp();installTypography();installCategoryCardLayout();scheduleScoreRepair();removeCover()}
 
   hardTop();
 })();
