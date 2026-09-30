@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictTopNavSectionFixV10)return;
-  window.__vyrdictTopNavSectionFixV10=1;
+  if(window.__vyrdictTopNavSectionFixV11)return;
+  window.__vyrdictTopNavSectionFixV11=1;
 
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const HEADER_OFFSET=88;
@@ -8,18 +8,18 @@
   const PRIMARY='data-vyrdict-topnav';
 
   function loadEditorialHome(){
-    if(!isHome()||document.getElementById('vyrdict-editorial-bootstrap-loader-v4'))return;
+    if(!isHome()||document.getElementById('vyrdict-editorial-bootstrap-loader-v5'))return;
     const s=document.createElement('script');
-    s.id='vyrdict-editorial-bootstrap-loader-v4';
-    s.src='/homepage-editorial-bootstrap.js?v=4-20260929-polish';
+    s.id='vyrdict-editorial-bootstrap-loader-v5';
+    s.src='/homepage-editorial-bootstrap.js?v=5-20260929-audiofix';
     s.defer=true;
     (document.head||document.documentElement).appendChild(s);
   }
   function loadEnhancements(){
-    if(!isHome()||document.getElementById('vyrdict-isamaya-enhancements-loader-v1'))return;
+    if(!isHome()||document.getElementById('vyrdict-isamaya-enhancements-loader-v2'))return;
     const s=document.createElement('script');
-    s.id='vyrdict-isamaya-enhancements-loader-v1';
-    s.src='/homepage-isamaya-enhancements.js?v=1-20260929';
+    s.id='vyrdict-isamaya-enhancements-loader-v2';
+    s.src='/homepage-isamaya-enhancements.js?v=2-20260929-audiofix';
     s.defer=true;
     (document.head||document.documentElement).appendChild(s);
   }
@@ -106,9 +106,7 @@
     const y=Math.max(0,target.getBoundingClientRect().top+window.scrollY-HEADER_OFFSET);
     window.scrollTo({top:y,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
     if(location.hash==='#'+kind){
-      setTimeout(()=>{
-        try{history.replaceState(history.state,'',location.pathname+location.search)}catch{}
-      },250);
+      setTimeout(()=>{try{history.replaceState(history.state,'',location.pathname+location.search)}catch{}},250);
     }
     return true;
   }
