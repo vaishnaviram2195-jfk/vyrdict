@@ -1,11 +1,13 @@
 (()=>{
-  if(window.__vyrdictHomepageDetailTuningV1)return;
-  window.__vyrdictHomepageDetailTuningV1=1;
+  if(window.__vyrdictHomepageDetailTuningV2)return;
+  window.__vyrdictHomepageDetailTuningV2=1;
   if((location.pathname||'/')!=='/')return;
 
-  const STYLE_ID='vyrdict-homepage-detail-tuning-v1';
+  const OLD_STYLE_ID='vyrdict-homepage-detail-tuning-v1';
+  const STYLE_ID='vyrdict-homepage-detail-tuning-v2';
 
   function ensureStyle(){
+    document.getElementById(OLD_STYLE_ID)?.remove();
     if(document.getElementById(STYLE_ID))return;
     const s=document.createElement('style');
     s.id=STYLE_ID;
@@ -26,18 +28,19 @@
         letter-spacing:-.035em!important;
       }
 
-      /* Product-shot treatment for the current headband visual in Signal, Not Noise. */
+      /* Signal, Not Noise: make the current headband image editorial and edge-to-edge, not a boxed product shot. */
       #vyrdict-editorial-home .ve-story-media.ve-story-product-shot{
-        background:#dedbd4!important;
+        background:transparent!important;
+        overflow:hidden!important;
       }
       #vyrdict-editorial-home .ve-story-media.ve-story-product-shot img{
-        inset:7%!important;
-        width:86%!important;
-        height:86%!important;
-        object-fit:contain!important;
+        inset:0!important;
+        width:100%!important;
+        height:100%!important;
+        object-fit:cover!important;
         object-position:center!important;
         transform:none!important;
-        filter:grayscale(.16) contrast(.97)!important;
+        filter:grayscale(.10) contrast(.98)!important;
       }
 
       @media(max-width:620px){
@@ -51,9 +54,7 @@
           line-height:1.04!important;
         }
         #vyrdict-editorial-home .ve-story-media.ve-story-product-shot img{
-          inset:9%!important;
-          width:82%!important;
-          height:82%!important;
+          object-position:center 45%!important;
         }
       }
     `;
