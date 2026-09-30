@@ -1,13 +1,14 @@
 (()=>{
-  if(window.__vyrdictEditorialBootstrapV5)return;
-  window.__vyrdictEditorialBootstrapV5=1;
+  if(window.__vyrdictEditorialBootstrapV6)return;
+  window.__vyrdictEditorialBootstrapV6=1;
   const isHome=()=>location.pathname==='/'||location.pathname==='';
   if(!isHome())return;
 
   const BRIDGE_ID='vyrdict-editorial-product-bridge';
-  const SCRIPT_ID='vyrdict-editorial-reference-force-v5';
-  const LEGACY_ID='vyrdict-editorial-legacy-force-v5';
+  const SCRIPT_ID='vyrdict-editorial-reference-force-v6';
+  const LEGACY_ID='vyrdict-editorial-legacy-force-v6';
   const POLISH_ID='vyrdict-editorial-polish-v2';
+  const VIDEO_ID='vyrdict-editorial-video-pass-v1';
   const FALLBACK=[
     {slug:'coach-tabby-shoulder-bag-20',name:'Tabby Shoulder Bag 20',brand:'Coach',image_url:'https://www.houseoffraser.co.uk/images/imgzoom/70/70618101_xxl.jpg'},
     {slug:'ray-ban-rb3025-aviator-classic',name:'RB3025 Aviator Classic',brand:'Ray-Ban',image_url:'https://images.ray-ban.com/is/image/RayBan/8056597259811_0001.png?impolicy=SEO_4x3'},
@@ -59,10 +60,11 @@
 
   function loadLegacyGuard(){addScript('/homepage-editorial-legacy-guard.js?v=6-20260929-polish',LEGACY_ID)}
   function loadPolish(){addScript('/homepage-editorial-polish.js?v=2-20260929-audiofix',POLISH_ID)}
+  function loadVideoPass(){addScript('/homepage-video-pass.js?v=1-20260929-video685',VIDEO_ID)}
 
   function mount(force=false){
     if(!isHome())return;
-    if(document.getElementById('vyrdict-editorial-home')&&!force){loadPolish();return}
+    if(document.getElementById('vyrdict-editorial-home')&&!force){loadPolish();loadVideoPass();return}
     bridgeProducts();
     window.__vyrdictHomepageEditorialRefV1=0;
     document.getElementById(SCRIPT_ID)?.remove();
@@ -73,13 +75,14 @@
     (document.head||document.documentElement).appendChild(s);
     loadLegacyGuard();
     loadPolish();
+    loadVideoPass();
   }
 
   let missingSince=0,lastForce=0;
   function ensure(){
     if(!isHome())return;
     const root=document.getElementById('vyrdict-editorial-home');
-    if(root){missingSince=0;loadPolish();return;}
+    if(root){missingSince=0;loadPolish();loadVideoPass();return;}
     const now=Date.now();
     if(!missingSince)missingSince=now;
     if(now-missingSince>100&&now-lastForce>650){lastForce=now;mount(true)}
