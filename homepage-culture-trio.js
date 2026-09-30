@@ -1,11 +1,11 @@
 (()=>{
-  if(window.__vyrdictCultureTrioV2)return;
-  window.__vyrdictCultureTrioV2=1;
+  if(window.__vyrdictCultureTrioV3)return;
+  window.__vyrdictCultureTrioV3=1;
   if((location.pathname||'/')!=='/')return;
 
   const ROOT='vyrdict-editorial-home', ID='ve-culture-trio';
   const CARDS=[
-    {title:'Viral Around the World',kicker:'GLOBAL DISCOVERY',dek:'The products crossing borders, feeds and shopping lists — from Japan to Europe and everywhere in between.',href:'/collection/viral-around-the-world/',image:'https://se-cdn.djiits.com/tpc/uploads/spu/cover/35d158a1f3d1a3a48ec4cf2220cfc426%40small.png',alt:'DJI Osmo Pocket 3'},
+    {title:'Viral Around the World',kicker:'GLOBAL DISCOVERY',dek:'The products crossing borders, feeds and shopping lists — from Japan to Europe and everywhere in between.',href:'/collection/viral-around-the-world/',image:'https://www.ikea.com/us/en/images/products/ikea-ps-2026-chair-with-inflatable-seat-back-cushion-knaebaeck-bright-green__1481191_pe1000447_s5.jpg',alt:'IKEA PS 2026 Inflatable Chair'},
     {title:'Celebrity Effect',kicker:'CULTURE / PEOPLE',dek:'What happens when a celebrity wears it, uses it, launches it or quietly turns it into the next obsession.',href:'/collection/celebrity-effect/',image:'https://www.rhodeskin.com/cdn/shop/files/press-pls-hero-d_d381ba3b-cca6-4ec0-a49f-bf4b994b5956_medium.jpg?v=1754344364',alt:'rhode Peptide Lip Shape'},
     {title:'Seen on Screen',kicker:'TV / FILM / SCREEN CULTURE',dek:'The fashion, beauty and objects people start searching for the second they appear on screen.',href:'/collection/seen-on-screen/',image:'https://edikted.com/cdn/shop/files/Edikted_Lookbook_07_07_2025268554copy.jpg?v=1753686263&width=1200',alt:'Edikted Zigzag Stripe Crochet Tank Top'}
   ];
