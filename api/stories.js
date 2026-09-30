@@ -1,5 +1,6 @@
 const SB='https://shmbvkjzeqqxybweyowj.supabase.co/rest/v1/vyrdict_stories';
 const KEY='sb_publishable_XEsFSPQsuq8AXxBVSnIKgQ_kbGegBtG';
+const DAILY=require('../data/daily-news.json');
 const TZ='America/Toronto';
 const MAX_AGE_DAYS=7;
 const LEAD_MAX_AGE_HOURS=72;
@@ -22,10 +23,8 @@ function interestScore(story,now=Date.now()){
   const category=String(story?.category||'').toLowerCase();
   const age=ageHours(story,now);
   let score=0;
-
   if(story?.is_featured)score+=50;
   score+=Math.max(0,48-Math.min(48,age*1.35));
-
   const strongSignals=[
     /\b(collab|collaboration|launch|launched|drop|drops|limited|exclusive|sold out|sellout|restock|viral|comeback|debut|campaign)\b/,
     /\b(celebrity|creator|internet|culture|ai|fashion|beauty|tech|luxury|collector|collectible)\b/,
@@ -54,6 +53,17 @@ function pickDailyLead(stories){
   return [...candidates].sort((a,b)=>interestScore(b,now)-interestScore(a,now)||Date.parse(b?.published_at||0)-Date.parse(a?.published_at||0))[0]||null;
 }
 
+function dedupe(rows){
+  const out=[],seen=new Set();
+  for(const s of rows){
+    if(!s?.headline||!s?.image_url)continue;
+    const key=String(s.slug||s.source_url||s.headline).toLowerCase();
+    if(!key||seen.has(key))continue;
+    seen.add(key);out.push(s);
+  }
+  return out;
+}
+
 module.exports=async function handler(req,res){
   try{
     const requested=Number(req.query?.limit||4);
@@ -74,7 +84,16 @@ module.exports=async function handler(req,res){
 
     const r=await fetch(`${SB}?${qs}`,{headers:{apikey:KEY,Authorization:`Bearer ${KEY}`,accept:'application/json'}});
     if(!r.ok)throw new Error(`stories ${r.status}`);
-    const pool=(await r.json()).filter(s=>s?.headline&&s?.image_url);
+    const dbPool=await r.json();
+    const maxAgeMs=MAX_AGE_DAYS*86400000;
+    const editorial=(Array.isArray(DAILY)?DAILY:[]).filter(s=>{
+      const ts=Date.parse(s?.published_at||0);
+      return s?.headline&&s?.image_url&&Number.isFinite(ts)&&ts<=now.getTime()&&now.getTime()-ts<=maxAgeMs;
+    });
+    const pool=dedupe([...editorial,...dbPool]).filter(s=>{
+      const ts=Date.parse(s?.published_at||0);
+      return Number.isFinite(ts)&&ts<=now.getTime()&&now.getTime()-ts<=maxAgeMs;
+    });
     const dailyPick=pickDailyLead(pool);
     const rest=[...pool]
       .filter(s=>!dailyPick||s.id!==dailyPick.id)
@@ -87,7 +106,8 @@ module.exports=async function handler(req,res){
       daily_pick:dailyPick||null,
       selection:'fresh_daily_editorial_pick',
       max_age_days:MAX_AGE_DAYS,
-      lead_max_age_hours:LEAD_MAX_AGE_HOURS
+      lead_max_age_hours:LEAD_MAX_AGE_HOURS,
+      editorial_feed_count:editorial.length
     });
   }catch(e){
     res.setHeader('Cache-Control','no-store');
