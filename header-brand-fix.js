@@ -66,7 +66,7 @@
       load('/homepage-moment-top.js?v=6-20260930-liveviral','vyrdict-home-moment-top-loader');
       load('/homepage-heading-scale.js?v=1-20260930','vyrdict-home-heading-scale-loader');
       load('/homepage-seamless-spacing.js?v=1-20260930','vyrdict-home-seamless-spacing-loader');
-      load('/homepage-detail-tuning.js?v=1-20260930','vyrdict-home-detail-tuning-loader');
+      load('/homepage-detail-tuning.js?v=2-20260930-fullbleed','vyrdict-home-detail-tuning-loader');
     }
     if(attempt<20&&!document.querySelector('header,nav'))setTimeout(()=>boot(attempt+1),120);
   }
