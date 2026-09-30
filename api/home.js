@@ -1,5 +1,8 @@
+const fs=require('fs');
+const path=require('path');
 const BUNDLE='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-bundle-fast?v=18';
 let mem=null;
+let localFallback=null;
 
 function patch(html){
   html=String(html||'')
@@ -29,9 +32,16 @@ function patch(html){
   return html;
 }
 
+function getLocalFallback(){
+  if(localFallback)return localFallback;
+  const source=fs.readFileSync(path.join(process.cwd(),'index.html'),'utf8');
+  localFallback=patch(source);
+  return localFallback;
+}
+
 async function getBundle(){
   const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),8000);
+  const timer=setTimeout(()=>controller.abort(),18000);
   try{
     // Deliberately do not forward the visitor User-Agent. The homepage markup
     // must be identical on mobile and desktop; responsive behavior belongs in CSS/JS.
@@ -50,9 +60,11 @@ module.exports=async function handler(req,res){
   try{html=await getBundle()}catch(e){
     if(mem?.html)html=mem.html;
     else{
-      res.setHeader('Content-Type','text/html; charset=utf-8');
-      res.setHeader('Cache-Control','no-store');
-      return res.status(503).send('<!doctype html><html><body style="margin:0;background:#f4ede5;font-family:Arial;display:grid;place-items:center;min-height:100vh"><div>VYRDICT is refreshing. Please reload once.</div></body></html>');
+      try{html=getLocalFallback()}catch(fallbackError){
+        res.setHeader('Content-Type','text/html; charset=utf-8');
+        res.setHeader('Cache-Control','no-store');
+        return res.status(503).send('<!doctype html><html><body style="margin:0;background:#f4ede5;font-family:Arial;display:grid;place-items:center;min-height:100vh"><div>VYRDICT is refreshing. Please reload once.</div></body></html>');
+      }
     }
   }
   res.setHeader('Content-Type','text/html; charset=utf-8');
