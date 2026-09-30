@@ -1,13 +1,30 @@
 (()=>{
-  if(window.__vyrdictSpaNavigationFastV2)return;
-  window.__vyrdictSpaNavigationFastV2=1;
+  if(window.__vyrdictSpaNavigationFastV3)return;
+  window.__vyrdictSpaNavigationFastV3=1;
 
-  const INITIAL_PATH=location.pathname||'/';
-  const INITIAL_NON_HOME=INITIAL_PATH!=='/'&&INITIAL_PATH!=='';
   const normPath=p=>{try{return new URL(p,location.href).pathname}catch{return String(p||'')}};
   const onProduct=()=>/^\/product\/[^/]+\/?$/i.test(location.pathname||'');
   const isHome=()=>location.pathname==='/'||location.pathname==='';
   const needsCompactTitle=()=>/^\/(?:collection(?:\/|$)|saved\/?$|search\/?$)/i.test(location.pathname||'');
+
+  function hardTop(){
+    try{history.scrollRestoration='manual'}catch{}
+    try{document.documentElement.style.scrollBehavior='auto'}catch{}
+    try{document.body.style.scrollBehavior='auto'}catch{}
+    try{if(document.scrollingElement)document.scrollingElement.scrollTop=0}catch{}
+    try{document.documentElement.scrollTop=0}catch{}
+    try{document.body.scrollTop=0}catch{}
+    try{window.scrollTo(0,0)}catch{}
+  }
+
+  function settleHomeTop(){
+    if(!isHome())return;
+    window.__vyrdictRestoreSerial=Date.now();
+    hardTop();
+    requestAnimationFrame(hardTop);
+    setTimeout(hardTop,50);
+    setTimeout(hardTop,160);
+  }
 
   function installStabilityCss(){
     if(document.getElementById('vyrdict-route-stability-v2'))return;
@@ -32,8 +49,6 @@
     installStabilityCss();
     document.documentElement.dataset.vyrdictHome=isHome()?'1':'0';
     document.documentElement.dataset.vyrdictCompactTitle=needsCompactTitle()?'1':'0';
-    // This section was an unapproved experiment. Hide/remove any copy that may
-    // still be alive in an older cached SPA session.
     const growth=document.getElementById('vyrdict-growth-entry');
     if(growth)growth.style.setProperty('display','none','important');
   }
@@ -60,16 +75,8 @@
     const candidates=[...document.querySelectorAll('button,a,[role="button"]')];
     for(const el of candidates){
       const text=String(el.textContent||'').replace(/\s+/g,' ').trim();
-      if(/^BROWSE\s+\d+\+\s+VERIFIED PRODUCTS$/i.test(text)||/^BROWSE\s+250\+\s+VERIFIED PRODUCTS$/i.test(text)){
-        el.textContent='BROWSE 250+ VERIFIED PRODUCTS';
-      }
+      if(/^BROWSE\s+\d+\+\s+VERIFIED PRODUCTS$/i.test(text)||/^BROWSE\s+250\+\s+VERIFIED PRODUCTS$/i.test(text))el.textContent='BROWSE 250+ VERIFIED PRODUCTS';
     }
-  }
-
-  function hardHome(){
-    if(isHome())return false;
-    location.assign('/');
-    return true;
   }
 
   document.addEventListener('click',e=>{
@@ -78,10 +85,16 @@
 
     const home=t.closest?.('a[data-vyrdict-home="1"],button[data-vyrdict-home="1"]');
     const anchor=t.closest?.('a[href]');
-    const sameOriginHome=anchor&&anchor.target!=='_blank'&&!anchor.hasAttribute('download')&&normPath(anchor.href)==='/';
-    if((home||sameOriginHome)&&!isHome()){
+    let plainHome=false;
+    if(anchor&&anchor.target!=='_blank'&&!anchor.hasAttribute('download')){
+      try{const u=new URL(anchor.href,location.href);plainHome=u.origin===location.origin&&u.pathname==='/'&&!u.search&&!u.hash}catch{}
+    }
+    if(home||plainHome){
       e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-      hardHome();
+      if(isHome()){
+        try{history.replaceState(history.state,'',location.pathname+location.search)}catch{}
+        settleHomeTop();
+      }else location.assign('/');
       return;
     }
 
@@ -94,6 +107,7 @@
   const apply=()=>{
     syncRouteUi();
     lockVerifiedCount();
+    if(isHome()&&!location.hash)settleHomeTop();
     setTimeout(()=>{syncRouteUi();lockVerifiedCount()},80);
     setTimeout(()=>{syncRouteUi();lockVerifiedCount()},350);
   };
@@ -102,13 +116,7 @@
   addEventListener('pageshow',apply);
   addEventListener('popstate',()=>{
     syncRouteUi();
-    // Collection/saved/search pages are served by the generic SPA shell. If a
-    // browser-back transition reaches Home from one of those shells, reload the
-    // canonical Home endpoint so an older homepage snapshot cannot resurface.
-    if(INITIAL_NON_HOME&&isHome()){
-      location.replace('/');
-      return;
-    }
+    if(isHome()&&!location.hash)settleHomeTop();
     apply();
   });
   new MutationObserver(()=>{
