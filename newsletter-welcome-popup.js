@@ -1,11 +1,11 @@
 (()=>{
-  if(window.__vyrdictNewsletterWelcomePopupV4)return;
-  window.__vyrdictNewsletterWelcomePopupV4=1;
+  if(window.__vyrdictNewsletterWelcomePopupV5)return;
+  window.__vyrdictNewsletterWelcomePopupV5=1;
 
   const ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-newsletter-subscribe';
   const ROOT_ID='vyrdict-newsletter-welcome';
-  const STYLE_ID='vyrdict-newsletter-welcome-style-v4';
-  const SESSION_KEY='vyrdict:newsletter-popup-seen:v4';
+  const STYLE_ID='vyrdict-newsletter-welcome-style-v5';
+  const SESSION_KEY='vyrdict:newsletter-popup-seen:v5';
   const SUBSCRIBED_KEY='vyrdict:newsletter-subscribed:v1';
 
   function shouldSkip(){
@@ -15,53 +15,46 @@
     }catch{}
     return false;
   }
-
   function markSeen(){try{sessionStorage.setItem(SESSION_KEY,'1')}catch{}}
   function markSubscribed(){try{localStorage.setItem(SUBSCRIBED_KEY,'1');sessionStorage.setItem(SESSION_KEY,'1')}catch{}}
 
   function ensureStyle(){
-    ['vyrdict-newsletter-welcome-style','vyrdict-newsletter-welcome-style-v2','vyrdict-newsletter-welcome-style-v3'].forEach(id=>document.getElementById(id)?.remove());
+    ['vyrdict-newsletter-welcome-style','vyrdict-newsletter-welcome-style-v2','vyrdict-newsletter-welcome-style-v3','vyrdict-newsletter-welcome-style-v4'].forEach(id=>document.getElementById(id)?.remove());
     if(document.getElementById(STYLE_ID))return;
     const s=document.createElement('style');
     s.id=STYLE_ID;
     s.textContent=`
-      #${ROOT_ID}{position:fixed;inset:0;z-index:2147482500;display:grid;place-items:center;padding:22px;background:rgba(41,34,28,.32);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);font-family:Arial,Helvetica,sans-serif;animation:vnpFade .2s ease-out both}
-      #${ROOT_ID} .vnp-card{position:relative;isolation:isolate;overflow:hidden;width:min(468px,calc(100vw - 36px));box-sizing:border-box;background:linear-gradient(145deg,#f7f2e8 0%,#eef0e8 54%,#f4efe5 100%);color:#2f2a25;border:1px solid rgba(72,61,50,.16);border-radius:22px;padding:36px 34px 30px;box-shadow:0 28px 85px rgba(47,39,31,.24);animation:vnpRise .28s cubic-bezier(.2,.75,.2,1) both}
-      #${ROOT_ID} .vnp-card:before{content:'';position:absolute;z-index:-1;width:174px;height:174px;border-radius:50%;right:-72px;top:-62px;background:#7d8e72;opacity:.20}
-      #${ROOT_ID} .vnp-card:after{content:'';position:absolute;z-index:-1;width:138px;height:138px;border-radius:32% 68% 61% 39%;left:-62px;bottom:-66px;background:#c96f45;opacity:.18;transform:rotate(16deg)}
-      #${ROOT_ID} .vnp-spark{position:absolute;right:78px;top:42px;font:900 24px/1 Georgia,serif;color:#b65f39;transform:rotate(12deg);user-select:none}
-      #${ROOT_ID} .vnp-close{position:absolute;z-index:3;top:13px;right:14px;width:34px;height:34px;border:1px solid rgba(72,61,50,.16);background:rgba(255,255,255,.56);color:#2f2a25;font-size:23px;line-height:1;cursor:pointer;border-radius:999px;display:grid;place-items:center;backdrop-filter:blur(8px)}
-      #${ROOT_ID} .vnp-close:hover{background:#fff}
-      #${ROOT_ID} .vnp-brand{position:relative;z-index:2;display:flex;align-items:flex-end;gap:3px;margin:0 0 22px;font-size:20px;font-weight:950;letter-spacing:-1px;color:#2f2a25}
-      #${ROOT_ID} .vnp-dot{width:6px;height:6px;background:#b65f39;display:inline-block;margin-bottom:2px}
-      #${ROOT_ID} .vnp-kicker{position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;margin:0 0 12px;padding:7px 10px;border-radius:999px;background:#dde3d8;color:#53634a;font-size:9px;line-height:1;font-weight:950;letter-spacing:.13em;text-transform:uppercase;box-shadow:inset 0 0 0 1px rgba(83,99,74,.10)}
-      #${ROOT_ID} h2{position:relative;z-index:2;margin:0 0 13px;max-width:390px;font-family:Georgia,'Times New Roman',serif;font-size:42px;line-height:.98;font-weight:500;letter-spacing:-.045em;color:#2f2a25}
-      #${ROOT_ID} .vnp-copy{position:relative;z-index:2;margin:0 0 22px;max-width:385px;font-size:14px;line-height:1.62;color:#655d55}
-      #${ROOT_ID} form{position:relative;z-index:2;margin:0}
-      #${ROOT_ID} .vnp-row{display:flex;gap:8px;align-items:stretch}
-      #${ROOT_ID} input[type=email]{flex:1 1 auto;min-width:0;box-sizing:border-box;border:1px solid rgba(72,61,50,.20);background:rgba(255,255,255,.82);color:#2f2a25;border-radius:999px;padding:13px 15px;font:500 13px/1 Arial,Helvetica,sans-serif;outline:none;box-shadow:0 7px 20px rgba(72,61,50,.05)}
-      #${ROOT_ID} input[type=email]::placeholder{color:#8a8178}
-      #${ROOT_ID} input[type=email]:focus{border-color:#7d8e72;box-shadow:0 0 0 3px rgba(125,142,114,.13)}
-      #${ROOT_ID} button[type=submit]{flex:0 0 auto;border:0;border-radius:999px;background:#3d342d;color:#fff;padding:0 19px;font-size:10px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap;box-shadow:0 8px 20px rgba(61,52,45,.20);transition:transform .18s ease,background .18s ease,box-shadow .18s ease}
-      #${ROOT_ID} button[type=submit]:hover{background:#b65f39;transform:translateY(-1px);box-shadow:0 10px 24px rgba(182,95,57,.22)}
-      #${ROOT_ID} button[type=submit]:disabled{opacity:.56;cursor:default;transform:none}
-      #${ROOT_ID} .vnp-note{margin:12px 0 0;font-size:9.5px;line-height:1.45;color:#81786f}
-      #${ROOT_ID} .vnp-status{min-height:16px;margin:10px 0 0;font-size:11px;line-height:1.45;color:#655d55}
-      #${ROOT_ID} .vnp-status.ok{color:#566c50;font-weight:700}
-      #${ROOT_ID} .vnp-status.err{color:#934f3e}
-      #${ROOT_ID} .vnp-mini{position:relative;z-index:2;display:flex;gap:7px;flex-wrap:wrap;margin:0 0 18px}
-      #${ROOT_ID} .vnp-mini span{display:inline-flex;align-items:center;border:1px solid rgba(72,61,50,.12);background:rgba(255,255,255,.44);border-radius:999px;padding:6px 9px;font-size:8px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;color:#6f665e}
+      #${ROOT_ID}{position:fixed;inset:0;z-index:2147482500;display:grid;place-items:center;padding:18px;background:rgba(24,24,22,.28);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);font-family:Arial,Helvetica,sans-serif;animation:vnpFade .18s ease-out both}
+      #${ROOT_ID} .vnp-card{position:relative;width:min(360px,calc(100vw - 30px));box-sizing:border-box;background:#f5f2ea;color:#20211d;border:1px solid #d8d2c8;border-radius:14px;padding:24px 22px 20px;box-shadow:0 18px 54px rgba(0,0,0,.18);animation:vnpRise .2s ease-out both}
+      #${ROOT_ID} .vnp-card:before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:#5c6b51;border-radius:14px 14px 0 0}
+      #${ROOT_ID} .vnp-close{position:absolute;top:9px;right:10px;width:30px;height:30px;border:0;background:transparent;color:#5f615a;font-size:21px;line-height:1;cursor:pointer;border-radius:50%;display:grid;place-items:center}
+      #${ROOT_ID} .vnp-close:hover{background:rgba(32,33,29,.06);color:#20211d}
+      #${ROOT_ID} .vnp-brand{display:flex;align-items:flex-end;gap:3px;margin:1px 0 16px;font-size:16px;font-weight:950;letter-spacing:-.7px;color:#20211d}
+      #${ROOT_ID} .vnp-dot{width:5px;height:5px;background:#5c6b51;display:inline-block;margin-bottom:2px}
+      #${ROOT_ID} .vnp-kicker{margin:0 0 8px;font-size:8px;line-height:1;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#66705f}
+      #${ROOT_ID} h2{margin:0 0 10px;max-width:280px;font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1;font-weight:500;letter-spacing:-.04em;color:#20211d}
+      #${ROOT_ID} .vnp-copy{margin:0 0 16px;max-width:305px;font-size:12.5px;line-height:1.52;color:#61635d}
+      #${ROOT_ID} form{margin:0}
+      #${ROOT_ID} .vnp-row{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:stretch}
+      #${ROOT_ID} input[type=email]{min-width:0;box-sizing:border-box;border:1px solid #c9c5bc;background:#fff;color:#20211d;border-radius:8px;padding:11px 12px;font:500 12px/1 Arial,Helvetica,sans-serif;outline:none}
+      #${ROOT_ID} input[type=email]::placeholder{color:#939087}
+      #${ROOT_ID} input[type=email]:focus{border-color:#5c6b51;box-shadow:0 0 0 2px rgba(92,107,81,.12)}
+      #${ROOT_ID} button[type=submit]{border:0;border-radius:8px;background:#5c6b51;color:#fff;padding:0 14px;font-size:9px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:background .15s ease,transform .15s ease}
+      #${ROOT_ID} button[type=submit]:hover{background:#4b5942;transform:translateY(-1px)}
+      #${ROOT_ID} button[type=submit]:disabled{opacity:.58;cursor:default;transform:none}
+      #${ROOT_ID} .vnp-note{margin:9px 0 0;font-size:8.5px;line-height:1.4;color:#86837b}
+      #${ROOT_ID} .vnp-status{min-height:14px;margin:7px 0 0;font-size:10px;line-height:1.4;color:#61635d}
+      #${ROOT_ID} .vnp-status.ok{color:#4d6647;font-weight:700}
+      #${ROOT_ID} .vnp-status.err{color:#8b4d44}
       @keyframes vnpFade{from{opacity:0}to{opacity:1}}
-      @keyframes vnpRise{from{opacity:0;transform:translateY(14px) rotate(-.2deg) scale(.985)}to{opacity:1;transform:none}}
-      @media(max-width:600px){
-        #${ROOT_ID}{padding:16px;place-items:center}
-        #${ROOT_ID} .vnp-card{width:min(100%,420px);padding:30px 22px 24px;border-radius:19px}
-        #${ROOT_ID} .vnp-card:before{width:140px;height:140px;right:-62px;top:-50px}
-        #${ROOT_ID} .vnp-spark{right:66px;top:39px;font-size:20px}
-        #${ROOT_ID} h2{font-size:36px;max-width:330px}
-        #${ROOT_ID} .vnp-row{display:block}
-        #${ROOT_ID} input[type=email],#${ROOT_ID} button[type=submit]{width:100%}
-        #${ROOT_ID} button[type=submit]{height:45px;margin-top:8px}
+      @keyframes vnpRise{from{opacity:0;transform:translateY(8px) scale(.99)}to{opacity:1;transform:none}}
+      @media(max-width:520px){
+        #${ROOT_ID}{padding:14px}
+        #${ROOT_ID} .vnp-card{width:min(100%,340px);padding:22px 18px 18px;border-radius:13px}
+        #${ROOT_ID} h2{font-size:28px;max-width:250px}
+        #${ROOT_ID} .vnp-copy{font-size:12px}
+        #${ROOT_ID} .vnp-row{grid-template-columns:1fr}
+        #${ROOT_ID} button[type=submit]{height:40px}
       }
       @media(prefers-reduced-motion:reduce){#${ROOT_ID},#${ROOT_ID} .vnp-card{animation:none}#${ROOT_ID} button[type=submit]{transition:none}}
     `;
@@ -77,20 +70,18 @@
     root.id=ROOT_ID;root.setAttribute('role','dialog');root.setAttribute('aria-modal','true');root.setAttribute('aria-labelledby','vnp-title');
     root.innerHTML=`
       <div class="vnp-card" role="document">
-        <span class="vnp-spark" aria-hidden="true">✦</span>
         <button class="vnp-close" type="button" aria-label="Close newsletter sign-up">×</button>
         <div class="vnp-brand" aria-label="VYRDICT"><span>VYRDICT</span><span class="vnp-dot" aria-hidden="true"></span></div>
-        <p class="vnp-kicker">THE WEEKLY DROP ✦</p>
+        <p class="vnp-kicker">WEEKLY VYRDICT</p>
         <h2 id="vnp-title">Welcome to VYRDICT.</h2>
-        <p class="vnp-copy">The internet moves fast. We keep the good stuff. Get breakout products, fresh launches and what’s actually worth the hype — once a week.</p>
-        <div class="vnp-mini" aria-hidden="true"><span>Fresh finds</span><span>Hype checks</span><span>Culture drops</span></div>
+        <p class="vnp-copy">A weekly edit of breakout products, fresh launches and what’s actually worth the hype.</p>
         <form novalidate>
           <div class="vnp-row">
-            <input type="email" name="email" inputmode="email" autocomplete="email" maxlength="254" aria-label="Email address" placeholder="Your email address" required>
-            <button type="submit">I’m in →</button>
+            <input type="email" name="email" inputmode="email" autocomplete="email" maxlength="254" aria-label="Email address" placeholder="Email address" required>
+            <button type="submit">Subscribe</button>
           </div>
           <div class="vnp-status" role="status" aria-live="polite"></div>
-          <p class="vnp-note">One email a week. No inbox chaos. Unsubscribe anytime.</p>
+          <p class="vnp-note">One email a week. Unsubscribe anytime.</p>
         </form>
       </div>`;
     document.body.appendChild(root);document.documentElement.style.overflow='hidden';
@@ -100,10 +91,10 @@
       e.preventDefault();const email=String(input.value||'').trim().toLowerCase();status.className='vnp-status';status.textContent='';
       if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email)){status.classList.add('err');status.textContent='Enter a valid email address.';input.focus();return}
       button.disabled=true;button.textContent='Joining…';
-      try{const r=await fetch(ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,source:'welcome_popup',website:''})});const out=await r.json().catch(()=>({}));if(!r.ok)throw new Error(out.error||'subscription_failed');markSubscribed();status.classList.add('ok');status.textContent='You’re in — see you in your inbox ✦';button.textContent='Subscribed ✓';setTimeout(close,1350)}
-      catch(err){status.classList.add('err');status.textContent='We couldn’t subscribe you just now. Please try again.';button.disabled=false;button.textContent='I’m in →'}
+      try{const r=await fetch(ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,source:'welcome_popup',website:''})});const out=await r.json().catch(()=>({}));if(!r.ok)throw new Error(out.error||'subscription_failed');markSubscribed();status.classList.add('ok');status.textContent='You’re in — welcome to Weekly VYRDICT.';button.textContent='Joined ✓';setTimeout(close,1200)}
+      catch(err){status.classList.add('err');status.textContent='We couldn’t subscribe you just now. Please try again.';button.disabled=false;button.textContent='Subscribe'}
     });
-    setTimeout(()=>input.focus({preventScroll:true}),120);
+    setTimeout(()=>input.focus({preventScroll:true}),100);
   }
 
   function schedule(){if(shouldSkip())return;setTimeout(mount,1400)}
