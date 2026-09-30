@@ -17,13 +17,10 @@ function interestScore(story,now=Date.now()){
   const ageHours=Number.isFinite(published)?Math.max(0,(now-published)/36e5):999;
   let score=0;
 
-  // Manual editorial flag remains the strongest override.
+  // Same-day manual editorial flag stays the strongest override.
   if(story?.is_featured)score+=80;
-
-  // Prefer fresh stories, with the biggest lift inside the first day.
   score+=Math.max(0,32-Math.min(32,ageHours*1.15));
 
-  // Reward the kinds of moments that tend to make the strongest VYRDICT story lead.
   const strongSignals=[
     /\b(collab|collaboration|launch|launched|drop|drops|limited|exclusive|sold out|sellout|restock|viral|comeback|debut|campaign)\b/,
     /\b(celebrity|creator|internet|culture|ai|fashion|beauty|tech|luxury|collector|collectible)\b/,
@@ -36,7 +33,6 @@ function interestScore(story,now=Date.now()){
   if(/brand culture|celebrity effect|internet culture|luxury design|collab|collaboration/.test(category))score+=10;
   else if(/beauty|fashion|tech|shoes|food|toys|collectibles/.test(category))score+=5;
 
-  // Prefer fully formed stories over thin records.
   if(story?.dek)score+=5;
   if(story?.source_url)score+=4;
   if(story?.instagram_url)score+=2;
@@ -51,12 +47,15 @@ function pickDailyLead(stories){
   const now=Date.now();
   const today=localDay(now);
   const todays=rows.filter(s=>localDay(s?.published_at)===today);
-  const candidates=todays.length?todays:rows.filter(s=>{
-    const t=Date.parse(s?.published_at||0);
-    return Number.isFinite(t)&&now-t<=48*36e5;
-  });
-  const pool=candidates.length?candidates:rows;
-  return [...pool].sort((a,b)=>interestScore(b,now)-interestScore(a,now)||Date.parse(b?.published_at||0)-Date.parse(a?.published_at||0))[0]||null;
+
+  // If there are stories today, rank only today's candidates for the homepage lead.
+  if(todays.length){
+    return [...todays].sort((a,b)=>interestScore(b,now)-interestScore(a,now)||Date.parse(b?.published_at||0)-Date.parse(a?.published_at||0))[0]||null;
+  }
+
+  // If nothing has been published today yet, never resurrect an older featured story.
+  // Simply keep the module on the freshest available published story.
+  return [...rows].sort((a,b)=>Date.parse(b?.published_at||0)-Date.parse(a?.published_at||0))[0]||null;
 }
 
 module.exports=async function handler(req,res){
