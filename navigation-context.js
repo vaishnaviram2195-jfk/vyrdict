@@ -1,21 +1,21 @@
 (()=>{
-  if(window.__vyrdictNavigationContextV4)return;
-  window.__vyrdictNavigationContextV4=1;
+  if(window.__vyrdictNavigationContextV5)return;
+  window.__vyrdictNavigationContextV5=1;
 
   const STORE_PREFIX='vyrdict:return-context:v2:';
   const LAST_NAV_KEY='vyrdict:last-product-nav:v2';
   const onHome=()=>location.pathname==='/'||location.pathname==='';
   const onProduct=()=>/^\/product\//i.test(location.pathname||'');
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
-  const navType=()=>{try{return performance.getEntriesByType('navigation')?.[0]?.type||''}catch{return ''}};
 
   try{history.scrollRestoration='manual'}catch{}
-  const directHomeBoot=onHome()&&navType()!=='back_forward';
+  const directHomeBoot=onHome()&&!location.hash;
   if(directHomeBoot){
     try{document.documentElement.style.setProperty('visibility','hidden')}catch{}
   }
 
   function hardTop(){
+    window.__vyrdictRestoreSerial=Date.now();
     try{document.documentElement.style.scrollBehavior='auto'}catch{}
     try{document.body.style.scrollBehavior='auto'}catch{}
     try{if(document.scrollingElement)document.scrollingElement.scrollTop=0}catch{}
@@ -24,24 +24,31 @@
     try{scrollTo(0,0)}catch{}
   }
 
+  function settleHomeTop(){
+    if(!onHome()||location.hash)return;
+    hardTop();
+    requestAnimationFrame(hardTop);
+    setTimeout(hardTop,60);
+    setTimeout(hardTop,180);
+  }
+
   function revealDirectHome(){
     if(!directHomeBoot)return;
     hardTop();
     requestAnimationFrame(()=>{hardTop();try{document.documentElement.style.removeProperty('visibility')}catch{}});
-    setTimeout(()=>{try{document.documentElement.style.removeProperty('visibility')}catch{}},180);
+    setTimeout(()=>{hardTop();try{document.documentElement.style.removeProperty('visibility')}catch{}},180);
   }
 
   function cleanDirectHomeState(){
-    if(!onHome()||navType()==='back_forward')return;
+    if(!onHome()||location.hash)return;
     const s={...(history.state||{})};
     delete s.vyrdictReturnY;
     delete s.vyrdictReturnSection;
     delete s.vyrdictReturnRail;
     delete s.vyrdictReturnUi;
     delete s.vyrdictProductFrom;
-    try{history.replaceState(s,'',location.href)}catch{}
-    hardTop();
-    requestAnimationFrame(hardTop);
+    try{history.replaceState(s,'',location.pathname+location.search)}catch{}
+    settleHomeTop();
   }
   cleanDirectHomeState();
   revealDirectHome();
@@ -70,6 +77,18 @@
     if(/^\/(saved|search)(\?|#|$)/i.test(p))return p;
     if(p==='/'||p.startsWith('/?')||p.startsWith('/#'))return p;
     return p;
+  }
+
+  function isPlainHomeTarget(target){
+    const el=target?.closest?.('a[href],a[data-vyrdict-home="1"],button[data-vyrdict-home="1"]');
+    if(!el)return false;
+    if(el.matches?.('[data-vyrdict-home="1"]'))return true;
+    const raw=el.getAttribute?.('href')||'';
+    if(!raw)return false;
+    try{
+      const u=new URL(raw,location.href);
+      return u.origin===location.origin&&u.pathname==='/'&&!u.search&&!u.hash;
+    }catch{return false}
   }
 
   function sectionContext(target){
@@ -136,10 +155,7 @@
 
   function scrollHome(kind,attempt=0){
     const target=findHomeTarget(kind);
-    if(!target){
-      if(attempt<30)setTimeout(()=>scrollHome(kind,attempt+1),120);
-      return false;
-    }
+    if(!target){if(attempt<30)setTimeout(()=>scrollHome(kind,attempt+1),120);return false}
     const y=Math.max(0,target.getBoundingClientRect().top+window.scrollY-92);
     window.scrollTo({top:y,left:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
     try{history.replaceState(history.state,'',location.pathname+location.search)}catch{}
@@ -155,7 +171,7 @@
       const u=new URL(raw,location.href);
       if(u.origin!==location.origin)return null;
       if(u.pathname==='/account.html')return '/account.html';
-      if(u.pathname==='/saved' || u.pathname==='/saved/')return '/saved';
+      if(u.pathname==='/saved'||u.pathname==='/saved/')return '/saved';
       if(/\.html$/i.test(u.pathname))return u.pathname+u.search+u.hash;
     }catch{}
     return null;
@@ -195,14 +211,14 @@
   }
 
   function restorePosition(state){
-    if(onProduct())return;
+    if(onProduct()||onHome())return;
     const y=Number(state?.vyrdictReturnY);
     const saved=state?.vyrdictReturnSection;
     if(!Number.isFinite(y)&&!saved)return;
     const serial=Date.now();
     window.__vyrdictRestoreSerial=serial;
     [40,120,260,520,900].forEach(ms=>setTimeout(()=>{
-      if(window.__vyrdictRestoreSerial!==serial||onProduct())return;
+      if(window.__vyrdictRestoreSerial!==serial||onProduct()||onHome())return;
       const maxY=Math.max(0,document.documentElement.scrollHeight-innerHeight);
       if(Number.isFinite(y))window.scrollTo({top:Math.min(Math.max(0,y),maxY),left:0,behavior:'auto'});
       else if(saved?.id)document.getElementById(saved.id)?.scrollIntoView({block:'start',behavior:'auto'});
@@ -213,6 +229,15 @@
     if(e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
     const target=e.target;
 
+    if(isPlainHomeTarget(target)){
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      if(onHome()){
+        try{history.replaceState(history.state,'',location.pathname+location.search)}catch{}
+        settleHomeTop();
+      }else location.assign('/');
+      return;
+    }
+
     const kind=homeNavKind(target);
     if(kind){
       e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
@@ -222,24 +247,12 @@
     }
 
     const hard=hardDestination(target);
-    if(hard){
-      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-      location.assign(hard);
-      return;
-    }
+    if(hard){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();location.assign(hard);return}
 
     if(isBackTarget(target)&&onProduct()){
       const ctx=currentProductContext();
-      if(ctx&&history.length>1){
-        e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-        history.back();
-        return;
-      }
-      if(coreBack){
-        e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-        coreBack();
-        return;
-      }
+      if(ctx&&history.length>1){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();history.back();return}
+      if(coreBack){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();coreBack();return}
     }
     const dest=destination(target);
     if(!dest)return;
@@ -260,6 +273,12 @@
   },true);
 
   addEventListener('popstate',()=>{
+    if(onHome()){
+      window.__vyrdictRestoreSerial=Date.now();
+      if(location.hash)setTimeout(handleInitialHomeHash,40);
+      else settleHomeTop();
+      return;
+    }
     const state=history.state||{};
     if(!onProduct()&&(Number.isFinite(Number(state.vyrdictReturnY))||state.vyrdictReturnSection))restorePosition(state);
     else requestAnimationFrame(hardTop);
@@ -271,19 +290,16 @@
     if(h==='#viral'||h==='#explore')scrollHome('explore');
     else if(h==='#categories')scrollHome('categories');
     else if(h==='#culture')scrollHome('culture');
+    else settleHomeTop();
   }
 
   addEventListener('pageshow',()=>{
-    if(onHome()&&navType()!=='back_forward'){
-      if(location.hash) setTimeout(handleInitialHomeHash,80);
-      else{
-        hardTop();
-        requestAnimationFrame(hardTop);
-        setTimeout(hardTop,80);
-      }
-    }
+    if(!onHome())return;
+    window.__vyrdictRestoreSerial=Date.now();
+    if(location.hash)setTimeout(handleInitialHomeHash,60);
+    else settleHomeTop();
   },true);
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(handleInitialHomeHash,80),{once:true});
-  else setTimeout(handleInitialHomeHash,80);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{if(onHome()){if(location.hash)setTimeout(handleInitialHomeHash,60);else settleHomeTop()}},{once:true});
+  else if(onHome()){if(location.hash)setTimeout(handleInitialHomeHash,60);else settleHomeTop()}
 })();
