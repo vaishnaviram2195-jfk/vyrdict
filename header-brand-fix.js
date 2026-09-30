@@ -59,7 +59,7 @@
       load('/homepage-news-desk.js?v=1-20260929-vogue','vyrdict-home-news-desk-loader');
       load('/homepage-remove-worth.js?v=1-20260929','vyrdict-home-remove-worth-loader');
       load('/homepage-remove-bottom-categories.js?v=1-20260929','vyrdict-home-remove-bottom-categories-loader');
-      load('/homepage-culture-trio.js?v=1-20260930','vyrdict-home-culture-trio-loader');
+      load('/homepage-culture-trio.js?v=2-20260930-cover','vyrdict-home-culture-trio-loader');
     }
     if(attempt<20&&!document.querySelector('header,nav'))setTimeout(()=>boot(attempt+1),120);
   }
