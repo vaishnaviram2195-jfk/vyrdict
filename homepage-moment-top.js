@@ -1,21 +1,23 @@
 (()=>{
-  if(window.__vyrdictMomentTopV9)return;
+  if(window.__vyrdictMomentTopV10)return;
+  window.__vyrdictMomentTopV10=1;
   window.__vyrdictMomentTopV9=1;
   if((location.pathname||'/')!=='/')return;
 
   const ROOT='vyrdict-editorial-home';
-  const STYLE_ID='ve-moment-top-style-v9';
+  const STYLE_ID='ve-moment-top-style-v10';
   let initialized=false;
   let reapplyTimer=0;
 
   function style(){
-    ['ve-moment-top-style','ve-moment-top-style-v3','ve-moment-top-style-v4','ve-moment-top-style-v5','ve-moment-top-style-v6','ve-moment-top-style-v7','ve-moment-top-style-v8'].forEach(id=>document.getElementById(id)?.remove());
+    ['ve-moment-top-style','ve-moment-top-style-v3','ve-moment-top-style-v4','ve-moment-top-style-v5','ve-moment-top-style-v6','ve-moment-top-style-v7','ve-moment-top-style-v8','ve-moment-top-style-v9'].forEach(id=>document.getElementById(id)?.remove());
     if(document.getElementById(STYLE_ID))return;
     const s=document.createElement('style');
     s.id=STYLE_ID;
     s.textContent=`
       #${ROOT} > .ve-hero{display:none!important}
       #${ROOT} > .ve-motion{margin:0!important;background:#686b68!important;transform:none!important;overflow-anchor:none!important}
+      @media(min-width:981px){#${ROOT} > .ve-motion{min-height:540px!important}}
       #${ROOT} > .ve-motion .ve-motion-frame{transform:none!important;overflow-anchor:none!important}
       #${ROOT} > .ve-motion .ve-motion-img{
         animation:none!important;
