@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictTopNavSectionFixV13)return;
-  window.__vyrdictTopNavSectionFixV13=1;
+  if(window.__vyrdictTopNavSectionFixV14)return;
+  window.__vyrdictTopNavSectionFixV14=1;
 
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const HEADER_OFFSET=88;
@@ -15,8 +15,12 @@
   }
 
   function loadDirectFixes(){
-    load('/header-categories-menu.js?v=5-20260930-mobile-direct','vyrdict-header-categories-direct-loader');
-    if(isHome())load('/homepage-signal-landscape.js?v=4-20260930-mutedgray','vyrdict-signal-muted-direct-loader');
+    if(matchMedia('(max-width:900px)').matches){
+      load('/mobile-categories-hardfix.js?v=1-20260930-guaranteed','vyrdict-mobile-categories-hardfix-loader');
+    }else{
+      load('/header-categories-menu.js?v=5-20260930-desktop','vyrdict-header-categories-direct-loader');
+    }
+    if(isHome())load('/homepage-signal-landscape.js?v=5-20260930-darkgray','vyrdict-signal-darkgray-direct-loader');
   }
 
   function loadEditorialHome(){
@@ -44,6 +48,7 @@
 
   function wire(){
     document.querySelectorAll('header a,header button,header [data-nav],nav a,nav button,nav [data-nav]').forEach(el=>{
+      if(el.closest('#vyrdict-mobile-categories-bar,#vyrdict-mobile-categories-menu'))return;
       const kind=kindFrom(el);
       if(!kind)return;
       el.setAttribute(PRIMARY,'1');
@@ -125,7 +130,7 @@
   document.addEventListener('click',e=>{
     if(e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
     const el=e.target?.closest?.('a,button,[data-nav]');
-    if(!el)return;
+    if(!el||el.closest('#vyrdict-mobile-categories-bar,#vyrdict-mobile-categories-menu'))return;
     let kind=el.getAttribute('data-vyrdict-topnav-kind')||'';
     if(!kind&&el.closest('header,nav'))kind=kindFrom(el);
     if(!kind)return;
