@@ -1,6 +1,6 @@
 const homeHandler=require('./home');
 
-const REV='20260930-scroll-stable-12';
+const REV='20260930-layout-restore-13';
 const SCRIPT_REVISIONS=[
   ['/product-navigation-market-fix.js?v=3-20260907',`/product-navigation-market-fix.js?v=${REV}`],
   ['/navigation-context.js?v=3-20260907',`/navigation-context.js?v=${REV}`],
@@ -37,10 +37,8 @@ body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!impor
 </style>`;
 
   const navBootstrap=`<script src="/top-nav-section-fix.js?v=${REV}"><\/script>`;
+  const layoutBootstrap=`<script src="/homepage-layout-restore.js?v=${REV}" defer><\/script>`;
 
-  // The current homepage is the editorial build. Disable legacy homepage hero
-  // animators before body scripts execute so they cannot keep remounting hidden
-  // hero layers underneath the editorial page.
   const disableLegacy=`<script id="vyrdict-disable-legacy-home-${REV}">(()=>{
     window.__vyrdictHeroV10=1;
     window.__vyrdictHeroV8=1;
@@ -49,8 +47,6 @@ body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!impor
     window.__vyrdictGrowthRetentionV4=1;
   })();<\/script>`;
 
-  // Keep the old bottom-flash protection, but only for the initial hidden boot.
-  // Once revealed, this code never pins scrollY again during normal scrolling.
   const guard=`<script id="vyrdict-home-revision-${REV}">(()=>{
     window.__VYRDICT_HOME_REV='${REV}';
     let completed=false;
@@ -96,7 +92,6 @@ body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!impor
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
     addEventListener('pageshow',e=>{
       if(!e.persisted||!onHome())return;
-      // bfcache restores should not force a second normal-load scroll lock.
       document.documentElement.classList.remove('vyrdict-home-entry-lock');
     });
   })();<\/script>`;
@@ -104,7 +99,7 @@ body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!impor
   if(html.includes('<html')&&!html.includes('data-vyrdict-home-rev=')){
     html=html.replace('<html','<html data-vyrdict-home-rev="'+REV+'"');
   }
-  if(html.includes('</head>'))html=html.replace('</head>',css+disableLegacy+navBootstrap+guard+'</head>');
+  if(html.includes('</head>'))html=html.replace('</head>',css+disableLegacy+navBootstrap+layoutBootstrap+guard+'</head>');
   return html;
 }
 
