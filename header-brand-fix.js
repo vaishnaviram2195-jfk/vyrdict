@@ -48,7 +48,7 @@
     fix();
     load('/performance-monitor.js?v=1-20260907','vyrdict-performance-monitor-loader');
     load('/conversion-optimization.js?v=1-20260907','vyrdict-conversion-optimization-loader');
-    load('/header-categories-menu.js?v=3-20260930-gifts','vyrdict-header-categories-menu-loader');
+    load('/header-categories-menu.js?v=4-20260930-mobile','vyrdict-header-categories-menu-loader');
     load('/search-empty-suggest.js?v=2-20260930-immediate','vyrdict-search-empty-suggest-loader');
     load('/newsletter-welcome-popup.js?v=5-20260930-compact','vyrdict-newsletter-welcome-popup-loader');
     if(location.hostname==='www.vyrdict.com'){
