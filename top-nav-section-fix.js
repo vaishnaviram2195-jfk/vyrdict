@@ -1,12 +1,14 @@
 (()=>{
-  if(window.__vyrdictTopNavSectionFixV18)return;
-  window.__vyrdictTopNavSectionFixV18=1;
+  if(window.__vyrdictTopNavSectionFixV19)return;
+  window.__vyrdictTopNavSectionFixV19=1;
   window.__vyrdictDisableLegacyHeroMotion=1;
 
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const HEADER_OFFSET=88;
   const isHome=()=>location.pathname==='/'||location.pathname==='';
   const PRIMARY='data-vyrdict-topnav';
+  const VIRAL_CACHE_KEY='vyrdict:viral-now:v1';
+  const VIRAL_CACHE_TTL=10*60*1000;
 
   function load(src,id){
     if(document.getElementById(id))return;
@@ -47,6 +49,27 @@
     s.defer=true;
     (document.head||document.documentElement).appendChild(s);
   }
+
+  function viralCacheFresh(){
+    try{
+      const c=JSON.parse(sessionStorage.getItem(VIRAL_CACHE_KEY)||'null');
+      return !!(c?.data?.products?.length&&Date.now()-Number(c.at||0)<VIRAL_CACHE_TTL);
+    }catch{return false}
+  }
+
+  function warmViralNow(force=false){
+    if(!isHome()||window.__vyrdictViralNowWarm&&!force)return;
+    if(!force&&viralCacheFresh())return;
+    window.__vyrdictViralNowWarm=1;
+    fetch('/api/viral-now?limit=24',{headers:{accept:'application/json'}})
+      .then(r=>r.ok?r.json():null)
+      .then(data=>{
+        if(!data?.products?.length)return;
+        try{sessionStorage.setItem(VIRAL_CACHE_KEY,JSON.stringify({at:Date.now(),data}))}catch{}
+      })
+      .catch(()=>{});
+  }
+
   loadDirectFixes();
   loadEditorialHome();
 
@@ -153,6 +176,14 @@
     e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();activate(kind);
   },true);
 
+  const warmFromLink=e=>{
+    const a=e.target?.closest?.('a[href*="viral-right-now"],a[href*="viral-now"]');
+    if(a)warmViralNow(true);
+  };
+  document.addEventListener('pointerover',warmFromLink,{passive:true});
+  document.addEventListener('focusin',warmFromLink);
+  document.addEventListener('touchstart',warmFromLink,{passive:true});
+
   function handleInitial(){
     if(!isHome())return;
     const h=(location.hash||'').toLowerCase();
@@ -164,6 +195,11 @@
 
   const start=()=>{
     loadDirectFixes();loadEditorialHome();wire();handleInitial();
+    if(isHome()){
+      const kick=()=>warmViralNow(false);
+      if('requestIdleCallback' in window)requestIdleCallback(kick,{timeout:900});
+      else setTimeout(kick,450);
+    }
     const app=document.getElementById('app')||document.body;
     if(app&&!window.__vyrdictTopNavWireObserver){
       window.__vyrdictTopNavWireObserver=new MutationObserver(()=>wire());
