@@ -48,7 +48,7 @@
     fix();
     load('/performance-monitor.js?v=1-20260907','vyrdict-performance-monitor-loader');
     load('/conversion-optimization.js?v=1-20260907','vyrdict-conversion-optimization-loader');
-    load('/header-categories-menu.js?v=2-20260929-clickfix','vyrdict-header-categories-menu-loader');
+    load('/header-categories-menu.js?v=3-20260930-gifts','vyrdict-header-categories-menu-loader');
     if(location.hostname==='www.vyrdict.com'){
       location.replace('https://vyrdict.com'+location.pathname+location.search+location.hash);
       return;
