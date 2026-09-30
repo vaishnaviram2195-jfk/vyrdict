@@ -1,6 +1,6 @@
 const homeHandler=require('./home');
 
-const REV='20260930-signal-collage-14';
+const REV='20260930-editorial-type-15';
 const SCRIPT_REVISIONS=[
   ['/product-navigation-market-fix.js?v=3-20260907',`/product-navigation-market-fix.js?v=${REV}`],
   ['/navigation-context.js?v=3-20260907',`/navigation-context.js?v=${REV}`],
@@ -26,19 +26,21 @@ html.vyrdict-home-entry-lock{scroll-behavior:auto!important;overflow:hidden!impo
 html.vyrdict-home-entry-lock body{overflow:hidden!important;scroll-behavior:auto!important}
 html.vyrdict-home-entry-lock::before{content:none!important;display:none!important}
 html.vyrdict-home-entry-lock::after{content:none!important;display:none!important}
-body.vyrdict-home-current .hero h1{font-size:clamp(42px,5vw,68px)!important;line-height:.94!important;letter-spacing:-.045em!important}
-body.vyrdict-home-current .section .head h2{font-size:clamp(32px,3.65vw,46px)!important;line-height:1!important;letter-spacing:-.04em!important}
-body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!important;line-height:1.03!important}
+body.vyrdict-home-current .hero h1{font-size:clamp(38px,4.4vw,54px)!important;line-height:.98!important;letter-spacing:-.042em!important}
+body.vyrdict-home-current .section .head h2{font-size:clamp(29px,3.1vw,39px)!important;line-height:1.03!important;letter-spacing:-.035em!important}
+body.vyrdict-home-current .section .head h3{font-size:clamp(25px,2.65vw,32px)!important;line-height:1.05!important}
 @media(max-width:700px){
-  body.vyrdict-home-current .hero h1{font-size:clamp(38px,10.5vw,50px)!important;line-height:.96!important}
-  body.vyrdict-home-current .section .head h2{font-size:clamp(28px,8.5vw,36px)!important;line-height:1!important}
-  body.vyrdict-home-current .section .head h3{font-size:clamp(24px,7vw,32px)!important}
+  body.vyrdict-home-current .hero h1{font-size:clamp(34px,9.4vw,42px)!important;line-height:1.01!important}
+  body.vyrdict-home-current .section .head h2{font-size:clamp(27px,7.8vw,32px)!important;line-height:1.05!important}
+  body.vyrdict-home-current .section .head h3{font-size:clamp(23px,6.5vw,28px)!important}
 }
 </style>`;
 
   const navBootstrap=`<script src="/top-nav-section-fix.js?v=${REV}"><\/script>`;
+  const typeBootstrap=`<script src="/site-typography-polish.js?v=${REV}" defer><\/script>`;
   const layoutBootstrap=`<script src="/homepage-layout-restore.js?v=${REV}" defer><\/script>`;
   const signalBootstrap=`<script src="/homepage-signal-landscape.js?v=${REV}" defer><\/script>`;
+  const headingBootstrap=`<script src="/homepage-heading-scale.js?v=${REV}" defer><\/script>`;
 
   const disableLegacy=`<script id="vyrdict-disable-legacy-home-${REV}">(()=>{
     window.__vyrdictHeroV10=1;
@@ -100,7 +102,7 @@ body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!impor
   if(html.includes('<html')&&!html.includes('data-vyrdict-home-rev=')){
     html=html.replace('<html','<html data-vyrdict-home-rev="'+REV+'"');
   }
-  if(html.includes('</head>'))html=html.replace('</head>',css+disableLegacy+navBootstrap+layoutBootstrap+signalBootstrap+guard+'</head>');
+  if(html.includes('</head>'))html=html.replace('</head>',css+disableLegacy+navBootstrap+typeBootstrap+layoutBootstrap+signalBootstrap+headingBootstrap+guard+'</head>');
   return html;
 }
 
