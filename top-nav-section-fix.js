@@ -1,11 +1,23 @@
 (()=>{
-  if(window.__vyrdictTopNavSectionFixV12)return;
-  window.__vyrdictTopNavSectionFixV12=1;
+  if(window.__vyrdictTopNavSectionFixV13)return;
+  window.__vyrdictTopNavSectionFixV13=1;
 
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const HEADER_OFFSET=88;
   const isHome=()=>location.pathname==='/'||location.pathname==='';
   const PRIMARY='data-vyrdict-topnav';
+
+  function load(src,id){
+    if(document.getElementById(id))return;
+    const s=document.createElement('script');
+    s.id=id;s.src=src;s.defer=true;
+    (document.head||document.documentElement).appendChild(s);
+  }
+
+  function loadDirectFixes(){
+    load('/header-categories-menu.js?v=5-20260930-mobile-direct','vyrdict-header-categories-direct-loader');
+    if(isHome())load('/homepage-signal-landscape.js?v=4-20260930-mutedgray','vyrdict-signal-muted-direct-loader');
+  }
 
   function loadEditorialHome(){
     if(!isHome()||document.getElementById('vyrdict-editorial-bootstrap-loader-v6'))return;
@@ -15,6 +27,7 @@
     s.defer=true;
     (document.head||document.documentElement).appendChild(s);
   }
+  loadDirectFixes();
   loadEditorialHome();
 
   function kindFrom(el){
@@ -129,13 +142,13 @@
   }
 
   const start=()=>{
-    loadEditorialHome();wire();handleInitial();
+    loadDirectFixes();loadEditorialHome();wire();handleInitial();
     const app=document.getElementById('app')||document.body;
     if(app&&!window.__vyrdictTopNavWireObserver){
       window.__vyrdictTopNavWireObserver=new MutationObserver(()=>wire());
       window.__vyrdictTopNavWireObserver.observe(app,{childList:true,subtree:true});
     }
-    [120,400,900,1800].forEach(ms=>setTimeout(()=>{loadEditorialHome();wire();handleInitial()},ms));
+    [120,400,900,1800].forEach(ms=>setTimeout(()=>{loadDirectFixes();loadEditorialHome();wire();handleInitial()},ms));
   };
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
