@@ -1,21 +1,21 @@
 (()=>{
-  if(window.__vyrdictMomentTopV7)return;
-  window.__vyrdictMomentTopV7=1;
+  if(window.__vyrdictMomentTopV8)return;
+  window.__vyrdictMomentTopV8=1;
   if((location.pathname||'/')!=='/')return;
 
   const ROOT='vyrdict-editorial-home';
-  const STYLE_ID='ve-moment-top-style-v7';
+  const STYLE_ID='ve-moment-top-style-v8';
   let initialized=false;
 
   function style(){
-    ['ve-moment-top-style','ve-moment-top-style-v3','ve-moment-top-style-v4','ve-moment-top-style-v5','ve-moment-top-style-v6'].forEach(id=>document.getElementById(id)?.remove());
+    ['ve-moment-top-style','ve-moment-top-style-v3','ve-moment-top-style-v4','ve-moment-top-style-v5','ve-moment-top-style-v6','ve-moment-top-style-v7'].forEach(id=>document.getElementById(id)?.remove());
     if(document.getElementById(STYLE_ID))return;
     const s=document.createElement('style');
     s.id=STYLE_ID;
     s.textContent=`
       #${ROOT} > .ve-hero{display:none!important}
-      #${ROOT} > .ve-motion{margin:0!important;background:#686b68!important;transform:none!important}
-      #${ROOT} > .ve-motion .ve-motion-frame{transform:none!important}
+      #${ROOT} > .ve-motion{margin:0!important;background:#686b68!important;transform:none!important;overflow-anchor:none!important}
+      #${ROOT} > .ve-motion .ve-motion-frame{transform:none!important;overflow-anchor:none!important}
       #${ROOT} > .ve-motion .ve-motion-img{
         animation:none!important;
         transition:none!important;
@@ -31,6 +31,22 @@
     document.head.appendChild(s);
   }
 
+  function wireFreshLink(link){
+    if(!link)return;
+    link.href='/collection/viral-right-now/?live=1';
+    link.textContent='See what’s viral';
+    link.dataset.veFreshViralLink='1';
+    if(link.dataset.veFreshViralReady==='1')return;
+    link.dataset.veFreshViralReady='1';
+    link.addEventListener('click',()=>{
+      try{
+        localStorage.removeItem('vyrdict:catalog-cache:v5');
+        localStorage.removeItem('vyrdict:catalog-cache:v4');
+        localStorage.removeItem('vyrdict:catalog-cache:v3');
+      }catch{}
+    },{capture:true});
+  }
+
   function alignCopy(motion){
     const kicker=motion.querySelector('.ve-motion-copy .ve-kicker');
     const heading=motion.querySelector('.ve-motion-copy h2');
@@ -39,7 +55,7 @@
     if(kicker)kicker.textContent='THE HYPE CHECK';
     if(heading)heading.textContent='What’s actually worth the hype?';
     if(description)description.textContent='The products with the strongest live momentum right now — ranked from fresh VYRDICT signals, not yesterday’s internet. We prioritize what is surging across roughly the last 7–10 days.';
-    if(link){link.href='/collection/viral-right-now/';link.textContent='See what’s viral';}
+    wireFreshLink(link);
   }
 
   async function loadFreshViral(motion){
@@ -69,12 +85,9 @@
     style();
     alignCopy(motion);
     loadFreshViral(motion);
-    // Important: never reorder the homepage after initial render. Repeated
-    // insertBefore calls were changing layout while the user was scrolling.
     if(!initialized){
       initialized=true;
-      const hero=root.querySelector(':scope > .ve-hero');
-      hero?.setAttribute('aria-hidden','true');
+      root.querySelector(':scope > .ve-hero')?.setAttribute('aria-hidden','true');
     }
     return true;
   }
@@ -86,5 +99,5 @@
     if(tries<30)setTimeout(tick,tries<10?120:350);
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tick,{once:true});else tick();
-  addEventListener('pageshow',()=>setTimeout(apply,40));
+  addEventListener('pageshow',e=>{if(e.persisted)setTimeout(apply,40)});
 })();
