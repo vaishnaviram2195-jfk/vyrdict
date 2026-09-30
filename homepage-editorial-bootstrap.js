@@ -1,13 +1,13 @@
 (()=>{
-  if(window.__vyrdictEditorialBootstrapV4)return;
-  window.__vyrdictEditorialBootstrapV4=1;
+  if(window.__vyrdictEditorialBootstrapV5)return;
+  window.__vyrdictEditorialBootstrapV5=1;
   const isHome=()=>location.pathname==='/'||location.pathname==='';
   if(!isHome())return;
 
   const BRIDGE_ID='vyrdict-editorial-product-bridge';
-  const SCRIPT_ID='vyrdict-editorial-reference-force-v4';
-  const LEGACY_ID='vyrdict-editorial-legacy-force-v4';
-  const POLISH_ID='vyrdict-editorial-polish-v1';
+  const SCRIPT_ID='vyrdict-editorial-reference-force-v5';
+  const LEGACY_ID='vyrdict-editorial-legacy-force-v5';
+  const POLISH_ID='vyrdict-editorial-polish-v2';
   const FALLBACK=[
     {slug:'coach-tabby-shoulder-bag-20',name:'Tabby Shoulder Bag 20',brand:'Coach',image_url:'https://www.houseoffraser.co.uk/images/imgzoom/70/70618101_xxl.jpg'},
     {slug:'ray-ban-rb3025-aviator-classic',name:'RB3025 Aviator Classic',brand:'Ray-Ban',image_url:'https://images.ray-ban.com/is/image/RayBan/8056597259811_0001.png?impolicy=SEO_4x3'},
@@ -58,7 +58,7 @@
   }
 
   function loadLegacyGuard(){addScript('/homepage-editorial-legacy-guard.js?v=6-20260929-polish',LEGACY_ID)}
-  function loadPolish(){addScript('/homepage-editorial-polish.js?v=1-20260929-polish',POLISH_ID)}
+  function loadPolish(){addScript('/homepage-editorial-polish.js?v=2-20260929-audiofix',POLISH_ID)}
 
   function mount(force=false){
     if(!isHome())return;
