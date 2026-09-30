@@ -1,5 +1,6 @@
 (()=>{
   const STYLE_ID='vyrdict-header-brand-fix-style';
+  window.__vyrdictDisableLegacyHeroMotion=1;
   if(!document.getElementById(STYLE_ID)){
     const s=document.createElement('style');
     s.id=STYLE_ID;
@@ -24,6 +25,7 @@
   }
 
   function removeLegacyMobile(){
+    window.__vyrdictDisableLegacyHeroMotion=1;
     document.getElementById('vyrdict-mobile-final-style')?.remove();
     document.getElementById('vyrdict-mobile-current-static-layer')?.remove();
     document.getElementById('vyrdict-mobile-motion-layer')?.remove();
@@ -65,7 +67,7 @@
       load('/homepage-culture-trio.js?v=4-20260930-ikeaquality','vyrdict-home-culture-trio-loader');
       load('/homepage-culture-horizontal.js?v=1-20260930-swipe','vyrdict-home-culture-horizontal-loader');
       load('/homepage-signal-landscape.js?v=5-20260930-darkgray','vyrdict-home-signal-landscape-loader');
-      load('/homepage-moment-top.js?v=7-20260930-stable','vyrdict-home-moment-top-loader');
+      load('/homepage-moment-top.js?v=8-20260930-freshstable','vyrdict-home-moment-top-loader');
       load('/homepage-heading-scale.js?v=1-20260930','vyrdict-home-heading-scale-loader');
       load('/homepage-seamless-spacing.js?v=1-20260930','vyrdict-home-seamless-spacing-loader');
       load('/homepage-detail-tuning.js?v=2-20260930-fullbleed','vyrdict-home-detail-tuning-loader');
