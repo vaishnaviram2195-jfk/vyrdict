@@ -1,10 +1,12 @@
 (()=>{
-  if(window.__vyrdictEditorialBootstrapV2)return;
-  window.__vyrdictEditorialBootstrapV2=1;
+  if(window.__vyrdictEditorialBootstrapV3)return;
+  window.__vyrdictEditorialBootstrapV3=1;
   const isHome=()=>location.pathname==='/'||location.pathname==='';
   if(!isHome())return;
 
   const BRIDGE_ID='vyrdict-editorial-product-bridge';
+  const SCRIPT_ID='vyrdict-editorial-reference-force-v3';
+  const LEGACY_ID='vyrdict-editorial-legacy-force-v3';
   const FALLBACK=[
     {slug:'coach-tabby-shoulder-bag-20',name:'Tabby Shoulder Bag 20',brand:'Coach',image_url:'https://www.houseoffraser.co.uk/images/imgzoom/70/70618101_xxl.jpg'},
     {slug:'ray-ban-rb3025-aviator-classic',name:'RB3025 Aviator Classic',brand:'Ray-Ban',image_url:'https://images.ray-ban.com/is/image/RayBan/8056597259811_0001.png?impolicy=SEO_4x3'},
@@ -19,27 +21,23 @@
     {slug:'la-ligne-molly-jeans',name:'Molly Jeans',brand:'La Ligne',image_url:'https://vader-prod.s3.amazonaws.com/1678732514-la-ligne-molly-jeans-640f6cc921252.png'}
   ];
 
-  const addScript=(src,id)=>{
-    if(document.getElementById(id))return;
-    const s=document.createElement('script');
-    s.id=id;s.src=src;s.defer=true;
-    (document.head||document.documentElement).appendChild(s);
-  };
-
-  function bridgeProducts(){
-    if(document.getElementById(BRIDGE_ID))return true;
-    let rows=[];
+  function rows(){
+    let data=[];
     try{
       const c=JSON.parse(localStorage.getItem('vyrdict:catalog-cache:v5')||'null');
-      if(Array.isArray(c?.p))rows=c.p;
+      if(Array.isArray(c?.p))data=c.p;
     }catch{}
-    rows=rows.filter(p=>p?.slug&&p?.name&&p?.image_url).slice(0,24);
-    if(rows.length<6)rows=FALLBACK;
+    data=data.filter(p=>p?.slug&&p?.name&&p?.image_url).slice(0,24);
+    return data.length>=6?data:FALLBACK;
+  }
+
+  function bridgeProducts(){
+    document.getElementById(BRIDGE_ID)?.remove();
     const wrap=document.createElement('div');
     wrap.id=BRIDGE_ID;
     wrap.setAttribute('aria-hidden','true');
     Object.assign(wrap.style,{position:'fixed',left:'-99999px',top:'0',width:'1px',height:'1px',overflow:'hidden',pointerEvents:'none',opacity:'0'});
-    for(const p of rows){
+    for(const p of rows()){
       const a=document.createElement('a');
       a.href='/product/'+encodeURIComponent(p.slug)+'/';
       a.innerHTML='<img src="'+String(p.image_url).replace(/"/g,'&quot;')+'" alt=""><h3></h3><small class="brand"></small><span class="scores"></span>';
@@ -51,19 +49,49 @@
       wrap.appendChild(a);
     }
     (document.getElementById('app')||document.body).appendChild(wrap);
-    return true;
   }
 
-  function load(){
-    if(!isHome()||document.getElementById('vyrdict-editorial-home'))return;
+  function loadLegacyGuard(){
+    if(document.getElementById(LEGACY_ID))return;
+    const s=document.createElement('script');
+    s.id=LEGACY_ID;
+    s.src='/homepage-editorial-legacy-guard.js?v=5-20260929-remount';
+    s.defer=true;
+    (document.head||document.documentElement).appendChild(s);
+  }
+
+  function mount(force=false){
+    if(!isHome())return;
+    if(document.getElementById('vyrdict-editorial-home')&&!force)return;
     bridgeProducts();
-    /* V1 could have set its guard before product data was ready. Reset it only
-       for this forced, data-ready execution. */
     window.__vyrdictHomepageEditorialRefV1=0;
-    addScript('/homepage-editorial-reference.js?v=5-20260929-hard-fallback','vyrdict-editorial-reference-force-v2');
-    addScript('/homepage-editorial-legacy-guard.js?v=4-20260929-hard-fallback','vyrdict-editorial-legacy-force-v2');
+    document.getElementById(SCRIPT_ID)?.remove();
+    const s=document.createElement('script');
+    s.id=SCRIPT_ID;
+    s.src='/homepage-editorial-reference.js?v=6-20260929-remount&t='+Date.now();
+    s.defer=true;
+    (document.head||document.documentElement).appendChild(s);
+    loadLegacyGuard();
   }
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
-  [80,220,500,900,1500,2600,4200].forEach(ms=>setTimeout(load,ms));
+  let missingSince=0,lastForce=0;
+  function ensure(){
+    if(!isHome())return;
+    const root=document.getElementById('vyrdict-editorial-home');
+    if(root){missingSince=0;return;}
+    const now=Date.now();
+    if(!missingSince)missingSince=now;
+    if(now-missingSince>100&&now-lastForce>650){lastForce=now;mount(true)}
+  }
+
+  const start=()=>{
+    mount();
+    [180,500,900,1500,2400,3800,5600,8000].forEach(ms=>setTimeout(ensure,ms));
+    const app=document.getElementById('app')||document.body;
+    new MutationObserver(()=>setTimeout(ensure,20)).observe(app,{childList:true,subtree:false});
+    setTimeout(()=>{if(document.getElementById('vyrdict-editorial-home'))document.getElementById(BRIDGE_ID)?.remove()},9000);
+  };
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+  addEventListener('pageshow',()=>setTimeout(ensure,30));
 })();
