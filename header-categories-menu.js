@@ -1,10 +1,10 @@
 (()=>{
-  if(window.__vyrdictHeaderCategoriesMenuV2)return;
-  window.__vyrdictHeaderCategoriesMenuV2=1;
+  if(window.__vyrdictHeaderCategoriesMenuV3)return;
+  window.__vyrdictHeaderCategoriesMenuV3=1;
 
   const CATS=[
     ['Beauty','beauty'],['Beauty Tech','beauty-tech'],['Books','books'],['Fashion','fashion'],['Fitness','fitness'],
-    ['Food & Drinks','food-and-drinks'],['Hair','hair'],['Home','home'],['Kids & Baby','kids-and-baby'],['Kitchen','kitchen'],
+    ['Food & Drinks','food-and-drinks'],['Gifts','gifts','collection'],['Hair','hair'],['Home','home'],['Kids & Baby','kids-and-baby'],['Kitchen','kitchen'],
     ['Makeup','makeup'],['Perfume','perfume'],['Pets','pets'],['Shoes','shoes'],['Skincare','skincare'],
     ['Stationery & Crafts','stationery-and-crafts'],['Tech','tech'],['Toys & Collectibles','toys-and-collectibles'],['Travel','travel'],['Wellness','wellness']
   ];
@@ -12,9 +12,10 @@
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
   function style(){
-    if(document.getElementById('ve-category-menu-style-v2'))return;
+    if(document.getElementById('ve-category-menu-style-v3'))return;
     document.getElementById('ve-category-menu-style')?.remove();
-    const s=document.createElement('style');s.id='ve-category-menu-style-v2';s.textContent=`
+    document.getElementById('ve-category-menu-style-v2')?.remove();
+    const s=document.createElement('style');s.id='ve-category-menu-style-v3';s.textContent=`
       [data-ve-categories-trigger]{position:relative!important;cursor:pointer!important;user-select:none!important}
       #ve-category-menu{position:fixed;z-index:99999;background:#f4f2ec;border:1px solid rgba(0,0,0,.13);box-shadow:0 18px 45px rgba(0,0,0,.13);border-radius:2px;padding:18px 20px 20px;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-5px);transition:opacity .16s ease,transform .16s ease,visibility .16s;min-width:620px;max-width:min(760px,calc(100vw - 32px));}
       #ve-category-menu.ve-open{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0)}
@@ -52,7 +53,7 @@
     let menu=document.getElementById('ve-category-menu');
     if(!menu){
       menu=document.createElement('div');menu.id='ve-category-menu';menu.setAttribute('role','menu');menu.setAttribute('aria-label','All product categories');
-      menu.innerHTML=`<div class="ve-cat-head"><div class="ve-cat-kicker">Shop all categories</div><button class="ve-cat-close" type="button" aria-label="Close categories">×</button></div><div class="ve-cat-grid">${CATS.map(([name,slug])=>`<a class="ve-cat-link" role="menuitem" data-category="${esc(name)}" href="/category/${slug}/">${esc(name)}</a>`).join('')}</div>`;
+      menu.innerHTML=`<div class="ve-cat-head"><div class="ve-cat-kicker">Shop all categories</div><button class="ve-cat-close" type="button" aria-label="Close categories">×</button></div><div class="ve-cat-grid">${CATS.map(([name,slug,type])=>`<a class="ve-cat-link" role="menuitem" data-category="${esc(name)}" href="/${type==='collection'?'collection':'category'}/${slug}/">${esc(name)}</a>`).join('')}</div>`;
       document.body.appendChild(menu);
       menu.querySelector('.ve-cat-close')?.addEventListener('click',()=>close(menu,document.querySelector('[data-ve-categories-trigger]')));
     }
@@ -75,7 +76,6 @@
     return true;
   }
 
-  /* Run before the older document-level navigation capture handler. */
   window.addEventListener('click',e=>{
     const trigger=e.target?.closest?.('[data-ve-categories-trigger]');
     if(!trigger)return;
