@@ -65,6 +65,7 @@
       load('/homepage-signal-landscape.js?v=2-20260930-fullwidth','vyrdict-home-signal-landscape-loader');
       load('/homepage-moment-top.js?v=6-20260930-liveviral','vyrdict-home-moment-top-loader');
       load('/homepage-heading-scale.js?v=1-20260930','vyrdict-home-heading-scale-loader');
+      load('/homepage-seamless-spacing.js?v=1-20260930','vyrdict-home-seamless-spacing-loader');
     }
     if(attempt<20&&!document.querySelector('header,nav'))setTimeout(()=>boot(attempt+1),120);
   }
