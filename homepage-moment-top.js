@@ -1,19 +1,26 @@
 (()=>{
-  if(window.__vyrdictMomentTopV2)return;
-  window.__vyrdictMomentTopV2=1;
+  if(window.__vyrdictMomentTopV3)return;
+  window.__vyrdictMomentTopV3=1;
   if((location.pathname||'/')!=='/')return;
 
   const ROOT='vyrdict-editorial-home';
-  const STYLE_ID='ve-moment-top-style';
+  const STYLE_ID='ve-moment-top-style-v3';
 
   function style(){
+    document.getElementById('ve-moment-top-style')?.remove();
     if(document.getElementById(STYLE_ID))return;
     const s=document.createElement('style');
     s.id=STYLE_ID;
     s.textContent=`
-      /* The cinematic motion treatment is now the homepage opener. */
+      /* Keep the cinematic opener, but shift it from near-black to muted gray. */
       #${ROOT} > .ve-hero{display:none!important}
-      #${ROOT} > .ve-motion{margin:0!important}
+      #${ROOT} > .ve-motion{margin:0!important;background:#8d908c!important}
+      #${ROOT} > .ve-motion .ve-motion-img{
+        filter:saturate(.62) brightness(.78) contrast(.92)!important;
+      }
+      #${ROOT} > .ve-motion:after{
+        background:linear-gradient(180deg,rgba(112,115,111,.14) 10%,rgba(82,85,81,.56) 100%)!important;
+      }
     `;
     document.head.appendChild(s);
   }
@@ -37,12 +44,8 @@
     style();
     alignCopy(motion);
 
-    /* Move the existing cinematic section to the top while preserving its
-       imagery, animation and CTA behavior. */
     if(root.firstElementChild!==motion)root.insertBefore(motion,root.firstElementChild);
 
-    /* Keep the editorial discovery trio after the hidden legacy hero and keep
-       the news desk after the trio. */
     const culture=document.getElementById('ve-culture-trio');
     const news=document.getElementById('ve-news-desk');
     if(culture&&hero.nextElementSibling!==culture)hero.insertAdjacentElement('afterend',culture);
