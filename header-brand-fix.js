@@ -61,7 +61,7 @@
       load('/homepage-remove-bottom-categories.js?v=1-20260929','vyrdict-home-remove-bottom-categories-loader');
       load('/homepage-culture-trio.js?v=2-20260930-cover','vyrdict-home-culture-trio-loader');
       load('/homepage-signal-landscape.js?v=2-20260930-fullwidth','vyrdict-home-signal-landscape-loader');
-      load('/homepage-moment-top.js?v=3-20260930-mutedgray','vyrdict-home-moment-top-loader');
+      load('/homepage-moment-top.js?v=4-20260930-smoothfade','vyrdict-home-moment-top-loader');
     }
     if(attempt<20&&!document.querySelector('header,nav'))setTimeout(()=>boot(attempt+1),120);
   }
