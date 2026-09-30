@@ -56,6 +56,7 @@
       load('/homepage-hero-variety.js?v=9-20260904-mobilefix','vyrdict-current-hero-loader');
       load('/growth-retention.js?v=2-20260904-mobilefix','vyrdict-current-growth-loader');
       load('/homepage-news-desk.js?v=1-20260929-vogue','vyrdict-home-news-desk-loader');
+      load('/homepage-remove-worth.js?v=1-20260929','vyrdict-home-remove-worth-loader');
     }
     if(attempt<20&&!document.querySelector('header,nav'))setTimeout(()=>boot(attempt+1),120);
   }
