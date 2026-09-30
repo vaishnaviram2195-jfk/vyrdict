@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictTopNavSectionFixV8)return;
-  window.__vyrdictTopNavSectionFixV8=1;
+  if(window.__vyrdictTopNavSectionFixV9)return;
+  window.__vyrdictTopNavSectionFixV9=1;
 
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const HEADER_OFFSET=88;
@@ -8,10 +8,10 @@
   const PRIMARY='data-vyrdict-topnav';
 
   function loadEditorialHome(){
-    if(!isHome()||document.getElementById('vyrdict-editorial-bootstrap-loader-v3'))return;
+    if(!isHome()||document.getElementById('vyrdict-editorial-bootstrap-loader-v4'))return;
     const s=document.createElement('script');
-    s.id='vyrdict-editorial-bootstrap-loader-v3';
-    s.src='/homepage-editorial-bootstrap.js?v=3-20260929-remount';
+    s.id='vyrdict-editorial-bootstrap-loader-v4';
+    s.src='/homepage-editorial-bootstrap.js?v=4-20260929-polish';
     s.defer=true;
     (document.head||document.documentElement).appendChild(s);
   }
@@ -140,7 +140,8 @@
     [120,400,900,1800].forEach(ms=>setTimeout(()=>{loadEditorialHome();wire();handleInitial()},ms));
   };
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
   addEventListener('pageshow',()=>setTimeout(start,20));
   addEventListener('hashchange',()=>setTimeout(handleInitial,50));
 })();
