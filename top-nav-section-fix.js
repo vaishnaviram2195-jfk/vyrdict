@@ -1,11 +1,21 @@
 (()=>{
-  if(window.__vyrdictTopNavSectionFixV5)return;
-  window.__vyrdictTopNavSectionFixV5=1;
+  if(window.__vyrdictTopNavSectionFixV6)return;
+  window.__vyrdictTopNavSectionFixV6=1;
 
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const HEADER_OFFSET=88;
   const isHome=()=>location.pathname==='/'||location.pathname==='';
   const PRIMARY='data-vyrdict-topnav';
+
+  function loadEditorialHome(){
+    if(!isHome()||document.getElementById('vyrdict-editorial-bootstrap-loader'))return;
+    const s=document.createElement('script');
+    s.id='vyrdict-editorial-bootstrap-loader';
+    s.src='/homepage-editorial-bootstrap.js?v=1-20260929-force';
+    s.defer=true;
+    (document.head||document.documentElement).appendChild(s);
+  }
+  loadEditorialHome();
 
   function kindFrom(el){
     const footer=el?.getAttribute('data-vf-action');
@@ -55,19 +65,22 @@
     if(kind==='skip')return document.getElementById('skip-list');
     const els=candidates();
     if(kind==='explore'){
-      return document.getElementById('trending-index')
+      return document.getElementById('ve-community')
+        || document.getElementById('trending-index')
         || document.querySelector('.vyrdict-index-gallery,#viral,[data-section="viral"],[data-section="trending"]')
         || els.find(el=>norm(el.textContent)==='trending index')
         || els.find(el=>norm(el.textContent).includes("what's trending now"));
     }
     if(kind==='categories'){
-      return document.getElementById('categories')
+      return document.querySelector('.ve-discover')
+        || document.getElementById('categories')
         || document.querySelector('[data-section="categories"],#browse-by-category,.browse-by-category,.v-home-categories')
         || els.find(el=>norm(el.textContent)==='browse by category')
         || els.find(el=>norm(el.textContent).includes('browse by category'));
     }
     if(kind==='culture'){
-      return document.getElementById('culture')
+      return document.querySelector('.ve-story')
+        || document.getElementById('culture')
         || document.querySelector('[data-section="culture"],.culture-section')
         || els.find(el=>norm(el.textContent).includes('culture commerce'))
         || els.find(el=>norm(el.textContent).includes('you saw it then everyone bought it'));
@@ -107,9 +120,6 @@
     scrollToKind(kind);
   }
 
-  // This listener is intentionally registered by the first deferred navigation
-  // script on the homepage. It owns the five primary header destinations so
-  // generic product/category navigation cannot swallow these clicks.
   document.addEventListener('click',e=>{
     if(e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
     const el=e.target?.closest?.('a,button,[data-nav]');
@@ -133,6 +143,7 @@
   }
 
   const start=()=>{
+    loadEditorialHome();
     wire();
     handleInitial();
     const app=document.getElementById('app')||document.body;
@@ -140,7 +151,7 @@
       window.__vyrdictTopNavWireObserver=new MutationObserver(()=>wire());
       window.__vyrdictTopNavWireObserver.observe(app,{childList:true,subtree:true});
     }
-    [120,400,900,1800].forEach(ms=>setTimeout(()=>{wire();handleInitial()},ms));
+    [120,400,900,1800].forEach(ms=>setTimeout(()=>{loadEditorialHome();wire();handleInitial()},ms));
   };
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
