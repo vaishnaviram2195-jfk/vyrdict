@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictMomentTopV1)return;
-  window.__vyrdictMomentTopV1=1;
+  if(window.__vyrdictMomentTopV2)return;
+  window.__vyrdictMomentTopV2=1;
   if((location.pathname||'/')!=='/')return;
 
   const ROOT='vyrdict-editorial-home';
@@ -11,11 +11,20 @@
     const s=document.createElement('style');
     s.id=STYLE_ID;
     s.textContent=`
-      /* The cinematic "What's Having a Moment" treatment is now the homepage opener. */
+      /* The cinematic motion treatment is now the homepage opener. */
       #${ROOT} > .ve-hero{display:none!important}
       #${ROOT} > .ve-motion{margin:0!important}
     `;
     document.head.appendChild(s);
+  }
+
+  function alignCopy(motion){
+    const kicker=motion.querySelector('.ve-motion-copy .ve-kicker');
+    const heading=motion.querySelector('.ve-motion-copy h2');
+    const description=motion.querySelector('.ve-motion-side p');
+    if(kicker)kicker.textContent='THE HYPE CHECK';
+    if(heading)heading.textContent='What’s actually worth the hype?';
+    if(description)description.textContent='A rotating edit of the products everyone is talking about right now. VYRDICT cuts through the hype to show what deserves the attention — and what’s actually worth buying.';
   }
 
   function apply(){
@@ -26,14 +35,14 @@
     if(!hero||!motion)return false;
 
     style();
+    alignCopy(motion);
 
-    /* Physically move the existing section rather than rebuilding it so all
-       imagery, motion, copy and CTA remain exactly the same. */
+    /* Move the existing cinematic section to the top while preserving its
+       imagery, animation and CTA behavior. */
     if(root.firstElementChild!==motion)root.insertBefore(motion,root.firstElementChild);
 
-    /* Keep the editorial discovery trio immediately after the hidden legacy
-       hero, then keep the news desk after that trio even if its own loader
-       initially inserted it after .ve-motion. */
+    /* Keep the editorial discovery trio after the hidden legacy hero and keep
+       the news desk after the trio. */
     const culture=document.getElementById('ve-culture-trio');
     const news=document.getElementById('ve-news-desk');
     if(culture&&hero.nextElementSibling!==culture)hero.insertAdjacentElement('afterend',culture);
