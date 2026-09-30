@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictTopNavSectionFixV7)return;
-  window.__vyrdictTopNavSectionFixV7=1;
+  if(window.__vyrdictTopNavSectionFixV8)return;
+  window.__vyrdictTopNavSectionFixV8=1;
 
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const HEADER_OFFSET=88;
@@ -8,10 +8,10 @@
   const PRIMARY='data-vyrdict-topnav';
 
   function loadEditorialHome(){
-    if(!isHome()||document.getElementById('vyrdict-editorial-bootstrap-loader-v2'))return;
+    if(!isHome()||document.getElementById('vyrdict-editorial-bootstrap-loader-v3'))return;
     const s=document.createElement('script');
-    s.id='vyrdict-editorial-bootstrap-loader-v2';
-    s.src='/homepage-editorial-bootstrap.js?v=2-20260929-fallback';
+    s.id='vyrdict-editorial-bootstrap-loader-v3';
+    s.src='/homepage-editorial-bootstrap.js?v=3-20260929-remount';
     s.defer=true;
     (document.head||document.documentElement).appendChild(s);
   }
@@ -105,18 +105,9 @@
   }
 
   function activate(kind){
-    if(kind==='account'){
-      location.assign('/account.html');
-      return;
-    }
-    if(kind==='saves'){
-      location.assign('/saved');
-      return;
-    }
-    if(!isHome()){
-      location.assign('/#'+(kind==='skip'?'skip-list':kind));
-      return;
-    }
+    if(kind==='account'){location.assign('/account.html');return;}
+    if(kind==='saves'){location.assign('/saved');return;}
+    if(!isHome()){location.assign('/#'+(kind==='skip'?'skip-list':kind));return;}
     scrollToKind(kind);
   }
 
@@ -127,10 +118,7 @@
     let kind=el.getAttribute('data-vyrdict-topnav-kind')||'';
     if(!kind&&el.closest('header,nav'))kind=kindFrom(el);
     if(!kind)return;
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-    activate(kind);
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();activate(kind);
   },true);
 
   function handleInitial(){
@@ -143,9 +131,7 @@
   }
 
   const start=()=>{
-    loadEditorialHome();
-    wire();
-    handleInitial();
+    loadEditorialHome();wire();handleInitial();
     const app=document.getElementById('app')||document.body;
     if(app&&!window.__vyrdictTopNavWireObserver){
       window.__vyrdictTopNavWireObserver=new MutationObserver(()=>wire());
@@ -154,8 +140,7 @@
     [120,400,900,1800].forEach(ms=>setTimeout(()=>{loadEditorialHome();wire();handleInitial()},ms));
   };
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
-  else start();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
   addEventListener('pageshow',()=>setTimeout(start,20));
   addEventListener('hashchange',()=>setTimeout(handleInitial,50));
 })();
