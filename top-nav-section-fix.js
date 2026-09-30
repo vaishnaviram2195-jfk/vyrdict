@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictTopNavSectionFixV14)return;
-  window.__vyrdictTopNavSectionFixV14=1;
+  if(window.__vyrdictTopNavSectionFixV15)return;
+  window.__vyrdictTopNavSectionFixV15=1;
 
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const HEADER_OFFSET=88;
@@ -20,7 +20,10 @@
     }else{
       load('/header-categories-menu.js?v=5-20260930-desktop','vyrdict-header-categories-direct-loader');
     }
-    if(isHome())load('/homepage-signal-landscape.js?v=5-20260930-darkgray','vyrdict-signal-darkgray-direct-loader');
+    if(isHome()){
+      load('/homepage-signal-landscape.js?v=5-20260930-darkgray','vyrdict-signal-darkgray-direct-loader');
+      load('/homepage-culture-horizontal.js?v=1-20260930-swipe','vyrdict-home-culture-horizontal-loader');
+    }
   }
 
   function loadEditorialHome(){
