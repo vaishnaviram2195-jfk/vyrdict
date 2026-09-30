@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictTopNavSectionFixV11)return;
-  window.__vyrdictTopNavSectionFixV11=1;
+  if(window.__vyrdictTopNavSectionFixV12)return;
+  window.__vyrdictTopNavSectionFixV12=1;
 
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const HEADER_OFFSET=88;
@@ -8,23 +8,14 @@
   const PRIMARY='data-vyrdict-topnav';
 
   function loadEditorialHome(){
-    if(!isHome()||document.getElementById('vyrdict-editorial-bootstrap-loader-v5'))return;
+    if(!isHome()||document.getElementById('vyrdict-editorial-bootstrap-loader-v6'))return;
     const s=document.createElement('script');
-    s.id='vyrdict-editorial-bootstrap-loader-v5';
-    s.src='/homepage-editorial-bootstrap.js?v=5-20260929-audiofix';
-    s.defer=true;
-    (document.head||document.documentElement).appendChild(s);
-  }
-  function loadEnhancements(){
-    if(!isHome()||document.getElementById('vyrdict-isamaya-enhancements-loader-v2'))return;
-    const s=document.createElement('script');
-    s.id='vyrdict-isamaya-enhancements-loader-v2';
-    s.src='/homepage-isamaya-enhancements.js?v=2-20260929-audiofix';
+    s.id='vyrdict-editorial-bootstrap-loader-v6';
+    s.src='/homepage-editorial-bootstrap.js?v=6-20260929-video685';
     s.defer=true;
     (document.head||document.documentElement).appendChild(s);
   }
   loadEditorialHome();
-  loadEnhancements();
 
   function kindFrom(el){
     const footer=el?.getAttribute('data-vf-action');
@@ -34,7 +25,7 @@
     if(t==='categories')return 'categories';
     if(t==='culture')return 'culture';
     if(t==='account')return 'account';
-    if(t==='saves'||t.startsWith('saves '))return 'saves';
+    if(t==='saves'||t.startsWith('saves ')||t==='saved')return 'saves';
     return '';
   }
 
@@ -138,13 +129,13 @@
   }
 
   const start=()=>{
-    loadEditorialHome();loadEnhancements();wire();handleInitial();
+    loadEditorialHome();wire();handleInitial();
     const app=document.getElementById('app')||document.body;
     if(app&&!window.__vyrdictTopNavWireObserver){
       window.__vyrdictTopNavWireObserver=new MutationObserver(()=>wire());
       window.__vyrdictTopNavWireObserver.observe(app,{childList:true,subtree:true});
     }
-    [120,400,900,1800].forEach(ms=>setTimeout(()=>{loadEditorialHome();loadEnhancements();wire();handleInitial()},ms));
+    [120,400,900,1800].forEach(ms=>setTimeout(()=>{loadEditorialHome();wire();handleInitial()},ms));
   };
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
