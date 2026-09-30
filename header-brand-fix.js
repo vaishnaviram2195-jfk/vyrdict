@@ -48,7 +48,7 @@
     fix();
     load('/performance-monitor.js?v=1-20260907','vyrdict-performance-monitor-loader');
     load('/conversion-optimization.js?v=1-20260907','vyrdict-conversion-optimization-loader');
-    load('/header-categories-menu.js?v=4-20260930-mobile','vyrdict-header-categories-menu-loader');
+    load('/header-categories-menu.js?v=5-20260930-mobile-direct','vyrdict-header-categories-menu-loader');
     load('/search-empty-suggest.js?v=2-20260930-immediate','vyrdict-search-empty-suggest-loader');
     load('/newsletter-welcome-popup.js?v=5-20260930-compact','vyrdict-newsletter-welcome-popup-loader');
     if(location.hostname==='www.vyrdict.com'){
@@ -62,7 +62,7 @@
       load('/homepage-remove-worth.js?v=1-20260929','vyrdict-home-remove-worth-loader');
       load('/homepage-remove-bottom-categories.js?v=1-20260929','vyrdict-home-remove-bottom-categories-loader');
       load('/homepage-culture-trio.js?v=4-20260930-ikeaquality','vyrdict-home-culture-trio-loader');
-      load('/homepage-signal-landscape.js?v=3-20260930-trimmed','vyrdict-home-signal-landscape-loader');
+      load('/homepage-signal-landscape.js?v=4-20260930-mutedgray','vyrdict-home-signal-landscape-loader');
       load('/homepage-moment-top.js?v=6-20260930-liveviral','vyrdict-home-moment-top-loader');
       load('/homepage-heading-scale.js?v=1-20260930','vyrdict-home-heading-scale-loader');
       load('/homepage-seamless-spacing.js?v=1-20260930','vyrdict-home-seamless-spacing-loader');
