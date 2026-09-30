@@ -1,14 +1,15 @@
 (()=>{
-  if(window.__vyrdictMomentTopV8)return;
-  window.__vyrdictMomentTopV8=1;
+  if(window.__vyrdictMomentTopV9)return;
+  window.__vyrdictMomentTopV9=1;
   if((location.pathname||'/')!=='/')return;
 
   const ROOT='vyrdict-editorial-home';
-  const STYLE_ID='ve-moment-top-style-v8';
+  const STYLE_ID='ve-moment-top-style-v9';
   let initialized=false;
+  let reapplyTimer=0;
 
   function style(){
-    ['ve-moment-top-style','ve-moment-top-style-v3','ve-moment-top-style-v4','ve-moment-top-style-v5','ve-moment-top-style-v6','ve-moment-top-style-v7'].forEach(id=>document.getElementById(id)?.remove());
+    ['ve-moment-top-style','ve-moment-top-style-v3','ve-moment-top-style-v4','ve-moment-top-style-v5','ve-moment-top-style-v6','ve-moment-top-style-v7','ve-moment-top-style-v8'].forEach(id=>document.getElementById(id)?.remove());
     if(document.getElementById(STYLE_ID))return;
     const s=document.createElement('style');
     s.id=STYLE_ID;
@@ -53,9 +54,18 @@
     const description=motion.querySelector('.ve-motion-side p');
     const link=motion.querySelector('.ve-motion-side a');
     if(kicker)kicker.textContent='THE HYPE CHECK';
-    if(heading)heading.textContent='What’s actually worth the hype?';
+    if(heading)heading.textContent='What’s Actually Worth the Hype';
     if(description)description.textContent='The products with the strongest live momentum right now — ranked from fresh VYRDICT signals, not yesterday’s internet. We prioritize what is surging across roughly the last 7–10 days.';
     wireFreshLink(link);
+  }
+
+  function pinAsHomepageLead(root,motion){
+    const ribbon=root.querySelector(':scope > .ve-site-ribbon');
+    if(ribbon){
+      if(ribbon.nextElementSibling!==motion)ribbon.insertAdjacentElement('afterend',motion);
+      return;
+    }
+    if(root.firstElementChild!==motion)root.insertBefore(motion,root.firstElementChild);
   }
 
   async function loadFreshViral(motion){
@@ -83,6 +93,7 @@
     const motion=root.querySelector(':scope > .ve-motion');
     if(!motion)return false;
     style();
+    pinAsHomepageLead(root,motion);
     alignCopy(motion);
     loadFreshViral(motion);
     if(!initialized){
@@ -96,8 +107,21 @@
   const tick=()=>{
     tries++;
     if(apply())return;
-    if(tries<30)setTimeout(tick,tries<10?120:350);
+    if(tries<40)setTimeout(tick,tries<10?120:300);
   };
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tick,{once:true});else tick();
+  const queueApply=()=>{
+    clearTimeout(reapplyTimer);
+    reapplyTimer=setTimeout(apply,30);
+  };
+  const watch=()=>{
+    const app=document.getElementById('app')||document.body;
+    if(!app||app.dataset.veMomentTopWatch==='1')return;
+    app.dataset.veMomentTopWatch='1';
+    new MutationObserver(queueApply).observe(app,{childList:true,subtree:false});
+  };
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{tick();watch()},{once:true});
+  else{tick();watch()}
+  [250,700,1400,2600,5000,8500].forEach(ms=>setTimeout(apply,ms));
   addEventListener('pageshow',e=>{if(e.persisted)setTimeout(apply,40)});
 })();
