@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictTopNavSectionFixV9)return;
-  window.__vyrdictTopNavSectionFixV9=1;
+  if(window.__vyrdictTopNavSectionFixV10)return;
+  window.__vyrdictTopNavSectionFixV10=1;
 
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const HEADER_OFFSET=88;
@@ -15,7 +15,16 @@
     s.defer=true;
     (document.head||document.documentElement).appendChild(s);
   }
+  function loadEnhancements(){
+    if(!isHome()||document.getElementById('vyrdict-isamaya-enhancements-loader-v1'))return;
+    const s=document.createElement('script');
+    s.id='vyrdict-isamaya-enhancements-loader-v1';
+    s.src='/homepage-isamaya-enhancements.js?v=1-20260929';
+    s.defer=true;
+    (document.head||document.documentElement).appendChild(s);
+  }
   loadEditorialHome();
+  loadEnhancements();
 
   function kindFrom(el){
     const footer=el?.getAttribute('data-vf-action');
@@ -131,13 +140,13 @@
   }
 
   const start=()=>{
-    loadEditorialHome();wire();handleInitial();
+    loadEditorialHome();loadEnhancements();wire();handleInitial();
     const app=document.getElementById('app')||document.body;
     if(app&&!window.__vyrdictTopNavWireObserver){
       window.__vyrdictTopNavWireObserver=new MutationObserver(()=>wire());
       window.__vyrdictTopNavWireObserver.observe(app,{childList:true,subtree:true});
     }
-    [120,400,900,1800].forEach(ms=>setTimeout(()=>{loadEditorialHome();wire();handleInitial()},ms));
+    [120,400,900,1800].forEach(ms=>setTimeout(()=>{loadEditorialHome();loadEnhancements();wire();handleInitial()},ms));
   };
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
