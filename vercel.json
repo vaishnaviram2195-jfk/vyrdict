@@ -3,6 +3,12 @@
   "functions": {
     "api/home-stable.js": {
       "maxDuration": 30
+    },
+    "api/page-stable.js": {
+      "maxDuration": 30
+    },
+    "api/info-stable.js": {
+      "maxDuration": 15
     }
   },
   "headers": [
@@ -22,21 +28,20 @@
       },
       "dest": "/api/home-stable"
     },
-    { "src": "/about/?$", "dest": "/about.html" },
+    { "src": "/(?<page>about|careers|editorial-policy|evidence|how-vyrdict-scores|privacy|suggest-product|terms)(?:\\.html)?/?$", "dest": "/api/info-stable?page=$page" },
     { "src": "/vti-image", "dest": "/api/vti-image" },
     { "src": "/score-discovery/?$", "dest": "/api/score-discovery" },
     { "src": "/viral-10/?$", "dest": "/api/removed-growth" },
     { "src": "/edit/nightstand-essentials/?$", "dest": "/api/removed-growth" },
     { "src": "/battle/dyson-airwrap-vs-shark-flexstyle/?$", "dest": "/api/removed-growth" },
     { "src": "/product/oura-ring-4/?$", "dest": "/api/product-legacy-redirect?to=oura-ring-5" },
-    { "src": "/product/(?<slug>[^/]+)/?$", "dest": "/api/product-seo?slug=$slug" },
-    { "src": "/category/(?<slug>[^/]+)/?$", "dest": "/api/category-seo?slug=$slug" },
+    { "src": "/product/(?<slug>[^/]+)/?$", "dest": "/api/page-stable?kind=product&slug=$slug" },
+    { "src": "/category/(?<slug>[^/]+)/?$", "dest": "/api/page-stable?kind=category&slug=$slug" },
     { "src": "/category/?$", "dest": "/index.html" },
     { "src": "/collection/viral-right-now/?$", "dest": "/viral-now.html" },
     { "src": "/collection(?:/.*)?$", "dest": "/index.html" },
     { "src": "/saved$", "dest": "/index.html" },
     { "src": "/search$", "dest": "/index.html" },
-    { "src": "/careers/?$", "dest": "/careers.html" },
     { "src": "/command-center/?$", "dest": "/analytics-dashboard.html" },
     { "handle": "filesystem" }
   ]
