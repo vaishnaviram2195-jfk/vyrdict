@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictTopNavSectionFixV15)return;
-  window.__vyrdictTopNavSectionFixV15=1;
+  if(window.__vyrdictTopNavSectionFixV16)return;
+  window.__vyrdictTopNavSectionFixV16=1;
 
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const HEADER_OFFSET=88;
@@ -23,6 +23,7 @@
     if(isHome()){
       load('/homepage-signal-landscape.js?v=5-20260930-darkgray','vyrdict-signal-darkgray-direct-loader');
       load('/homepage-culture-horizontal.js?v=1-20260930-swipe','vyrdict-home-culture-horizontal-loader');
+      load('/homepage-moment-top.js?v=7-20260930-stable','vyrdict-home-moment-stable-direct-loader');
     }
   }
 
@@ -161,6 +162,6 @@
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();
-  addEventListener('pageshow',()=>setTimeout(start,20));
+  addEventListener('pageshow',e=>{if(e.persisted)setTimeout(start,20)});
   addEventListener('hashchange',()=>setTimeout(handleInitial,50));
 })();
