@@ -23,9 +23,9 @@ function currentHomePatch(input){
   const css=`<style id="vyrdict-home-stable-${REV}">
 html,body{background:#f4ede5}
 html.vyrdict-home-entry-lock{scroll-behavior:auto!important;overflow:hidden!important;background:#f4ede5!important}
-html.vyrdict-home-entry-lock body{visibility:hidden!important;overflow:hidden!important;scroll-behavior:auto!important}
-html.vyrdict-home-entry-lock::before{content:'VYRDICT';position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;background:#f4ede5;color:#171511;font:950 27px/1 Arial,Helvetica,sans-serif;letter-spacing:-1.6px;visibility:visible!important;pointer-events:none}
-html.vyrdict-home-entry-lock::after{content:'';position:fixed;z-index:2147483647;left:calc(50% + 49px);top:calc(50% + 8px);width:7px;height:7px;background:#e65f72;visibility:visible!important;pointer-events:none}
+html.vyrdict-home-entry-lock body{overflow:hidden!important;scroll-behavior:auto!important}
+html.vyrdict-home-entry-lock::before{content:none!important;display:none!important}
+html.vyrdict-home-entry-lock::after{content:none!important;display:none!important}
 body.vyrdict-home-current .hero h1{font-size:clamp(42px,5vw,68px)!important;line-height:.94!important;letter-spacing:-.045em!important}
 body.vyrdict-home-current .section .head h2{font-size:clamp(32px,3.65vw,46px)!important;line-height:1!important;letter-spacing:-.04em!important}
 body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!important;line-height:1.03!important}
