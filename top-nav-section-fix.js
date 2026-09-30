@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictTopNavSectionFixV6)return;
-  window.__vyrdictTopNavSectionFixV6=1;
+  if(window.__vyrdictTopNavSectionFixV7)return;
+  window.__vyrdictTopNavSectionFixV7=1;
 
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const HEADER_OFFSET=88;
@@ -8,10 +8,10 @@
   const PRIMARY='data-vyrdict-topnav';
 
   function loadEditorialHome(){
-    if(!isHome()||document.getElementById('vyrdict-editorial-bootstrap-loader'))return;
+    if(!isHome()||document.getElementById('vyrdict-editorial-bootstrap-loader-v2'))return;
     const s=document.createElement('script');
-    s.id='vyrdict-editorial-bootstrap-loader';
-    s.src='/homepage-editorial-bootstrap.js?v=1-20260929-force';
+    s.id='vyrdict-editorial-bootstrap-loader-v2';
+    s.src='/homepage-editorial-bootstrap.js?v=2-20260929-fallback';
     s.defer=true;
     (document.head||document.documentElement).appendChild(s);
   }
