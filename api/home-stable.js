@@ -1,6 +1,6 @@
 const homeHandler=require('./home');
 
-const REV='20260929-nav-10';
+const REV='20260929-top-entry-11';
 const SCRIPT_REVISIONS=[
   ['/product-navigation-market-fix.js?v=3-20260907',`/product-navigation-market-fix.js?v=${REV}`],
   ['/navigation-context.js?v=3-20260907',`/navigation-context.js?v=${REV}`],
@@ -26,6 +26,10 @@ function currentHomePatch(input){
 
   const css=`<style id="vyrdict-home-stable-${REV}">
 html,body{background:#f4ede5}
+html.vyrdict-home-entry-lock{scroll-behavior:auto!important;overflow:hidden!important;background:#f4ede5!important}
+html.vyrdict-home-entry-lock body{visibility:hidden!important;overflow:hidden!important;scroll-behavior:auto!important}
+html.vyrdict-home-entry-lock::before{content:'VYRDICT';position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;background:#f4ede5;color:#171511;font:950 27px/1 Arial,Helvetica,sans-serif;letter-spacing:-1.6px;visibility:visible!important;pointer-events:none}
+html.vyrdict-home-entry-lock::after{content:'';position:fixed;z-index:2147483647;left:calc(50% + 49px);top:calc(50% + 8px);width:7px;height:7px;background:#e65f72;visibility:visible!important;pointer-events:none}
 body.vyrdict-home-current .hero h1{font-size:clamp(42px,5vw,68px)!important;line-height:.94!important;letter-spacing:-.045em!important}
 body.vyrdict-home-current .section .head h2{font-size:clamp(32px,3.65vw,46px)!important;line-height:1!important;letter-spacing:-.04em!important}
 body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!important;line-height:1.03!important}
@@ -40,10 +44,42 @@ body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!impor
   // any inline bundle router can claim those same header clicks.
   const navBootstrap=`<script src="/top-nav-section-fix.js?v=${REV}"><\/script>`;
 
+  // This runs in <head>, before the homepage body can paint. We deliberately
+  // lock the document at scrollY=0 and keep the body hidden behind a tiny
+  // branded cover until the app has rendered at the top. That prevents the
+  // browser's restored scroll position from flashing the footer/bottom first.
   const guard=`<script id="vyrdict-home-revision-${REV}">(()=>{
     window.__VYRDICT_HOME_REV='${REV}';
+    const legacyDeep=()=>/^#\\/(?:product|category|collection|search|saved|rankings)(?:\\/|$)/i.test(location.hash||'');
+    const onHome=()=>((location.pathname==='/'||location.pathname==='')&&!legacyDeep());
+    const pinTop=()=>{
+      if(!onHome())return;
+      try{history.scrollRestoration='manual'}catch{}
+      try{window.scrollTo(0,0)}catch{}
+      try{document.documentElement.scrollTop=0}catch{}
+      try{if(document.body)document.body.scrollTop=0}catch{}
+    };
+    const lock=()=>{
+      if(!onHome())return;
+      document.documentElement.classList.add('vyrdict-home-entry-lock');
+      pinTop();
+    };
+    const unlock=()=>{
+      pinTop();
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        pinTop();
+        document.documentElement.classList.remove('vyrdict-home-entry-lock');
+      }));
+    };
+    lock();
+    let entryFrames=0;
+    const holdTop=()=>{
+      if(!onHome()||!document.documentElement.classList.contains('vyrdict-home-entry-lock'))return;
+      pinTop();
+      if(entryFrames++<45)requestAnimationFrame(holdTop);
+    };
+    requestAnimationFrame(holdTop);
     try{for(const k of Object.keys(localStorage)){if(/^vyrdict:(?:bundle-cache|home|hero|homepage)/i.test(k))localStorage.removeItem(k)}}catch{}
-    const onHome=()=>location.pathname==='/'||location.pathname==='';
     const mark=()=>{
       if(!onHome())return;
       document.body?.classList.add('vyrdict-home-current');
@@ -64,8 +100,23 @@ body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!impor
         hero.appendChild(layer);
       }
     };
+    const revealWhenReady=()=>{
+      if(!onHome()){document.documentElement.classList.remove('vyrdict-home-entry-lock');return}
+      let tries=0;
+      const check=()=>{
+        pinTop();
+        const app=document.getElementById('app');
+        const ready=!!(app&&app.innerHTML&&app.innerHTML.trim().length>0);
+        if(ready||tries++>36){unlock();return}
+        requestAnimationFrame(check);
+      };
+      requestAnimationFrame(check);
+    };
     const start=()=>{
+      if(!onHome()){document.documentElement.classList.remove('vyrdict-home-entry-lock');return}
+      lock();
       mark();
+      pinTop();
       const began=Date.now();
       const timer=setInterval(()=>{
         if(!onHome()||Date.now()-began>8000){clearInterval(timer);return}
@@ -77,10 +128,15 @@ body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!impor
       setTimeout(holdMotion,700);
       setTimeout(holdMotion,1600);
       setTimeout(holdMotion,3200);
+      revealWhenReady();
     };
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-    addEventListener('pageshow',()=>setTimeout(start,20));
-    addEventListener('popstate',()=>setTimeout(start,20));
+    addEventListener('pageshow',e=>{
+      if(!onHome())return;
+      if(e.persisted)lock();
+      setTimeout(()=>{pinTop();start()},0);
+    });
+    addEventListener('popstate',()=>setTimeout(()=>{if(onHome()){lock();start()}},0));
   })();<\/script>`;
 
   if(html.includes('<html')&&!html.includes('data-vyrdict-home-rev=')){
@@ -91,6 +147,13 @@ body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!impor
 }
 
 module.exports=async function handler(req,res){
+  const incomingHost=String(req?.headers?.['x-forwarded-host']||req?.headers?.host||'').split(',')[0].trim().toLowerCase();
+  if(incomingHost==='www.vyrdict.com'){
+    res.setHeader('Location','https://vyrdict.com/');
+    res.setHeader('Cache-Control','no-store, max-age=0, must-revalidate');
+    return res.status(308).send('');
+  }
+
   let statusCode=200;
   let body='';
   const capturedHeaders={};
