@@ -58,6 +58,7 @@
       load('/growth-retention.js?v=2-20260904-mobilefix','vyrdict-current-growth-loader');
       load('/homepage-news-desk.js?v=1-20260929-vogue','vyrdict-home-news-desk-loader');
       load('/homepage-remove-worth.js?v=1-20260929','vyrdict-home-remove-worth-loader');
+      load('/homepage-remove-bottom-categories.js?v=1-20260929','vyrdict-home-remove-bottom-categories-loader');
     }
     if(attempt<20&&!document.querySelector('header,nav'))setTimeout(()=>boot(attempt+1),120);
   }
