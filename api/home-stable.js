@@ -1,6 +1,6 @@
 const homeHandler=require('./home');
 
-const REV='20260930-layout-restore-13';
+const REV='20260930-signal-collage-14';
 const SCRIPT_REVISIONS=[
   ['/product-navigation-market-fix.js?v=3-20260907',`/product-navigation-market-fix.js?v=${REV}`],
   ['/navigation-context.js?v=3-20260907',`/navigation-context.js?v=${REV}`],
@@ -38,6 +38,7 @@ body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!impor
 
   const navBootstrap=`<script src="/top-nav-section-fix.js?v=${REV}"><\/script>`;
   const layoutBootstrap=`<script src="/homepage-layout-restore.js?v=${REV}" defer><\/script>`;
+  const signalBootstrap=`<script src="/homepage-signal-landscape.js?v=${REV}" defer><\/script>`;
 
   const disableLegacy=`<script id="vyrdict-disable-legacy-home-${REV}">(()=>{
     window.__vyrdictHeroV10=1;
@@ -99,7 +100,7 @@ body.vyrdict-home-current .section .head h3{font-size:clamp(26px,3vw,38px)!impor
   if(html.includes('<html')&&!html.includes('data-vyrdict-home-rev=')){
     html=html.replace('<html','<html data-vyrdict-home-rev="'+REV+'"');
   }
-  if(html.includes('</head>'))html=html.replace('</head>',css+disableLegacy+navBootstrap+layoutBootstrap+guard+'</head>');
+  if(html.includes('</head>'))html=html.replace('</head>',css+disableLegacy+navBootstrap+layoutBootstrap+signalBootstrap+guard+'</head>');
   return html;
 }
 
