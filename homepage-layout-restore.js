@@ -21,7 +21,7 @@
   }
   function apply(){
     const root=document.getElementById(ROOT);if(!root)return false;
-    ensureStories();ensureNews();return true;
+    ensureStories();if(!matchMedia('(max-width:900px)').matches)ensureNews();return true;
   }
   let n=0;const tick=()=>{if(apply()||++n>20)return;setTimeout(tick,120)};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tick,{once:true});else tick();
