@@ -1,31 +1,37 @@
 (()=>{
-  if(window.__vyrdictEmptySearchSuggestV2)return;
-  window.__vyrdictEmptySearchSuggestV2=1;
+  if(window.__vyrdictEmptySearchSuggestV3)return;
+  window.__vyrdictEmptySearchSuggestV3=1;
 
   const ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-suggest-product';
-  const STYLE_ID='vyrdict-empty-search-suggest-style-v2';
-  const CARD_ID='vyrdict-empty-search-suggest';
+  const STYLE_ID='vyrdict-empty-search-suggest-style-v3';
+  const CARD_ID='vyrdict-empty-search-suggest-v3';
   let queued=false;
 
+  function visible(el){
+    if(!el)return false;
+    const r=el.getBoundingClientRect();
+    const cs=getComputedStyle(el);
+    return r.width>0&&r.height>0&&cs.display!=='none'&&cs.visibility!=='hidden';
+  }
+
   function ensureStyle(){
-    document.getElementById('vyrdict-empty-search-suggest-style')?.remove();
     if(document.getElementById(STYLE_ID))return;
     const s=document.createElement('style');
     s.id=STYLE_ID;
     s.textContent=`
-      #${CARD_ID}{margin:18px 0 0;max-width:560px;border:1px solid #d8cec4;background:#fffdf8;border-radius:18px;padding:20px;color:#171511;font-family:Arial,Helvetica,sans-serif;box-shadow:0 12px 34px rgba(58,43,32,.06);animation:ves-in .18s ease-out both}
-      #${CARD_ID} h3{margin:0 0 7px;font-size:20px;line-height:1.15;letter-spacing:-.025em}
-      #${CARD_ID} p{margin:0 0 14px;color:#6d675f;font-size:12px;line-height:1.55}
-      #${CARD_ID} .ves-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
-      #${CARD_ID} input{flex:1 1 230px;min-width:0;border:1px solid #d8cec4;background:#fff;border-radius:999px;padding:12px 14px;font:inherit;font-size:13px;color:#171511;outline:none}
+      #${CARD_ID}{margin:14px 0 0;padding:16px 0 2px;border-top:1px solid #ece7e1;color:#171511;font-family:Arial,Helvetica,sans-serif;animation:ves3-in .16s ease-out both}
+      #${CARD_ID} h3{margin:0 0 6px;font-size:17px;line-height:1.2;letter-spacing:-.02em;font-weight:700}
+      #${CARD_ID} p{margin:0 0 12px;color:#6d675f;font-size:12px;line-height:1.5}
+      #${CARD_ID} .ves-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+      #${CARD_ID} input{box-sizing:border-box;flex:1 1 220px;min-width:0;border:1px solid #d8cec4;background:#fff;border-radius:999px;padding:11px 13px;font:inherit;font-size:13px;color:#171511;outline:none}
       #${CARD_ID} input:focus{border-color:#8f867e;box-shadow:0 0 0 3px rgba(143,134,126,.12)}
-      #${CARD_ID} button{border:0;border-radius:999px;background:#171511;color:#fff;padding:12px 16px;font-size:10px;font-weight:950;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+      #${CARD_ID} button{border:0;border-radius:999px;background:#171511;color:#fff;padding:11px 15px;font-size:10px;font-weight:800;letter-spacing:.055em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
       #${CARD_ID} button:disabled{opacity:.55;cursor:default}
-      #${CARD_ID} .ves-status{margin-top:10px;font-size:11px;line-height:1.45;color:#6d675f}
+      #${CARD_ID} .ves-status{margin-top:9px;font-size:11px;line-height:1.45;color:#6d675f}
       #${CARD_ID} .ves-status.ok{color:#49624b}
       #${CARD_ID} .ves-status.err{color:#8b4f43}
-      @keyframes ves-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-      @media(max-width:620px){#${CARD_ID}{max-width:none;padding:18px;border-radius:16px}#${CARD_ID} .ves-row{display:block}#${CARD_ID} input{box-sizing:border-box;width:100%}#${CARD_ID} button{width:100%;margin-top:9px}}
+      @keyframes ves3-in{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+      @media(max-width:620px){#${CARD_ID} .ves-row{display:block}#${CARD_ID} input{width:100%}#${CARD_ID} button{width:100%;margin-top:8px}}
       @media(prefers-reduced-motion:reduce){#${CARD_ID}{animation:none}}
     `;
     document.head.appendChild(s);
@@ -33,7 +39,12 @@
 
   const clean=s=>String(s||'').replace(/^['“”\"]+|['“”\"]+$/g,'').trim();
   const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,' ').trim();
-  const isSearchPage=()=>/^\/search\/?$/i.test(location.pathname)||/^#\/search(?:[/?]|$)/i.test(location.hash);
+  const isSearchRoute=()=>/^\/search\/?$/i.test(location.pathname)||/^#\/search(?:[/?]|$)/i.test(location.hash);
+  const searchSelector='input[type="search"],input[placeholder*="search" i],input[aria-label*="search" i]';
+
+  function findVisibleSearchInput(){
+    return [...document.querySelectorAll(searchSelector)].find(el=>visible(el))||null;
+  }
 
   function queryFromPage(){
     const params=new URLSearchParams(location.search);
@@ -42,14 +53,13 @@
     const hash=decodeURIComponent(location.hash||'');
     let m=hash.match(/#\/search\/(.+)$/i);if(m)return clean(m[1]);
     m=hash.match(/[?&](?:q|query|search)=([^&]+)/i);if(m)return clean(m[1]);
-    const inputs=[...document.querySelectorAll('input[type="search"],input[placeholder*="search" i],input[aria-label*="search" i]')];
-    const visible=inputs.find(el=>{const r=el.getBoundingClientRect();return r.width>0&&r.height>0&&String(el.value||'').trim()});
-    return clean(visible?.value||'');
+    const input=findVisibleSearchInput();
+    return clean(input?.value||'');
   }
 
   function findEmpty(){
-    if(!isSearchPage())return null;
     const phrases=[
+      'no matching products yet',
       'no verified products here yet',
       'no products found',
       'no product found',
@@ -62,9 +72,41 @@
       if(el.closest('#'+CARD_ID))return false;
       const t=norm(el.textContent).replace(/[.!?]+$/,'');
       if(!phrases.some(p=>t===p||t.startsWith(p+' for ')||t.startsWith(p+':')))return false;
-      const r=el.getBoundingClientRect();
-      return r.width>0&&r.height>0;
+      return visible(el);
     })||null;
+  }
+
+  function panelFor(empty,input){
+    if(!empty)return null;
+    let node=empty.parentElement;
+    let best=node;
+    for(let i=0;node&&i<7;i++,node=node.parentElement){
+      if(input&&node.contains(input))best=node;
+      const r=node.getBoundingClientRect();
+      if(input&&node.contains(input)&&r.width>=Math.min(innerWidth*.45,420))break;
+    }
+    return best;
+  }
+
+  function dedupeCloseButtons(empty,input){
+    const panel=panelFor(empty,input);
+    if(!panel)return;
+    const xLike=el=>{
+      const txt=norm(el.textContent).replace(/\s/g,'');
+      const label=norm(el.getAttribute('aria-label')||el.getAttribute('title')||'');
+      return ['x','×','✕','✖','close','clear'].includes(txt)||/^(close|clear)( search)?$/.test(label);
+    };
+    const candidates=[...panel.querySelectorAll('button,[role="button"],a')].filter(el=>visible(el)&&xLike(el)&&el.getBoundingClientRect().width<=64&&el.getBoundingClientRect().height<=64);
+    if(candidates.length<2)return;
+    const rightmost=[...candidates].sort((a,b)=>b.getBoundingClientRect().right-a.getBoundingClientRect().right)[0];
+    const top=rightmost.getBoundingClientRect().top;
+    candidates.forEach(el=>{
+      if(el===rightmost)return;
+      if(Math.abs(el.getBoundingClientRect().top-top)<=70){
+        el.dataset.vyrdictHiddenDuplicateClose='1';
+        el.style.setProperty('display','none','important');
+      }
+    });
   }
 
   function refineSavedEmpty(){
@@ -76,17 +118,26 @@
   function mount(){
     queued=false;
     ensureStyle();
-    if(!isSearchPage()){
-      document.getElementById(CARD_ID)?.remove();
+
+    const empty=findEmpty();
+    const searchInput=findVisibleSearchInput();
+    const inSearchContext=isSearchRoute()||Boolean(empty&&searchInput);
+    const existing=document.getElementById(CARD_ID);
+
+    if(!inSearchContext){
+      existing?.remove();
       refineSavedEmpty();
       return false;
     }
 
-    const empty=findEmpty();
-    const existing=document.getElementById(CARD_ID);
-    if(!empty){existing?.remove();return false;}
+    if(!empty){
+      existing?.remove();
+      return false;
+    }
 
+    dedupeCloseButtons(empty,searchInput);
     const q=queryFromPage();
+
     if(existing){
       const input=existing.querySelector('input');
       if(input&&q&&!input.matches(':focus'))input.value=q;
@@ -97,7 +148,7 @@
     const card=document.createElement('div');
     card.id=CARD_ID;
     card.setAttribute('aria-live','polite');
-    card.innerHTML=`<h3>Can’t find a product?</h3><p>Suggest it to VYRDICT and we’ll put it in the research queue for review.</p><div class="ves-row"><input maxlength="160" aria-label="Product to suggest" placeholder="Product name"><button type="button" data-vyrdict-suggest>Suggest this product</button></div><div class="ves-status" role="status" aria-live="polite"></div>`;
+    card.innerHTML=`<h3>Can’t find this product?</h3><p>Suggest it to VYRDICT and we’ll add it to the research queue for review.</p><div class="ves-row"><input maxlength="160" aria-label="Product to suggest" placeholder="Product name"><button type="button" data-vyrdict-suggest>Suggest this product</button></div><div class="ves-status" role="status" aria-live="polite"></div>`;
     const input=card.querySelector('input'),btn=card.querySelector('button'),status=card.querySelector('.ves-status');
     input.value=q;
 
@@ -131,13 +182,13 @@
 
   function schedule(){
     mount();
-    [40,120,280].forEach(ms=>setTimeout(mount,ms));
+    [40,120,280,650].forEach(ms=>setTimeout(mount,ms));
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
   addEventListener('hashchange',schedule);
   addEventListener('popstate',schedule);
-  document.addEventListener('input',e=>{if(isSearchPage()&&e.target?.matches?.('input[type="search"],input[placeholder*="search" i],input[aria-label*="search" i]'))queueMount()},{passive:true});
+  document.addEventListener('input',e=>{if(e.target?.matches?.(searchSelector))queueMount()},{passive:true});
   document.addEventListener('click',()=>setTimeout(mount,20),{passive:true});
   new MutationObserver(queueMount).observe(document.documentElement,{subtree:true,childList:true,characterData:true});
 })();
