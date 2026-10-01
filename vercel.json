@@ -30,6 +30,7 @@
     { "src": "/battle/dyson-airwrap-vs-shark-flexstyle/?$", "dest": "/api/removed-growth" },
     { "src": "/product/oura-ring-4/?$", "dest": "/api/product-legacy-redirect?to=oura-ring-5" },
     { "src": "/product/(?<slug>[^/]+)/?$", "dest": "/api/product-seo?slug=$slug" },
+    { "src": "/category/gifts/?$", "status": 308, "headers": { "Location": "/collection/gifts/" } },
     { "src": "/category/(?<slug>[^/]+)/?$", "dest": "/api/category-seo?slug=$slug" },
     { "src": "/category/?$", "dest": "/index.html" },
     { "src": "/collection/viral-right-now/?$", "dest": "/viral-now.html" },
