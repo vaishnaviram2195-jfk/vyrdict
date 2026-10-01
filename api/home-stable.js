@@ -1,6 +1,6 @@
 const homeHandler=require('./home');
 
-const REV='20260930-editorial-type-15';
+const REV='20261001-category-heading-16';
 const SCRIPT_REVISIONS=[
   ['/product-navigation-market-fix.js?v=3-20260907',`/product-navigation-market-fix.js?v=${REV}`],
   ['/navigation-context.js?v=3-20260907',`/navigation-context.js?v=${REV}`],
