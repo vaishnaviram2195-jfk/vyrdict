@@ -1,14 +1,18 @@
 (()=>{
-  if(window.__vyrdictEditorialBootstrapV6)return;
-  window.__vyrdictEditorialBootstrapV6=1;
+  if(window.__vyrdictEditorialBootstrapV7)return;
+  window.__vyrdictEditorialBootstrapV7=1;
   const isHome=()=>location.pathname==='/'||location.pathname==='';
   if(!isHome())return;
 
   const BRIDGE_ID='vyrdict-editorial-product-bridge';
-  const SCRIPT_ID='vyrdict-editorial-reference-force-v6';
-  const LEGACY_ID='vyrdict-editorial-legacy-force-v6';
+  const SCRIPT_ID='vyrdict-editorial-reference-force-v7';
+  const LEGACY_ID='vyrdict-editorial-legacy-force-v7';
   const POLISH_ID='vyrdict-editorial-polish-v2';
   const VIDEO_ID='vyrdict-editorial-video-pass-v1';
+  const CULTURE_ID='vyrdict-culture-trio-stable-v1';
+  const CULTURE_HORIZONTAL_ID='vyrdict-culture-horizontal-stable-v1';
+  const NEWS_ID='vyrdict-news-desk-stable-v1';
+  const MOBILE_STABILITY_ID='vyrdict-mobile-home-stability-v1';
   const FALLBACK=[
     {slug:'coach-tabby-shoulder-bag-20',name:'Tabby Shoulder Bag 20',brand:'Coach',image_url:'https://www.houseoffraser.co.uk/images/imgzoom/70/70618101_xxl.jpg'},
     {slug:'ray-ban-rb3025-aviator-classic',name:'RB3025 Aviator Classic',brand:'Ray-Ban',image_url:'https://images.ray-ban.com/is/image/RayBan/8056597259811_0001.png?impolicy=SEO_4x3'},
@@ -23,6 +27,8 @@
     {slug:'la-ligne-molly-jeans',name:'Molly Jeans',brand:'La Ligne',image_url:'https://vader-prod.s3.amazonaws.com/1678732514-la-ligne-molly-jeans-640f6cc921252.png'}
   ];
 
+  let mounting=false,lastAttempt=0,recoveries=0,observerTimer=0;
+
   function rows(){
     let data=[];
     try{
@@ -34,7 +40,7 @@
   }
 
   function bridgeProducts(){
-    document.getElementById(BRIDGE_ID)?.remove();
+    if(document.getElementById(BRIDGE_ID))return;
     const wrap=document.createElement('div');
     wrap.id=BRIDGE_ID;
     wrap.setAttribute('aria-hidden','true');
@@ -55,47 +61,93 @@
 
   function addScript(src,id){
     if(document.getElementById(id))return;
-    const s=document.createElement('script');s.id=id;s.src=src;s.defer=true;(document.head||document.documentElement).appendChild(s);
-  }
-
-  function loadLegacyGuard(){addScript('/homepage-editorial-legacy-guard.js?v=6-20260929-polish',LEGACY_ID)}
-  function loadPolish(){addScript('/homepage-editorial-polish.js?v=2-20260929-audiofix',POLISH_ID)}
-  function loadVideoPass(){addScript('/homepage-video-pass.js?v=1-20260929-video685',VIDEO_ID)}
-
-  function mount(force=false){
-    if(!isHome())return;
-    if(document.getElementById('vyrdict-editorial-home')&&!force){loadPolish();loadVideoPass();return}
-    bridgeProducts();
-    window.__vyrdictHomepageEditorialRefV1=0;
-    document.getElementById(SCRIPT_ID)?.remove();
     const s=document.createElement('script');
-    s.id=SCRIPT_ID;
-    s.src='/homepage-editorial-reference.js?v=7-20260929-polish&t='+Date.now();
-    s.defer=true;
+    s.id=id;s.src=src;s.defer=true;
     (document.head||document.documentElement).appendChild(s);
-    loadLegacyGuard();
-    loadPolish();
-    loadVideoPass();
   }
 
-  let missingSince=0,lastForce=0;
-  function ensure(){
+  function loadCore(){
+    addScript('/homepage-editorial-legacy-guard.js?v=7-20261001-stable',LEGACY_ID);
+    if(matchMedia('(max-width:900px)').matches)addScript('/mobile-home-stability.js?v=1-20261001',MOBILE_STABILITY_ID);
+  }
+
+  function loadEnhancements(){
+    if(!document.getElementById('vyrdict-editorial-home'))return;
+    addScript('/homepage-editorial-polish.js?v=2-20260929-audiofix',POLISH_ID);
+    addScript('/homepage-video-pass.js?v=1-20260929-video685',VIDEO_ID);
+    addScript('/homepage-culture-trio.js?v=3-20261001-stable',CULTURE_ID);
+    addScript('/homepage-culture-horizontal.js?v=2-20261001-stable',CULTURE_HORIZONTAL_ID);
+    addScript('/homepage-news-desk.js?v=3-20261001-stable',NEWS_ID);
+  }
+
+  function finishMount(){
+    mounting=false;
+    const root=document.getElementById('vyrdict-editorial-home');
+    if(root){
+      recoveries=0;
+      loadEnhancements();
+      document.getElementById(BRIDGE_ID)?.remove();
+      return true;
+    }
+    return false;
+  }
+
+  function mount(recovery=false){
     if(!isHome())return;
     const root=document.getElementById('vyrdict-editorial-home');
-    if(root){missingSince=0;loadPolish();loadVideoPass();return;}
+    if(root){loadEnhancements();return;}
+    if(mounting)return;
     const now=Date.now();
-    if(!missingSince)missingSince=now;
-    if(now-missingSince>100&&now-lastForce>650){lastForce=now;mount(true)}
+    if(now-lastAttempt<1800)return;
+    lastAttempt=now;
+    mounting=true;
+    bridgeProducts();
+    loadCore();
+
+    if(recovery){
+      window.__vyrdictHomepageEditorialRefV1=0;
+      document.getElementById(SCRIPT_ID)?.remove();
+    }
+
+    let s=document.getElementById(SCRIPT_ID);
+    if(!s){
+      s=document.createElement('script');
+      s.id=SCRIPT_ID;
+      s.src='/homepage-editorial-reference.js?v=8-20261001-stable'+(recovery?'&r='+now:'');
+      s.defer=true;
+      s.onload=()=>setTimeout(finishMount,40);
+      s.onerror=()=>{mounting=false};
+      (document.head||document.documentElement).appendChild(s);
+    }else{
+      setTimeout(finishMount,100);
+    }
+
+    setTimeout(()=>{
+      if(finishMount())return;
+      if(recoveries<1){recoveries++;mount(true)}
+    },2600);
+  }
+
+  function ensure(){
+    if(!isHome())return;
+    if(document.getElementById('vyrdict-editorial-home')){loadEnhancements();return;}
+    if(!mounting&&Date.now()-lastAttempt>3000&&recoveries<1){recoveries++;mount(true)}
   }
 
   const start=()=>{
-    mount();
-    [180,500,900,1500,2400,3800,5600,8000].forEach(ms=>setTimeout(ensure,ms));
+    loadCore();
+    mount(false);
+    [900,2200,5000].forEach(ms=>setTimeout(ensure,ms));
     const app=document.getElementById('app')||document.body;
-    new MutationObserver(()=>setTimeout(ensure,20)).observe(app,{childList:true,subtree:false});
-    setTimeout(()=>{if(document.getElementById('vyrdict-editorial-home'))document.getElementById(BRIDGE_ID)?.remove()},9000);
+    if(app&&!window.__vyrdictEditorialStableObserver){
+      window.__vyrdictEditorialStableObserver=new MutationObserver(()=>{
+        clearTimeout(observerTimer);
+        observerTimer=setTimeout(ensure,180);
+      });
+      window.__vyrdictEditorialStableObserver.observe(app,{childList:true,subtree:false});
+    }
   };
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-  addEventListener('pageshow',()=>setTimeout(ensure,30));
+  addEventListener('pageshow',e=>{if(e.persisted)setTimeout(ensure,60)});
 })();
