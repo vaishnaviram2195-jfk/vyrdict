@@ -80,11 +80,20 @@
     addScript('/homepage-news-desk.js?v=3-20261001-stable',NEWS_ID);
   }
 
+  function purgeMobileLegacy(){
+    if(!matchMedia('(max-width:900px)').matches)return;
+    const root=document.getElementById('vyrdict-editorial-home');
+    const app=document.getElementById('app');
+    if(!root||!app)return;
+    [...app.querySelectorAll('.ve-legacy-home')].forEach(el=>{if(!root.contains(el))el.remove()});
+  }
+
   function finishMount(){
     mounting=false;
     const root=document.getElementById('vyrdict-editorial-home');
     if(root){
       recoveries=0;
+      purgeMobileLegacy();
       loadEnhancements();
       document.getElementById(BRIDGE_ID)?.remove();
       return true;
