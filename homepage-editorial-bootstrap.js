@@ -67,7 +67,6 @@
   }
 
   function loadCore(){
-    addScript('/homepage-editorial-legacy-guard.js?v=7-20261001-stable',LEGACY_ID);
     if(matchMedia('(max-width:900px)').matches)addScript('/mobile-home-stability.js?v=1-20261001',MOBILE_STABILITY_ID);
   }
 
@@ -94,7 +93,7 @@
     if(root){
       recoveries=0;
       purgeMobileLegacy();
-      loadEnhancements();
+      if(!matchMedia('(max-width:900px)').matches)loadEnhancements();
       document.getElementById(BRIDGE_ID)?.remove();
       return true;
     }
@@ -104,7 +103,7 @@
   function mount(recovery=false){
     if(!isHome())return;
     const root=document.getElementById('vyrdict-editorial-home');
-    if(root){loadEnhancements();return;}
+    if(root){return;}
     if(mounting)return;
     const now=Date.now();
     if(now-lastAttempt<1800)return;
@@ -139,7 +138,7 @@
 
   function ensure(){
     if(!isHome())return;
-    if(document.getElementById('vyrdict-editorial-home')){loadEnhancements();return;}
+    if(document.getElementById('vyrdict-editorial-home'))return;
     if(!mounting&&Date.now()-lastAttempt>3000&&recoveries<1){recoveries++;mount(true)}
   }
 
@@ -148,7 +147,7 @@
     mount(false);
     [900,2200,5000].forEach(ms=>setTimeout(ensure,ms));
     const app=document.getElementById('app')||document.body;
-    if(app&&!window.__vyrdictEditorialStableObserver){
+    if(app&&!matchMedia('(max-width:900px)').matches&&!window.__vyrdictEditorialStableObserver){
       window.__vyrdictEditorialStableObserver=new MutationObserver(()=>{
         clearTimeout(observerTimer);
         observerTimer=setTimeout(ensure,180);
