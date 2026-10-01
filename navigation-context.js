@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictNavigationContextV6)return;
-  window.__vyrdictNavigationContextV6=1;
+  if(window.__vyrdictNavigationContextV7)return;
+  window.__vyrdictNavigationContextV7=1;
 
   const STORE_PREFIX='vyrdict:return-context:v2:';
   const LAST_NAV_KEY='vyrdict:last-product-nav:v2';
@@ -184,14 +184,14 @@
   }
 
   function restorePosition(state){
-    if(onProduct()||onHome())return;
+    if(onProduct())return;
     const y=Number(state?.vyrdictReturnY);
     const saved=state?.vyrdictReturnSection;
     if(!Number.isFinite(y)&&!saved)return;
     const serial=Date.now();
     window.__vyrdictRestoreSerial=serial;
-    [60,180,420].forEach(ms=>setTimeout(()=>{
-      if(window.__vyrdictRestoreSerial!==serial||onProduct()||onHome())return;
+    [0,70,180,420].forEach(ms=>setTimeout(()=>{
+      if(window.__vyrdictRestoreSerial!==serial||onProduct())return;
       const maxY=Math.max(0,document.documentElement.scrollHeight-innerHeight);
       if(Number.isFinite(y))nativeScrollTo({top:Math.min(Math.max(0,y),maxY),left:0,behavior:'auto'});
       else if(saved?.id)document.getElementById(saved.id)?.scrollIntoView({block:'start',behavior:'auto'});
@@ -261,19 +261,22 @@
 
   addEventListener('popstate',()=>{
     window.__vyrdictRestoreSerial=Date.now();
+    const state=history.state||{};
     if(onHome()){
-      if(location.hash)setTimeout(handleInitialHomeHash,40);
-      else requestAnimationFrame(topOnce);
+      if(location.hash){setTimeout(handleInitialHomeHash,40);return}
+      if(Number.isFinite(Number(state.vyrdictReturnY))||state.vyrdictReturnSection){restorePosition(state);return}
+      requestAnimationFrame(topOnce);
       return;
     }
-    const state=history.state||{};
     if(!onProduct()&&(Number.isFinite(Number(state.vyrdictReturnY))||state.vyrdictReturnSection))restorePosition(state);
     else requestAnimationFrame(topOnce);
   },true);
 
   addEventListener('pageshow',e=>{
-    if(!e.persisted||!onHome())return;
+    if(!e.persisted)return;
     window.__vyrdictRestoreSerial=Date.now();
-    if(location.hash)setTimeout(handleInitialHomeHash,40);
+    if(onHome()&&location.hash){setTimeout(handleInitialHomeHash,40);return}
+    const state=history.state||{};
+    if(!onProduct()&&(Number.isFinite(Number(state.vyrdictReturnY))||state.vyrdictReturnSection))restorePosition(state);
   },true);
 })();
