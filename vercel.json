@@ -34,7 +34,7 @@
     { "src": "/category/?$", "dest": "/index.html" },
     { "src": "/collection/viral-right-now/?$", "dest": "/viral-now.html" },
     { "src": "/collection(?:/.*)?$", "dest": "/index.html" },
-    { "src": "/saved$", "dest": "/index.html" },
+    { "src": "/saved$", "dest": "/saved.html" },
     { "src": "/search$", "dest": "/index.html" },
     { "src": "/careers/?$", "dest": "/careers.html" },
     { "src": "/command-center/?$", "dest": "/analytics-dashboard.html" },
