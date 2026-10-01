@@ -29,6 +29,7 @@
   function loadDirectFixes(){
     removeLegacyHeroMotion();
     load('/newsletter-modal-enhanced.js?v=1-20260930','vyrdict-newsletter-enhanced-loader');
+    load('/my-vyrdict-lists.js?v=1-20260930','vyrdict-my-lists-loader');
     if(matchMedia('(max-width:900px)').matches){
       load('/mobile-categories-hardfix.js?v=1-20260930-guaranteed','vyrdict-mobile-categories-hardfix-loader');
     }else{
