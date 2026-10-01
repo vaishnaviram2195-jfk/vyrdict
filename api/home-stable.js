@@ -1,6 +1,6 @@
 const homeHandler=require('./home');
 
-const REV='20261001-editorial-restore-3';
+const REV='20261001-editorial-restore-4';
 const HOME_CONFLICTS=[
   'homepage-simplify.js',
   'homepage-editorial-now.js',
@@ -19,9 +19,7 @@ const HOME_CONFLICTS=[
 ];
 
 function removeScriptByName(html,name){
-  const escaped=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-  const re=new RegExp('<script\\b[^>]*src=["\\'][^"\\']*'+escaped+'[^"\\']*["\\'][^>]*>\\s*<\\/script>','gi');
-  return html.replace(re,'');
+  return html.replace(/<script\b[^>]*\bsrc=(["'])([^"']*)\1[^>]*>\s*<\/script>/gi,(tag,_q,src)=>src.includes(name)?'':tag);
 }
 
 function currentHomePatch(input){
