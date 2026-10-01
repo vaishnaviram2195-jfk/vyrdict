@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictTopNavSectionFixV19)return;
-  window.__vyrdictTopNavSectionFixV19=1;
+  if(window.__vyrdictTopNavSectionFixV20)return;
+  window.__vyrdictTopNavSectionFixV20=1;
   window.__vyrdictDisableLegacyHeroMotion=1;
 
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
@@ -9,6 +9,7 @@
   const PRIMARY='data-vyrdict-topnav';
   const VIRAL_CACHE_KEY='vyrdict:viral-now:v1';
   const VIRAL_CACHE_TTL=10*60*1000;
+  let navWireTimer=0;
 
   function load(src,id){
     if(document.getElementById(id))return;
@@ -32,21 +33,21 @@
     load('/my-vyrdict-lists.js?v=1-20260930','vyrdict-my-lists-loader');
     if(matchMedia('(max-width:900px)').matches){
       load('/mobile-categories-hardfix.js?v=1-20260930-guaranteed','vyrdict-mobile-categories-hardfix-loader');
+      if(isHome())load('/mobile-home-stability.js?v=1-20261001','vyrdict-mobile-home-stability-direct-loader');
     }else{
       load('/header-categories-menu.js?v=5-20260930-desktop','vyrdict-header-categories-direct-loader');
     }
     if(isHome()){
       load('/homepage-signal-landscape.js?v=5-20260930-darkgray','vyrdict-signal-darkgray-direct-loader');
-      load('/homepage-culture-horizontal.js?v=1-20260930-swipe','vyrdict-home-culture-horizontal-loader');
       load('/homepage-moment-top.js?v=8-20260930-freshstable','vyrdict-home-moment-stable-direct-loader');
     }
   }
 
   function loadEditorialHome(){
-    if(!isHome()||document.getElementById('vyrdict-editorial-bootstrap-loader-v6'))return;
+    if(!isHome()||document.getElementById('vyrdict-editorial-bootstrap-loader-v7'))return;
     const s=document.createElement('script');
-    s.id='vyrdict-editorial-bootstrap-loader-v6';
-    s.src='/homepage-editorial-bootstrap.js?v=6-20260929-video685';
+    s.id='vyrdict-editorial-bootstrap-loader-v7';
+    s.src='/homepage-editorial-bootstrap.js?v=7-20261001-stable';
     s.defer=true;
     (document.head||document.documentElement).appendChild(s);
   }
@@ -70,9 +71,6 @@
       })
       .catch(()=>{});
   }
-
-  loadDirectFixes();
-  loadEditorialHome();
 
   function kindFrom(el){
     const footer=el?.getAttribute('data-vf-action');
@@ -137,7 +135,9 @@
         || els.find(el=>norm(el.textContent).includes('browse by category'));
     }
     if(kind==='culture'){
-      return document.querySelector('.ve-story')
+      return document.getElementById('ve-culture-trio')
+        || document.getElementById('ve-news-desk')
+        || document.querySelector('.ve-story')
         || document.getElementById('culture')
         || document.querySelector('[data-section="culture"],.culture-section')
         || els.find(el=>norm(el.textContent).includes('culture commerce'))
@@ -195,7 +195,10 @@
   }
 
   const start=()=>{
-    loadDirectFixes();loadEditorialHome();wire();handleInitial();
+    loadDirectFixes();
+    loadEditorialHome();
+    wire();
+    handleInitial();
     if(isHome()){
       const kick=()=>warmViralNow(false);
       if('requestIdleCallback' in window)requestIdleCallback(kick,{timeout:900});
@@ -203,14 +206,17 @@
     }
     const app=document.getElementById('app')||document.body;
     if(app&&!window.__vyrdictTopNavWireObserver){
-      window.__vyrdictTopNavWireObserver=new MutationObserver(()=>wire());
+      window.__vyrdictTopNavWireObserver=new MutationObserver(()=>{
+        clearTimeout(navWireTimer);
+        navWireTimer=setTimeout(wire,120);
+      });
       window.__vyrdictTopNavWireObserver.observe(app,{childList:true,subtree:true});
     }
-    [120,400,900,1800].forEach(ms=>setTimeout(()=>{loadDirectFixes();loadEditorialHome();wire();handleInitial()},ms));
+    [180,600,1400].forEach(ms=>setTimeout(()=>{wire();handleInitial()},ms));
   };
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();
-  addEventListener('pageshow',e=>{if(e.persisted)setTimeout(start,20)});
+  addEventListener('pageshow',e=>{if(e.persisted)setTimeout(()=>{wire();handleInitial()},40)});
   addEventListener('hashchange',()=>setTimeout(handleInitial,50));
 })();
