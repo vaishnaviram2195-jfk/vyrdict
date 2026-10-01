@@ -1,6 +1,6 @@
 const homeHandler=require('./home');
 
-const REV='20261001-editorial-restore-2';
+const REV='20261001-editorial-restore-3';
 const HOME_CONFLICTS=[
   'homepage-simplify.js',
   'homepage-editorial-now.js',
@@ -72,11 +72,18 @@ html[data-vyrdict-home-rev="${REV}"] #vyrdict-editorial-home{display:block!impor
 
   const editorial=`
 <script src="/homepage-editorial-reference.js?v=${REV}" defer><\/script>
-<script src="/homepage-editorial-polish.js?v=${REV}" defer><\/script>
-<script src="/homepage-video-pass.js?v=${REV}" defer><\/script>
-<script src="/homepage-culture-trio.js?v=${REV}" defer><\/script>
-<script src="/homepage-culture-horizontal.js?v=${REV}" defer><\/script>
-<script src="/homepage-news-desk.js?v=${REV}" defer><\/script>`;
+<script id="vyrdict-desktop-editorial-enhancements-${REV}">(()=>{
+  if(!matchMedia('(min-width:901px)').matches)return;
+  const srcs=[
+    '/homepage-editorial-polish.js?v=${REV}',
+    '/homepage-video-pass.js?v=${REV}',
+    '/homepage-culture-trio.js?v=${REV}',
+    '/homepage-culture-horizontal.js?v=${REV}',
+    '/homepage-news-desk.js?v=${REV}'
+  ];
+  const load=()=>{for(const src of srcs){const s=document.createElement('script');s.src=src;s.defer=true;document.head.appendChild(s)}};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+})();<\/script>`;
 
   if(html.includes('</head>'))html=html.replace('</head>',css+lock+editorial+'</head>');
   return html;
