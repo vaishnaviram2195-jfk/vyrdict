@@ -12,4 +12,11 @@
     s.defer=true;
     document.head.appendChild(s);
   }
+
+  if(!window.__vyrdictSearchUiPolishV1&&!document.querySelector('script[src*="search-ui-polish.js"]')){
+    const p=document.createElement('script');
+    p.src='/search-ui-polish.js?v=20261001-search-ui-1';
+    p.defer=true;
+    document.head.appendChild(p);
+  }
 })();
