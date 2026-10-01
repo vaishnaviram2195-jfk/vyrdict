@@ -1,6 +1,6 @@
 const homeHandler=require('./home');
 
-const REV='20261001-editorial-restore-4';
+const REV='20261001-editorial-restore-5';
 const HOME_CONFLICTS=[
   'homepage-simplify.js',
   'homepage-editorial-now.js',
@@ -46,13 +46,10 @@ html[data-vyrdict-home-rev="${REV}"] #vyrdict-editorial-home{display:block!impor
     if((location.pathname||'/')!=='/')return;
     document.documentElement.classList.add('vyrdict-home-entry-lock');
     try{history.scrollRestoration='manual'}catch{}
-    try{window.scrollTo(0,0)}catch{}
-    try{for(const k of Object.keys(localStorage)){if(/^vyrdict:(?:bundle-cache|home|hero|homepage)/i.test(k))localStorage.removeItem(k)}}catch{}
     const release=()=>{
       const root=document.getElementById('vyrdict-editorial-home');
       if(!root)return false;
       document.documentElement.classList.remove('vyrdict-home-entry-lock');
-      try{window.scrollTo(0,0)}catch{}
       return true;
     };
     const start=()=>{
@@ -70,6 +67,7 @@ html[data-vyrdict-home-rev="${REV}"] #vyrdict-editorial-home{display:block!impor
 
   const editorial=`
 <script src="/homepage-editorial-reference.js?v=${REV}" defer><\/script>
+<script src="/search-empty-suggest.js?v=${REV}" defer><\/script>
 <script id="vyrdict-desktop-editorial-enhancements-${REV}">(()=>{
   if(!matchMedia('(min-width:901px)').matches)return;
   const srcs=[
