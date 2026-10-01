@@ -1,14 +1,22 @@
 (()=>{
-  if(window.__vyrdictTypographyPolishV2)return;
-  window.__vyrdictTypographyPolishV2=1;
+  if(window.__vyrdictTypographyPolishV3)return;
+  window.__vyrdictTypographyPolishV3=1;
 
-  const STYLE_ID='vyrdict-typography-polish-v2';
+  const STYLE_ID='vyrdict-typography-polish-v3';
   const INFO_PAGE=/\/(?:about|careers|editorial-policy|evidence|how-vyrdict-scores|privacy|suggest-product|terms)(?:\.html)?\/?$/i.test(location.pathname||'');
+  const isCategoryView=()=>/^\/category\/[^/?#]+\/?$/i.test(location.pathname||'')||/^#\/category\/[^/?#]+\/?$/i.test(location.hash||'');
+
+  function syncRouteClass(){
+    const root=document.documentElement;
+    root.classList.toggle('vyrdict-category-view',isCategoryView());
+  }
 
   function addStyle(){
     document.documentElement.classList.add('vyrdict-type-polish');
     if(INFO_PAGE)document.documentElement.classList.add('vyrdict-info-page');
+    syncRouteClass();
     document.getElementById('vyrdict-typography-polish-v1')?.remove();
+    document.getElementById('vyrdict-typography-polish-v2')?.remove();
     let s=document.getElementById(STYLE_ID);
     if(!s){
       s=document.createElement('style');
@@ -34,6 +42,17 @@
         }
         html.vyrdict-type-polish .section .head p{font-size:14px!important;line-height:1.62!important;max-width:520px!important}
         html.vyrdict-type-polish .category{line-height:1.1!important}
+
+        /* Live SPA category views: keep the page title intentionally restrained. */
+        html.vyrdict-category-view #app h1,
+        html.vyrdict-category-view main h1,
+        html.vyrdict-category-view .hero h1,
+        html.vyrdict-category-view .wrap .hero h1{
+          font-size:clamp(34px,3.65vw,44px)!important;
+          line-height:1.02!important;
+          letter-spacing:-.035em!important;
+          max-width:900px!important;
+        }
 
         /* Category / collection discovery pages */
         html.vyrdict-type-polish .wrap .grid .card .body h2{
@@ -100,6 +119,10 @@
         @media(max-width:700px){
           html.vyrdict-type-polish .hero h1,
           html.vyrdict-type-polish .wrap .hero h1{font-size:clamp(33px,9.2vw,40px)!important;line-height:1.02!important;letter-spacing:-.036em!important}
+          html.vyrdict-category-view #app h1,
+          html.vyrdict-category-view main h1,
+          html.vyrdict-category-view .hero h1,
+          html.vyrdict-category-view .wrap .hero h1{font-size:32px!important;line-height:1.04!important;letter-spacing:-.03em!important}
           html.vyrdict-type-polish .hero p{font-size:14px!important;line-height:1.6!important}
           html.vyrdict-type-polish .section .head h2,
           html.vyrdict-type-polish .section .head h3{font-size:clamp(27px,7.6vw,32px)!important;line-height:1.06!important}
@@ -128,9 +151,33 @@
     if(document.head&&document.head.lastElementChild!==s)document.head.appendChild(s);
   }
 
-  const settle=()=>[0,160,520,1200].forEach(ms=>setTimeout(addStyle,ms));
+  function refreshRoute(){
+    syncRouteClass();
+    addStyle();
+  }
+
+  const settle=()=>[0,120,360,900].forEach(ms=>setTimeout(refreshRoute,ms));
   addStyle();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',settle,{once:true});else settle();
-  addEventListener('load',()=>setTimeout(addStyle,40),{once:true});
-  addEventListener('popstate',()=>setTimeout(addStyle,80));
+  addEventListener('load',()=>setTimeout(refreshRoute,40),{once:true});
+  addEventListener('popstate',()=>setTimeout(refreshRoute,40));
+
+  for(const method of ['pushState','replaceState']){
+    try{
+      const original=history[method];
+      if(original&& !original.__vyrdictTypographyRouteHook){
+        const wrapped=function(...args){
+          const out=original.apply(this,args);
+          queueMicrotask(refreshRoute);
+          return out;
+        };
+        wrapped.__vyrdictTypographyRouteHook=1;
+        history[method]=wrapped;
+      }
+    }catch{}
+  }
+
+  document.addEventListener('click',()=>{
+    [0,80,220].forEach(ms=>setTimeout(refreshRoute,ms));
+  },true);
 })();
