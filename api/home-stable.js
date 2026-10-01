@@ -1,108 +1,84 @@
 const homeHandler=require('./home');
 
-const REV='20261001-category-heading-16';
-const SCRIPT_REVISIONS=[
-  ['/product-navigation-market-fix.js?v=3-20260907',`/product-navigation-market-fix.js?v=${REV}`],
-  ['/navigation-context.js?v=3-20260907',`/navigation-context.js?v=${REV}`],
-  ['/navigation-guard.js?v=1',`/navigation-guard.js?v=${REV}`],
-  ['/top-nav-section-fix.js?v=3',`/top-nav-section-fix.js?v=${REV}`],
-  ['/spa-navigation-fast.js?v=1-20260905-perf',`/spa-navigation-fast.js?v=${REV}`],
-  ['/homepage-simplify.js?v=14',`/homepage-simplify.js?v=${REV}`],
-  ['/homepage-editorial-now.js?v=2-20260917',`/homepage-editorial-now.js?v=${REV}`],
-  ['/weekly-ranking-expand.js?v=32-20260909',`/weekly-ranking-expand.js?v=${REV}`],
-  ['/skip-list-reliable.js?v=2-20260909-mobilefix',`/skip-list-reliable.js?v=${REV}`],
-  ['/trending-index-claw.js?v=6-20260909-mobilefix',`/trending-index-claw.js?v=${REV}`],
-  ['/mobile-home-section-guard.js?v=3-20260909',`/mobile-home-section-guard.js?v=${REV}`]
+const REV='20261001-editorial-restore-2';
+const HOME_CONFLICTS=[
+  'homepage-simplify.js',
+  'homepage-editorial-now.js',
+  'homepage-hero-variety.js',
+  'mobile-current-hero.js',
+  'home-featured-rows.js',
+  'weekly-ranking-expand.js',
+  'skip-list-reliable.js',
+  'trending-index-claw.js',
+  'mobile-home-section-guard.js',
+  'homepage-layout-restore.js',
+  'homepage-signal-landscape.js',
+  'homepage-editorial-bootstrap.js',
+  'homepage-editorial-legacy-guard.js',
+  'mobile-home-stability.js'
 ];
+
+function removeScriptByName(html,name){
+  const escaped=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  const re=new RegExp('<script\\b[^>]*src=["\\'][^"\\']*'+escaped+'[^"\\']*["\\'][^>]*>\\s*<\\/script>','gi');
+  return html.replace(re,'');
+}
 
 function currentHomePatch(input){
   let html=String(input||'');
-  html=html.replaceAll('/site-footer.js?v=', '/site-footer.js?rev='+REV+'&v=');
-  for(const [from,to] of SCRIPT_REVISIONS)html=html.replaceAll(from,to);
-
-  const css=`<style id="vyrdict-home-stable-${REV}">
-html,body{background:#f4ede5}
-html.vyrdict-home-entry-lock{scroll-behavior:auto!important;overflow:hidden!important;background:#f4ede5!important}
-html.vyrdict-home-entry-lock body{overflow:hidden!important;scroll-behavior:auto!important}
-html.vyrdict-home-entry-lock::before{content:none!important;display:none!important}
-html.vyrdict-home-entry-lock::after{content:none!important;display:none!important}
-body.vyrdict-home-current .hero h1{font-size:clamp(38px,4.4vw,54px)!important;line-height:.98!important;letter-spacing:-.042em!important}
-body.vyrdict-home-current .section .head h2{font-size:clamp(29px,3.1vw,39px)!important;line-height:1.03!important;letter-spacing:-.035em!important}
-body.vyrdict-home-current .section .head h3{font-size:clamp(25px,2.65vw,32px)!important;line-height:1.05!important}
-@media(max-width:700px){
-  body.vyrdict-home-current .hero h1{font-size:clamp(34px,9.4vw,42px)!important;line-height:1.01!important}
-  body.vyrdict-home-current .section .head h2{font-size:clamp(27px,7.8vw,32px)!important;line-height:1.05!important}
-  body.vyrdict-home-current .section .head h3{font-size:clamp(23px,6.5vw,28px)!important}
-}
-</style>`;
-
-  const navBootstrap=`<script src="/top-nav-section-fix.js?v=${REV}"><\/script>`;
-  const typeBootstrap=`<script src="/site-typography-polish.js?v=${REV}" defer><\/script>`;
-  const layoutBootstrap=`<script src="/homepage-layout-restore.js?v=${REV}" defer><\/script>`;
-  const signalBootstrap=`<script src="/homepage-signal-landscape.js?v=${REV}" defer><\/script>`;
-  const headingBootstrap=`<script src="/homepage-heading-scale.js?v=${REV}" defer><\/script>`;
-
-  const disableLegacy=`<script id="vyrdict-disable-legacy-home-${REV}">(()=>{
-    window.__vyrdictHeroV10=1;
-    window.__vyrdictHeroV8=1;
-    window.__vyrdictMobileCurrentHeroV2=1;
-    window.__vyrdictFeaturedRowsV3=1;
-    window.__vyrdictGrowthRetentionV4=1;
-  })();<\/script>`;
-
-  const guard=`<script id="vyrdict-home-revision-${REV}">(()=>{
-    window.__VYRDICT_HOME_REV='${REV}';
-    let completed=false;
-    const legacyDeep=()=>/^#\\/(?:product|category|collection|search|saved|rankings)(?:\\/|$)/i.test(location.hash||'');
-    const onHome=()=>((location.pathname==='/'||location.pathname==='')&&!legacyDeep());
-    const pinTop=()=>{
-      if(!onHome()||completed)return;
-      try{history.scrollRestoration='manual'}catch{}
-      try{window.scrollTo(0,0)}catch{}
-      try{document.documentElement.scrollTop=0}catch{}
-      try{if(document.body)document.body.scrollTop=0}catch{}
-    };
-    const lock=()=>{
-      if(!onHome()||completed)return;
-      document.documentElement.classList.add('vyrdict-home-entry-lock');
-      pinTop();
-    };
-    const unlock=()=>{
-      if(completed)return;
-      completed=true;
-      document.documentElement.classList.remove('vyrdict-home-entry-lock');
-    };
-    lock();
-    try{for(const k of Object.keys(localStorage)){if(/^vyrdict:(?:bundle-cache|home|hero|homepage)/i.test(k))localStorage.removeItem(k)}}catch{}
-    const start=()=>{
-      if(!onHome()){unlock();return}
-      if(completed)return;
-      document.body?.classList.add('vyrdict-home-current');
-      let tries=0;
-      const check=()=>{
-        if(completed)return;
-        pinTop();
-        const app=document.getElementById('app');
-        const ready=!!(app&&app.innerHTML&&app.innerHTML.trim().length>0);
-        if(ready||tries++>28){
-          requestAnimationFrame(()=>requestAnimationFrame(unlock));
-          return;
-        }
-        requestAnimationFrame(check);
-      };
-      requestAnimationFrame(check);
-    };
-    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-    addEventListener('pageshow',e=>{
-      if(!e.persisted||!onHome())return;
-      document.documentElement.classList.remove('vyrdict-home-entry-lock');
-    });
-  })();<\/script>`;
+  for(const name of HOME_CONFLICTS)html=removeScriptByName(html,name);
 
   if(html.includes('<html')&&!html.includes('data-vyrdict-home-rev=')){
     html=html.replace('<html','<html data-vyrdict-home-rev="'+REV+'"');
   }
-  if(html.includes('</head>'))html=html.replace('</head>',css+disableLegacy+navBootstrap+typeBootstrap+layoutBootstrap+signalBootstrap+headingBootstrap+guard+'</head>');
+
+  const css=`<style id="vyrdict-editorial-restore-${REV}">
+html,body{background:#f1efe9!important}
+html.vyrdict-home-entry-lock{overflow:hidden!important;scroll-behavior:auto!important}
+html.vyrdict-home-entry-lock body{overflow:hidden!important}
+html[data-vyrdict-home-rev="${REV}"] body .hero,
+html[data-vyrdict-home-rev="${REV}"] body .section{display:none!important}
+html[data-vyrdict-home-rev="${REV}"] body .ve-hero{display:grid!important}
+html[data-vyrdict-home-rev="${REV}"] body .ve-legacy-home{display:none!important}
+html[data-vyrdict-home-rev="${REV}"] #vyrdict-editorial-home{display:block!important;visibility:visible!important;opacity:1!important}
+</style>`;
+
+  const lock=`<script id="vyrdict-editorial-entry-${REV}">(()=>{
+    window.__VYRDICT_HOME_REV='${REV}';
+    if((location.pathname||'/')!=='/')return;
+    document.documentElement.classList.add('vyrdict-home-entry-lock');
+    try{history.scrollRestoration='manual'}catch{}
+    try{window.scrollTo(0,0)}catch{}
+    try{for(const k of Object.keys(localStorage)){if(/^vyrdict:(?:bundle-cache|home|hero|homepage)/i.test(k))localStorage.removeItem(k)}}catch{}
+    const release=()=>{
+      const root=document.getElementById('vyrdict-editorial-home');
+      if(!root)return false;
+      document.documentElement.classList.remove('vyrdict-home-entry-lock');
+      try{window.scrollTo(0,0)}catch{}
+      return true;
+    };
+    const start=()=>{
+      let tries=0;
+      const check=()=>{
+        if(release())return;
+        if(tries++<90)requestAnimationFrame(check);
+        else document.documentElement.classList.remove('vyrdict-home-entry-lock');
+      };
+      requestAnimationFrame(check);
+    };
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+    addEventListener('pageshow',()=>setTimeout(release,20));
+  })();<\/script>`;
+
+  const editorial=`
+<script src="/homepage-editorial-reference.js?v=${REV}" defer><\/script>
+<script src="/homepage-editorial-polish.js?v=${REV}" defer><\/script>
+<script src="/homepage-video-pass.js?v=${REV}" defer><\/script>
+<script src="/homepage-culture-trio.js?v=${REV}" defer><\/script>
+<script src="/homepage-culture-horizontal.js?v=${REV}" defer><\/script>
+<script src="/homepage-news-desk.js?v=${REV}" defer><\/script>`;
+
+  if(html.includes('</head>'))html=html.replace('</head>',css+lock+editorial+'</head>');
   return html;
 }
 
@@ -118,7 +94,6 @@ module.exports=async function handler(req,res){
   let body='';
   const capturedHeaders={};
   let sent=false;
-
   const proxy={
     setHeader(name,value){capturedHeaders[String(name).toLowerCase()]=value;},
     status(code){statusCode=Number(code)||200;return proxy;},
@@ -129,7 +104,7 @@ module.exports=async function handler(req,res){
     await homeHandler(req,proxy);
   }catch(err){
     statusCode=503;
-    body='<!doctype html><html><body style="margin:0;background:#f4ede5;font-family:Arial;display:grid;place-items:center;min-height:100vh"><div>VYRDICT is refreshing. Please reload once.</div></body></html>';
+    body='<!doctype html><html><body style="margin:0;background:#f1efe9;font-family:Arial;display:grid;place-items:center;min-height:100vh"><div>VYRDICT is refreshing. Please reload once.</div></body></html>';
   }
 
   if(!sent&&statusCode===200)statusCode=503;
