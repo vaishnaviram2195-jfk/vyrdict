@@ -6,9 +6,9 @@
 
   // Reuse this already-loaded app-shell script to enable the search fallback
   // without adding another serverless function to the deployment.
-  if(!window.__vyrdictEmptySearchSuggestV2&&!document.querySelector('script[src*="search-empty-suggest.js"]')){
+  if(!window.__vyrdictEmptySearchSuggestV3&&!document.querySelector('script[src*="search-empty-suggest.js?v=20261001-search-suggest-3"]')){
     const s=document.createElement('script');
-    s.src='/search-empty-suggest.js?v=20261001-search-suggest-2';
+    s.src='/search-empty-suggest.js?v=20261001-search-suggest-3';
     s.defer=true;
     document.head.appendChild(s);
   }
