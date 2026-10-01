@@ -32,6 +32,18 @@
   }
   guardInitialHomeTop();
 
+  // Mobile homepage is now owned by the stable editorial renderer. Do not run
+  // legacy homepage DOM/category mutation guards there: they can continuously
+  // rewrite hidden legacy modules while the editorial home is mounting, which
+  // causes visible repaint/twitch loops on mobile browsers.
+  const MOBILE_EDITORIAL_HOME=isHome()&&isMobile();
+  if(MOBILE_EDITORIAL_HOME){
+    const reveal=()=>{if(document.getElementById('app')?.innerHTML?.trim())document.documentElement.classList.add('vyrdict-ready')};
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();
+    [120,350,800].forEach(ms=>setTimeout(reveal,ms));
+    return;
+  }
+
   function addStyle(){
     if(document.getElementById(STYLE_ID))return;
     const s=document.createElement('style');s.id=STYLE_ID;s.textContent=`
