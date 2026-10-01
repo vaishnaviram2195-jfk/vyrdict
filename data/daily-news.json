@@ -12,5 +12,47 @@
     "instagram_url": null,
     "published_at": "2026-09-30T23:00:00.000Z",
     "is_featured": true
+  },
+  {
+    "id": "daily-old-navy-altuzarra-2026-09-30",
+    "slug": "old-navy-altuzarra-romantic-collab-2026",
+    "headline": "Old Navy × Altuzarra turned fall basics into a full romance novel.",
+    "dek": "Altuzarra’s 44-piece Old Navy collaboration mixes florals, Fair Isle, plaid tailoring and dramatic outerwear at accessible prices — with Alexa Chung fronting the campaign.",
+    "category": "Fashion · Collaboration",
+    "image_url": "https://assets.vogue.com/photos/6ab680593e7d2167222a8d76/master/w_2560%2Cc_limit/image5.png",
+    "image_alt": "Alexa Chung wearing Old Navy x Altuzarra from the 2026 collaboration campaign",
+    "source_label": "Vogue",
+    "source_url": "https://www.vogue.com/article/old-navy-altuzarra-collaboration-2026",
+    "instagram_url": null,
+    "published_at": "2026-09-30T16:00:00.000Z",
+    "is_featured": false
+  },
+  {
+    "id": "daily-dior-paris-2026-09-29",
+    "slug": "dior-spring-summer-2027-paris-fashion-week",
+    "headline": "Dior’s Paris runway went sheer, metallic and sharply tailored.",
+    "dek": "Jonathan Anderson’s latest Dior womenswear show paired metallic trousers and structured jackets with sheer feathered skirts, pleating and soft romantic details.",
+    "category": "Fashion · Runway",
+    "image_url": "https://www.reuters.com/resizer/v2/PDSGJYBKTVJTXHHRDXFCZLMMEQ.jpg?auth=ea2d3d9df61f2ee8b3953c4dabc5885285d77a8cc6ff82acf6331bbbee321dad&quality=80&width=1080",
+    "image_alt": "Guest at Dior Spring Summer 2027 womenswear show during Paris Fashion Week",
+    "source_label": "Reuters",
+    "source_url": "https://www.reuters.com/lifestyle/dior-presents-sheer-tops-metallic-trousers-springsummer-2027-show-2026-09-29/",
+    "instagram_url": null,
+    "published_at": "2026-09-29T15:57:00.000Z",
+    "is_featured": false
+  },
+  {
+    "id": "daily-loreal-paris-runway-2026-09-28",
+    "slug": "loreal-paris-celine-dion-runway-2026",
+    "headline": "L’Oréal Paris made its runway show a celebrity-scale beauty moment.",
+    "dek": "Celine Dion closed L’Oréal Paris’s Paris Fashion Week show, alongside a lineup that included Kendall Jenner, Heidi Klum and Andie MacDowell.",
+    "category": "Beauty · Culture",
+    "image_url": "https://www.reuters.com/resizer/v2/OAXV5TUMXNP4BNSGU4BQ2WNXEU.jpg?auth=bc7237b1e6e6e3ab73c68f0f7acc7b57a720a178d9f9278b8f24addc881e49a6&quality=80&width=1080",
+    "image_alt": "L'Oreal Paris Express Your Worth show during Paris Fashion Week",
+    "source_label": "Reuters",
+    "source_url": "https://www.reuters.com/world/asia-pacific/celine-dion-brings-down-curtain-on-loreal-paris-runway-show-2026-09-28/",
+    "instagram_url": null,
+    "published_at": "2026-09-28T21:26:00.000Z",
+    "is_featured": false
   }
 ]
