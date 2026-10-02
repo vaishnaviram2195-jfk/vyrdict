@@ -90,7 +90,7 @@
     return `<div class="v-story-strip">
       <div class="v-story-brand"><p class="v-story-kicker">THE INTERNET, EDITED</p><h2>VYRDICT Stories</h2></div>
       <div class="v-story-row ${rest.length?'':'is-solo'}">
-        <img class="v-story-image" src="${esc(lead.image_url)}" alt="${esc(lead.image_alt||lead.headline)}" loading="eager" decoding="async">
+        <img class="v-story-image" data-vyrdict-no-placeholder="1" src="${esc(lead.image_url)}" alt="${esc(lead.image_alt||lead.headline)}" loading="eager" decoding="async">
         <div class="v-story-main"><div class="v-story-meta">${esc(meta(lead))}</div><h3 class="v-story-title">${esc(lead.headline)}</h3>${action}</div>
         ${more}
       </div>
@@ -122,6 +122,11 @@
     if(signature!==nextSig||!section.innerHTML.trim()){
       signature=nextSig;
       section.innerHTML=markup();
+      section.querySelector('.v-story-image')?.addEventListener('error',()=>{
+        stories=stories.slice(1).filter(x=>x?.headline&&x?.image_url&&!/^data:image/i.test(x.image_url));
+        signature='';
+        if(stories.length)mount();else section.remove();
+      },{once:true});
     }
     if(hero){
       if(hero.nextElementSibling!==section)hero.insertAdjacentElement('afterend',section);
