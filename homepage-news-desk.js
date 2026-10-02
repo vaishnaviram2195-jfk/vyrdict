@@ -5,6 +5,9 @@
 
   const ROOT='vyrdict-editorial-home';
   const ID='ve-news-desk';
+  const failedImages=new Set();
+  let latestRows=[],latestDailyPick=null;
+  const storyKey=x=>String(x?.slug||x?.id||x?.image_url||'');
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
   function style(){
@@ -35,7 +38,7 @@
   function validStories(rows){
     const now=Date.now(),maxAge=7*86400000;
     return (Array.isArray(rows)?rows:[])
-      .filter(x=>x&&x.headline&&x.image_url&&!/llbean\.com\/llb\/shop\//i.test(x.image_url)&&now-Date.parse(x.published_at||0)<=maxAge)
+      .filter(x=>x&&x.headline&&x.image_url&&!/^data:image/i.test(x.image_url)&&!failedImages.has(storyKey(x))&&!/llbean\.com\/llb\/shop\//i.test(x.image_url)&&now-Date.parse(x.published_at||0)<=maxAge)
       .sort((a,b)=>Date.parse(b.published_at||0)-Date.parse(a.published_at||0));
   }
 
@@ -47,9 +50,16 @@
     const rest=stories.filter(x=>x!==lead);
     const secondary=rest[0]||null,rail=rest.slice(1,5);
     let sec=document.getElementById(ID);if(!sec){sec=document.createElement('section');sec.id=ID;motion.insertAdjacentElement('afterend',sec)}
-    const secondaryHtml=secondary?`<a class="ve-news-secondary" ${attrs(secondary)}><img loading="lazy" decoding="async" src="${esc(secondary.image_url)}" alt="${esc(secondary.image_alt||secondary.headline)}"><div class="ve-news-meta">${esc(secondary.category||'Culture')}</div><h3>${esc(secondary.headline)}</h3></a>`:'';
-    const railHtml=rail.length?`<aside class="ve-news-rail"><div class="ve-news-rail-title">Latest</div>${rail.map(x=>`<a class="ve-news-item" ${attrs(x)}><div><div class="ve-news-meta">${esc(x.category||'Culture')}</div><h4>${esc(x.headline)}</h4></div><img loading="lazy" decoding="async" src="${esc(x.image_url)}" alt=""></a>`).join('')}</aside>`:'';
-    sec.innerHTML=`<div class="ve-news-wrap"><div class="ve-news-head"><div><div class="ve-news-kicker">VYRDICT / CULTURE DESK</div><h2>The VYRDICT Desk.</h2></div><p>The launches, collaborations and internet moments shaping what people want next.</p></div><div class="ve-news-grid ${secondary?'':'solo'}">${secondaryHtml}<a class="ve-news-lead" ${attrs(lead)}><img loading="eager" decoding="async" fetchpriority="high" src="${esc(lead.image_url)}" alt="${esc(lead.image_alt||lead.headline)}"><div class="ve-news-meta">${esc(lead.category||'Culture')}</div><h3>${esc(lead.headline)}</h3>${lead.dek?`<p class="ve-news-dek">${esc(lead.dek)}</p>`:''}</a>${railHtml}</div></div>`;
+    const secondaryHtml=secondary?`<a class="ve-news-secondary" ${attrs(secondary)}><img loading="lazy" decoding="async" data-vyrdict-no-placeholder="1" data-story-key="${esc(storyKey(secondary))}" src="${esc(secondary.image_url)}" alt="${esc(secondary.image_alt||secondary.headline)}"><div class="ve-news-meta">${esc(secondary.category||'Culture')}</div><h3>${esc(secondary.headline)}</h3></a>`:'';
+    const railHtml=rail.length?`<aside class="ve-news-rail"><div class="ve-news-rail-title">Latest</div>${rail.map(x=>`<a class="ve-news-item" ${attrs(x)}><div><div class="ve-news-meta">${esc(x.category||'Culture')}</div><h4>${esc(x.headline)}</h4></div><img loading="lazy" decoding="async" data-vyrdict-no-placeholder="1" data-story-key="${esc(storyKey(x))}" src="${esc(x.image_url)}" alt=""></a>`).join('')}</aside>`:'';
+    sec.innerHTML=`<div class="ve-news-wrap"><div class="ve-news-head"><div><div class="ve-news-kicker">VYRDICT / CULTURE DESK</div><h2>The VYRDICT Desk.</h2></div><p>The launches, collaborations and internet moments shaping what people want next.</p></div><div class="ve-news-grid ${secondary?'':'solo'}">${secondaryHtml}<a class="ve-news-lead" ${attrs(lead)}><img loading="eager" decoding="async" fetchpriority="high" data-vyrdict-no-placeholder="1" data-story-key="${esc(storyKey(lead))}" src="${esc(lead.image_url)}" alt="${esc(lead.image_alt||lead.headline)}"><div class="ve-news-meta">${esc(lead.category||'Culture')}</div><h3>${esc(lead.headline)}</h3>${lead.dek?`<p class="ve-news-dek">${esc(lead.dek)}</p>`:''}</a>${railHtml}</div></div>`;
+    sec.querySelectorAll('img[data-story-key]').forEach(img=>{
+      img.addEventListener('error',()=>{
+        const key=img.dataset.storyKey||'';
+        if(key)failedImages.add(key);
+        render(latestRows,latestDailyPick);
+      },{once:true});
+    });
     return true;
   }
 
@@ -59,7 +69,9 @@
       const res=await fetch('/api/stories?limit=8',{headers:{accept:'application/json'},cache:'no-cache'});
       if(!res.ok)throw new Error('stories');
       const j=await res.json();
-      render(j.stories,j.daily_pick);
+      latestRows=Array.isArray(j.stories)?j.stories:[];
+      latestDailyPick=j.daily_pick||null;
+      render(latestRows,latestDailyPick);
     }catch{
       document.getElementById(ID)?.remove();
     }
