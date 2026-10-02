@@ -33,6 +33,11 @@
     if(img.dataset.vyrdictFallbackBound==='1')return;
     img.dataset.vyrdictFallbackBound='1';
     img.addEventListener('error',()=>{
+      if(img.dataset.vyrdictNoPlaceholder==='1'||img.closest?.('#ve-news-desk,#vyrdict-editorial-now')){
+        img.dataset.vyrdictImageFailed='1';
+        img.dispatchEvent(new CustomEvent('vyrdict:story-image-error',{bubbles:true}));
+        return;
+      }
       if(img.dataset.vyrdictImageFallback==='1')return;
       img.dataset.vyrdictImageFallback='1';
       img.removeAttribute('srcset');
