@@ -1,6 +1,6 @@
 (()=>{
-  if(window.__vyrdictEditorialBootstrapV7)return;
-  window.__vyrdictEditorialBootstrapV7=1;
+  if(window.__vyrdictEditorialBootstrapV8)return;
+  window.__vyrdictEditorialBootstrapV8=1;
   const isHome=()=>location.pathname==='/'||location.pathname==='';
   if(!isHome())return;
 
@@ -70,14 +70,7 @@
     if(matchMedia('(max-width:900px)').matches)addScript('/mobile-home-stability.js?v=1-20261001',MOBILE_STABILITY_ID);
   }
 
-  function loadEnhancements(){
-    if(!document.getElementById('vyrdict-editorial-home'))return;
-    addScript('/homepage-editorial-polish.js?v=2-20260929-audiofix',POLISH_ID);
-    addScript('/homepage-video-pass.js?v=1-20260929-video685',VIDEO_ID);
-    addScript('/homepage-culture-trio.js?v=3-20261001-stable',CULTURE_ID);
-    addScript('/homepage-culture-horizontal.js?v=2-20261001-stable',CULTURE_HORIZONTAL_ID);
-    addScript('/homepage-news-desk.js?v=3-20261001-stable',NEWS_ID);
-  }
+  function loadEnhancements(){/* Stability freeze: no secondary homepage mutators. */}
 
   function purgeMobileLegacy(){
     if(!matchMedia('(max-width:900px)').matches)return;
@@ -146,14 +139,6 @@
     loadCore();
     mount(false);
     [900,2200,5000].forEach(ms=>setTimeout(ensure,ms));
-    const app=document.getElementById('app')||document.body;
-    if(app&&!matchMedia('(max-width:900px)').matches&&!window.__vyrdictEditorialStableObserver){
-      window.__vyrdictEditorialStableObserver=new MutationObserver(()=>{
-        clearTimeout(observerTimer);
-        observerTimer=setTimeout(ensure,180);
-      });
-      window.__vyrdictEditorialStableObserver.observe(app,{childList:true,subtree:false});
-    }
   };
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
