@@ -1,14 +1,22 @@
 const homeHandler=require('./home');
 
-const REV='20261003-stability-freeze-1';
+const REV='20261001-editorial-restore-5';
 const HOME_CONFLICTS=[
-  'homepage-simplify.js','homepage-editorial-now.js','homepage-hero-variety.js','mobile-current-hero.js',
-  'home-featured-rows.js','weekly-ranking-expand.js','skip-list-reliable.js','trending-index-claw.js',
-  'mobile-home-section-guard.js','homepage-layout-restore.js','homepage-signal-landscape.js',
-  'homepage-editorial-bootstrap.js','homepage-editorial-legacy-guard.js','mobile-home-stability.js',
-  'top-nav-section-fix.js','category-expander-failsafe.js','social-links-fix.js',
-  'product-card-alignment.js','worth-show-less-fix.js','navigation-context.js','navigation-guard.js'
-]
+  'homepage-simplify.js',
+  'homepage-editorial-now.js',
+  'homepage-hero-variety.js',
+  'mobile-current-hero.js',
+  'home-featured-rows.js',
+  'weekly-ranking-expand.js',
+  'skip-list-reliable.js',
+  'trending-index-claw.js',
+  'mobile-home-section-guard.js',
+  'homepage-layout-restore.js',
+  'homepage-signal-landscape.js',
+  'homepage-editorial-bootstrap.js',
+  'homepage-editorial-legacy-guard.js',
+  'mobile-home-stability.js'
+];
 
 function removeScriptByName(html,name){
   return html.replace(/<script\b[^>]*\bsrc=(["'])([^"']*)\1[^>]*>\s*<\/script>/gi,(tag,_q,src)=>src.includes(name)?'':tag);
@@ -22,11 +30,58 @@ function currentHomePatch(input){
     html=html.replace('<html','<html data-vyrdict-home-rev="'+REV+'"');
   }
 
-  const css=`<style id="vyrdict-editorial-restore-${REV}">html,body{background:#f1efe9!important}</style>`;
+  const css=`<style id="vyrdict-editorial-restore-${REV}">
+html,body{background:#f1efe9!important}
+html.vyrdict-home-entry-lock{overflow:hidden!important;scroll-behavior:auto!important}
+html.vyrdict-home-entry-lock body{overflow:hidden!important}
+html[data-vyrdict-home-rev="${REV}"] body .hero,
+html[data-vyrdict-home-rev="${REV}"] body .section{display:none!important}
+html[data-vyrdict-home-rev="${REV}"] body .ve-hero{display:grid!important}
+html[data-vyrdict-home-rev="${REV}"] body .ve-legacy-home{display:none!important}
+html[data-vyrdict-home-rev="${REV}"] #vyrdict-editorial-home{display:block!important;visibility:visible!important;opacity:1!important}
+</style>`;
 
-  const editorial=`<script src="/homepage-editorial-reference.js?v=${REV}" defer><\/script>`;
+  const lock=`<script id="vyrdict-editorial-entry-${REV}">(()=>{
+    window.__VYRDICT_HOME_REV='${REV}';
+    if((location.pathname||'/')!=='/')return;
+    document.documentElement.classList.add('vyrdict-home-entry-lock');
+    try{history.scrollRestoration='manual'}catch{}
+    const release=()=>{
+      const root=document.getElementById('vyrdict-editorial-home');
+      if(!root)return false;
+      document.documentElement.classList.remove('vyrdict-home-entry-lock');
+      return true;
+    };
+    const start=()=>{
+      let tries=0;
+      const check=()=>{
+        if(release())return;
+        if(tries++<90)requestAnimationFrame(check);
+        else document.documentElement.classList.remove('vyrdict-home-entry-lock');
+      };
+      requestAnimationFrame(check);
+    };
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+    addEventListener('pageshow',()=>setTimeout(release,20));
+  })();<\/script>`;
 
-  if(html.includes('</head>'))html=html.replace('</head>',css+editorial+'</head>');
+  const editorial=`
+<script src="/homepage-editorial-reference.js?v=${REV}" defer><\/script>
+<script src="/search-empty-suggest.js?v=${REV}" defer><\/script>
+<script id="vyrdict-desktop-editorial-enhancements-${REV}">(()=>{
+  if(!matchMedia('(min-width:901px)').matches)return;
+  const srcs=[
+    '/homepage-editorial-polish.js?v=${REV}',
+    '/homepage-video-pass.js?v=${REV}',
+    '/homepage-culture-trio.js?v=${REV}',
+    '/homepage-culture-horizontal.js?v=${REV}',
+    '/homepage-news-desk.js?v=${REV}'
+  ];
+  const load=()=>{for(const src of srcs){const s=document.createElement('script');s.src=src;s.defer=true;document.head.appendChild(s)}};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+})();<\/script>`;
+
+  if(html.includes('</head>'))html=html.replace('</head>',css+lock+editorial+'</head>');
   return html;
 }
 
