@@ -54,8 +54,8 @@ body.ve-home header a,body.ve-home header button{font-family:var(--ve-sans)!impo
 .ve-text-link:after{content:'↗';font-size:13px}
 .ve-stage{height:610px;position:relative;isolation:isolate}
 .ve-stage-orb{position:absolute;left:50%;top:50%;width:430px;height:430px;transform:translate(-50%,-50%);border-radius:50%;background:rgba(235,234,230,.26);filter:blur(.1px);border:1px solid rgba(255,255,255,.18)}
-.ve-float{position:absolute;display:block;text-decoration:none;transition:transform .6s cubic-bezier(.2,.7,.2,1);animation:veFloat 7s ease-in-out infinite}
-.ve-float:hover{transform:translateY(-7px) scale(1.02)}
+.ve-float{position:absolute;display:block;text-decoration:none;transition:none;animation:none}
+.ve-float:hover{transform:none}
 .ve-float img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 30px 30px rgba(0,0,0,.18))}
 .ve-float:nth-of-type(2){width:300px;height:390px;left:17%;top:17%;z-index:3}
 .ve-float:nth-of-type(3){width:230px;height:310px;right:3%;top:8%;z-index:2;animation-delay:-2.2s}
@@ -82,8 +82,8 @@ body.ve-home header a,body.ve-home header button{font-family:var(--ve-sans)!impo
 /* cinematic moving feature */
 .ve-motion{position:relative;min-height:760px;background:#171717;color:#f5f3ee;overflow:hidden;display:grid;align-items:end}
 .ve-motion-frame{position:absolute;inset:0}
-.ve-motion-img{position:absolute;inset:-5%;background-position:center;background-size:cover;opacity:0;filter:grayscale(.18) brightness(.58);animation:veFilm 18s infinite;transform:scale(1.06)}
-.ve-motion-img:nth-child(2){animation-delay:6s}.ve-motion-img:nth-child(3){animation-delay:12s}
+.ve-motion-img{position:absolute;inset:-5%;background-position:center;background-size:cover;opacity:0;filter:grayscale(.18) brightness(.58);animation:none;transform:scale(1.02)}
+.ve-motion-img:first-child{opacity:1}.ve-motion-img:nth-child(2),.ve-motion-img:nth-child(3){opacity:0}
 @keyframes veFilm{0%{opacity:0;transform:scale(1.08)}8%,28%{opacity:1}36%,100%{opacity:0;transform:scale(1.015)}}
 .ve-motion:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.12) 20%,rgba(0,0,0,.74) 100%)}
 .ve-motion-copy{position:relative;z-index:3;padding:70px 0 72px;display:grid;grid-template-columns:1fr .7fr;gap:80px;align-items:end}
@@ -230,7 +230,6 @@ body.ve-home footer a{color:#f4f1eb!important}
 
     /* Keep the entry seamless and do not reintroduce browser scroll restoration. */
     try{history.scrollRestoration='manual'}catch{}
-    if(scrollY>2&&!location.hash)requestAnimationFrame(()=>scrollTo(0,0));
     return true;
   }
 
@@ -238,7 +237,5 @@ body.ve-home footer a{color:#f4f1eb!important}
   style();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attempt,{once:true});else attempt();
   [120,350,750,1300,2200,3600,5200].forEach(ms=>setTimeout(attempt,ms));
-  const obs=new MutationObserver(()=>{if(!built)setTimeout(attempt,45)});
-  const startObs=()=>{const app=document.getElementById('app');if(app)obs.observe(app,{childList:true,subtree:true})};
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startObs,{once:true});else startObs();
+
 })();
