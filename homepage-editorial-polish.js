@@ -212,7 +212,8 @@
     style();hideLegacyStories();hideLegacyCategoryRibbon();renderRibbon();diversify();fixEditorialLinks();bottomCategories();footerWatermark();ensureSearch();return true;
   }
 
-  let tries=0;const tick=()=>{tries++;if(apply()||tries>=24)return;setTimeout(tick,tries<8?180:500)};
+  let tries=0;const tick=()=>{tries++;apply();if(tries<16)setTimeout(tick,tries<7?260:700)};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tick,{once:true});else tick();
+  const app=document.getElementById('app')||document.body;new MutationObserver(()=>setTimeout(apply,45)).observe(app,{childList:true,subtree:false});
   addEventListener('pageshow',()=>setTimeout(apply,40));
 })();
