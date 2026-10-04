@@ -230,6 +230,7 @@ body.ve-home footer a{color:#f4f1eb!important}
 
     /* Keep the entry seamless and do not reintroduce browser scroll restoration. */
     try{history.scrollRestoration='manual'}catch{}
+    if(scrollY>2&&!location.hash)requestAnimationFrame(()=>scrollTo(0,0));
     return true;
   }
 
@@ -237,5 +238,7 @@ body.ve-home footer a{color:#f4f1eb!important}
   style();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attempt,{once:true});else attempt();
   [120,350,750,1300,2200,3600,5200].forEach(ms=>setTimeout(attempt,ms));
-
+  const obs=new MutationObserver(()=>{if(!built)setTimeout(attempt,45)});
+  const startObs=()=>{const app=document.getElementById('app');if(app)obs.observe(app,{childList:true,subtree:true})};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startObs,{once:true});else startObs();
 })();
