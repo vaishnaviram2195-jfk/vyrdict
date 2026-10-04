@@ -230,7 +230,6 @@ body.ve-home footer a{color:#f4f1eb!important}
 
     /* Keep the entry seamless and do not reintroduce browser scroll restoration. */
     try{history.scrollRestoration='manual'}catch{}
-    if(scrollY>2&&!location.hash)requestAnimationFrame(()=>scrollTo(0,0));
     return true;
   }
 
