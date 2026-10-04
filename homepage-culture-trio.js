@@ -53,5 +53,7 @@
 
   let tries=0;const tick=()=>{tries++;if(!build()&&tries<40)setTimeout(tick,150)};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tick,{once:true});else tick();
+  const app=document.getElementById('app')||document.body;
+  new MutationObserver(()=>{if(document.getElementById(ROOT)&&(!document.getElementById(ID)||document.querySelector('#'+ROOT+' .ve-community')))setTimeout(build,30)}).observe(app,{childList:true,subtree:true});
   addEventListener('pageshow',()=>setTimeout(build,50));
 })();
