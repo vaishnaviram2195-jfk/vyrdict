@@ -126,7 +126,7 @@
         preload.src=next;
       };
       const delay=1800+i*620;
-      setTimeout(()=>{step();const id=setInterval(step,3100+i*370);tile.dataset.interval=String(id)},delay);
+      setTimeout(()=>{step()},delay);
     });
     return grid;
   }
@@ -142,11 +142,6 @@
   let n=0;const tick=()=>{n++;if(!apply()&&n<80)setTimeout(tick,120)};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tick,{once:true});else tick();
 
-  new MutationObserver(()=>{
-    if(!document.getElementById(STYLE_ID)&&document.querySelector('#vyrdict-editorial-home .ve-story'))ensureStyle();
-    const media=document.querySelector('#vyrdict-editorial-home .ve-story .ve-story-media');
-    if(media&&!media.querySelector('.ve-signal-motion'))setTimeout(apply,20);
-  }).observe(document.documentElement,{childList:true,subtree:true});
 
   addEventListener('pageshow',()=>setTimeout(apply,40));
 })();
