@@ -66,6 +66,5 @@
   }
 
   apply();
-  new MutationObserver(()=>{if(!document.getElementById(STYLE_ID))apply()}).observe(document.documentElement,{childList:true,subtree:true});
   addEventListener('pageshow',()=>setTimeout(apply,30));
 })();
