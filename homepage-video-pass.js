@@ -140,9 +140,7 @@
     return true;
   }
 
-  let n=0;const tick=()=>{n++;apply();if(n<24)setTimeout(tick,n<8?220:650)};
+  let n=0;const tick=()=>{n++;if(apply()||n>=24)return;setTimeout(tick,n<8?180:500)};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tick,{once:true});else tick();
-  const app=document.getElementById('app')||document.body;
-  new MutationObserver(()=>setTimeout(apply,35)).observe(app,{childList:true,subtree:true});
   addEventListener('pageshow',()=>setTimeout(apply,30));
 })();
