@@ -102,33 +102,8 @@
     grid.dataset.pool=JSON.stringify(pool);
     for(let i=0;i<4;i++)grid.appendChild(makeTile(pool[i%pool.length],i));
     media.replaceChildren(grid);
-    if(matchMedia('(prefers-reduced-motion: reduce)').matches)return grid;
-
-    const tiles=[...grid.querySelectorAll('.ve-signal-tile')];
-    tiles.forEach((tile,i)=>{
-      let index=i;
-      const step=()=>{
-        if(!grid.isConnected)return;
-        const p=JSON.parse(grid.dataset.pool||'[]');if(p.length<2)return;
-        index=(index+4+(i%3)+1)%p.length;
-        const next=p[index];
-        const preload=new Image();
-        preload.onload=()=>{
-          if(!grid.isConnected)return;
-          tile.classList.remove('ve-signal-in');tile.classList.add('ve-signal-out');
-          setTimeout(()=>{
-            const img=tile.querySelector('img');if(!img)return;
-            img.src=next;tile.classList.remove('ve-signal-out');tile.classList.add('ve-signal-in');
-            setTimeout(()=>tile.classList.remove('ve-signal-in'),540);
-          },300);
-        };
-        preload.onerror=()=>{};
-        preload.src=next;
-      };
-      const delay=1800+i*620;
-      setTimeout(()=>{step()},delay);
-    });
     return grid;
+
   }
 
   function apply(){
