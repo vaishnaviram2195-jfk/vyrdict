@@ -204,14 +204,6 @@
       if('requestIdleCallback' in window)requestIdleCallback(kick,{timeout:900});
       else setTimeout(kick,450);
     }
-    const app=document.getElementById('app')||document.body;
-    if(app&&!window.__vyrdictTopNavWireObserver){
-      window.__vyrdictTopNavWireObserver=new MutationObserver(()=>{
-        clearTimeout(navWireTimer);
-        navWireTimer=setTimeout(wire,120);
-      });
-      window.__vyrdictTopNavWireObserver.observe(app,{childList:true,subtree:true});
-    }
     [180,600,1400].forEach(ms=>setTimeout(()=>{wire();handleInitial()},ms));
   };
 
