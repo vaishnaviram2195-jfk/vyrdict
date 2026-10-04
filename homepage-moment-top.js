@@ -115,15 +115,10 @@
     clearTimeout(reapplyTimer);
     reapplyTimer=setTimeout(apply,30);
   };
-  const watch=()=>{
-    const app=document.getElementById('app')||document.body;
-    if(!app||app.dataset.veMomentTopWatch==='1')return;
-    app.dataset.veMomentTopWatch='1';
-    new MutationObserver(queueApply).observe(app,{childList:true,subtree:false});
-  };
+  const watch=()=>{};
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{tick();watch()},{once:true});
   else{tick();watch()}
-  [250,700,1400,2600,5000,8500].forEach(ms=>setTimeout(apply,ms));
+  [250,700,1400].forEach(ms=>setTimeout(apply,ms));
   addEventListener('pageshow',e=>{if(e.persisted)setTimeout(apply,40)});
 })();
