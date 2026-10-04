@@ -119,6 +119,5 @@
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{tick();watch()},{once:true});
   else{tick();watch()}
-  [250,700,1400].forEach(ms=>setTimeout(apply,ms));
   addEventListener('pageshow',e=>{if(e.persisted)setTimeout(apply,40)});
 })();
