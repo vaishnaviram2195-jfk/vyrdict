@@ -27,11 +27,30 @@
     document.querySelectorAll('.hero.vyrdict-hero-v8,.hero.vyrdict-current-static,.hero.vyrdict-fullwidth-motion').forEach(el=>el.classList.remove('vyrdict-hero-v8','vyrdict-current-static','vyrdict-fullwidth-motion'));
   }
 
-  function loadDirectFixes(){ removeLegacyHeroMotion(); }
+  function loadDirectFixes(){
+    removeLegacyHeroMotion();
+    load('/newsletter-modal-enhanced.js?v=1-20260930','vyrdict-newsletter-enhanced-loader');
+    load('/my-vyrdict-lists.js?v=1-20260930','vyrdict-my-lists-loader');
+    if(matchMedia('(max-width:900px)').matches){
+      load('/mobile-categories-hardfix.js?v=1-20260930-guaranteed','vyrdict-mobile-categories-hardfix-loader');
+      if(isHome())load('/mobile-home-stability.js?v=1-20261001','vyrdict-mobile-home-stability-direct-loader');
+    }else{
+      load('/header-categories-menu.js?v=5-20260930-desktop','vyrdict-header-categories-direct-loader');
+    }
+    if(isHome()){
+      load('/homepage-signal-landscape.js?v=5-20260930-darkgray','vyrdict-signal-darkgray-direct-loader');
+      load('/homepage-moment-top.js?v=8-20260930-freshstable','vyrdict-home-moment-stable-direct-loader');
+    }
+  }
 
-
-  function loadEditorialHome(){ /* editorial home is server-injected */ }
-
+  function loadEditorialHome(){
+    if(!isHome()||document.getElementById('vyrdict-editorial-bootstrap-loader-v7'))return;
+    const s=document.createElement('script');
+    s.id='vyrdict-editorial-bootstrap-loader-v7';
+    s.src='/homepage-editorial-bootstrap.js?v=7-20261001-stable';
+    s.defer=true;
+    (document.head||document.documentElement).appendChild(s);
+  }
 
   function viralCacheFresh(){
     try{
@@ -184,6 +203,14 @@
       const kick=()=>warmViralNow(false);
       if('requestIdleCallback' in window)requestIdleCallback(kick,{timeout:900});
       else setTimeout(kick,450);
+    }
+    const app=document.getElementById('app')||document.body;
+    if(app&&!window.__vyrdictTopNavWireObserver){
+      window.__vyrdictTopNavWireObserver=new MutationObserver(()=>{
+        clearTimeout(navWireTimer);
+        navWireTimer=setTimeout(wire,120);
+      });
+      window.__vyrdictTopNavWireObserver.observe(app,{childList:true,subtree:true});
     }
     [180,600,1400].forEach(ms=>setTimeout(()=>{wire();handleInitial()},ms));
   };
