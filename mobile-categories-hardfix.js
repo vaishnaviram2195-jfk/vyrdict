@@ -113,8 +113,7 @@
   addEventListener('resize',()=>{ensure();position()});
   addEventListener('scroll',position,{passive:true});
 
-  let n=0;const tick=()=>{n++;ensure();if(n<50)setTimeout(tick,n<16?120:400)};
+  let n=0;const tick=()=>{n++;ensure();if(n<18)setTimeout(tick,n<12?120:300)};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tick,{once:true});else tick();
-  new MutationObserver(()=>setTimeout(ensure,30)).observe(document.documentElement,{childList:true,subtree:true});
   addEventListener('pageshow',()=>setTimeout(ensure,40));
 })();
