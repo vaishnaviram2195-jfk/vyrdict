@@ -1,6 +1,6 @@
 const homeHandler=require('./home');
 
-const REV='20261001-editorial-restore-5';
+const REV='20261004-approved-noflicker-1';
 const HOME_CONFLICTS=[
   'homepage-simplify.js',
   'homepage-editorial-now.js',
@@ -32,37 +32,52 @@ function currentHomePatch(input){
 
   const css=`<style id="vyrdict-editorial-restore-${REV}">
 html,body{background:#f1efe9!important}
-html.vyrdict-home-entry-lock{overflow:hidden!important;scroll-behavior:auto!important}
-html.vyrdict-home-entry-lock body{overflow:hidden!important}
+html.vyrdict-home-entry-lock{scroll-behavior:auto!important}
 html[data-vyrdict-home-rev="${REV}"] body .hero,
 html[data-vyrdict-home-rev="${REV}"] body .section{display:none!important}
 html[data-vyrdict-home-rev="${REV}"] body .ve-hero{display:grid!important}
 html[data-vyrdict-home-rev="${REV}"] body .ve-legacy-home{display:none!important}
 html[data-vyrdict-home-rev="${REV}"] #vyrdict-editorial-home{display:block!important;visibility:visible!important;opacity:1!important}
+html.vyrdict-home-entry-lock #vyrdict-editorial-home{opacity:0!important;pointer-events:none!important}
+html.vyrdict-home-entry-lock body:before{
+  content:"VYRDICT.";
+  position:fixed;inset:0;z-index:999999;
+  display:grid;place-items:center;
+  background:#f1efe9;color:#171717;
+  font:600 22px/1 Arial,Helvetica,sans-serif;
+  letter-spacing:-.04em;
+}
 </style>`;
 
   const lock=`<script id="vyrdict-editorial-entry-${REV}">(()=>{
     window.__VYRDICT_HOME_REV='${REV}';
     if((location.pathname||'/')!=='/')return;
-    document.documentElement.classList.add('vyrdict-home-entry-lock');
+    const html=document.documentElement;
+    html.classList.add('vyrdict-home-entry-lock');
     try{history.scrollRestoration='manual'}catch{}
+    let rootSeenAt=0,released=false;
     const release=()=>{
+      if(released)return;
+      released=true;
+      html.classList.remove('vyrdict-home-entry-lock');
+    };
+    const ready=()=>{
       const root=document.getElementById('vyrdict-editorial-home');
       if(!root)return false;
-      document.documentElement.classList.remove('vyrdict-home-entry-lock');
-      return true;
+      if(!rootSeenAt)rootSeenAt=performance.now();
+      const moment=!!document.getElementById('ve-moment-top-style-v10')||!!window.__vyrdictMomentTopV10;
+      const signal=!!document.querySelector('#vyrdict-editorial-home .ve-signal-motion')||!!window.__vyrdictSignalLandscapeV6;
+      const culture=matchMedia('(max-width:900px)').matches||!!document.getElementById('ve-culture-trio');
+      return moment&&signal&&culture;
     };
-    const start=()=>{
-      let tries=0;
-      const check=()=>{
-        if(release())return;
-        if(tries++<90)requestAnimationFrame(check);
-        else document.documentElement.classList.remove('vyrdict-home-entry-lock');
-      };
+    const started=performance.now();
+    const check=()=>{
+      if(ready() || performance.now()-started>1800){release();return}
       requestAnimationFrame(check);
     };
-    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-    addEventListener('pageshow',()=>setTimeout(release,20));
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>requestAnimationFrame(check),{once:true});
+    else requestAnimationFrame(check);
+    addEventListener('pageshow',e=>{if(e.persisted)release()});
   })();<\/script>`;
 
   const editorial=`
