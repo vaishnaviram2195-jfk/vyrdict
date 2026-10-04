@@ -164,9 +164,8 @@
   document.addEventListener('keydown',e=>{if(e.key==='Escape')close(document.getElementById('ve-category-menu'))});
   addEventListener('resize',()=>{wire();const m=document.getElementById('ve-category-menu'),t=activeTrigger();if(m?.classList.contains('ve-open')&&t)position(t,m)});
 
-  let n=0;const tick=()=>{n++;wire();if(n<60)setTimeout(tick,n<16?120:350)};
+  let n=0;const tick=()=>{n++;wire();if(n<18)setTimeout(tick,n<12?120:300)};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tick,{once:true});else tick();
-  new MutationObserver(()=>setTimeout(wire,20)).observe(document.documentElement,{childList:true,subtree:true});
   addEventListener('pageshow',()=>setTimeout(wire,40));
   addEventListener('popstate',()=>setTimeout(wire,40));
 })();
