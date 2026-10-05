@@ -78,11 +78,11 @@
     },
     {
       "src": "/collection/celebrity-effect/?$",
-      "dest": "/api/culture-collection?slug=celebrity-effect"
+      "dest": "/celebrity-effect.html"
     },
     {
       "src": "/collection/seen-on-screen/?$",
-      "dest": "/api/culture-collection?slug=seen-on-screen"
+      "dest": "/seen-on-screen.html"
     },
     {
       "src": "/collection(?:/.*)?$",
