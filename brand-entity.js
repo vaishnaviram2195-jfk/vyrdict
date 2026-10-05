@@ -19,7 +19,7 @@
   if(!document.getElementById('vyrdict-brand-entity-schema')){
     const s=document.createElement('script');s.id='vyrdict-brand-entity-schema';s.type='application/ld+json';s.textContent=JSON.stringify({
       '@context':'https://schema.org','@graph':[
-        {'@type':'Organization','@id':'https://vyrdict.com/#organization',name:'VYRDICT',alternateName:'Vyrdict',url:'https://vyrdict.com/',logo:{'@type':'ImageObject',url:'https://vyrdict.com/vyrdict-logo.svg',width:512,height:512},description:D,slogan:"The verdict on what's trending.",sameAs:['https://www.tiktok.com/@vyrdict']},
+        {'@type':'Organization','@id':'https://vyrdict.com/#organization',name:'VYRDICT',alternateName:'Vyrdict',url:'https://vyrdict.com/',logo:{'@type':'ImageObject',url:'https://vyrdict.com/vyrdict-logo.svg',width:512,height:512},description:D,slogan:"The verdict on what's trending.",sameAs:['https://www.instagram.com/vyrdict.co/','https://www.tiktok.com/@vyrdict']},
         {'@type':'WebSite','@id':'https://vyrdict.com/#website',url:'https://vyrdict.com/',name:'VYRDICT',alternateName:'Vyrdict',publisher:{'@id':'https://vyrdict.com/#organization'}},
         {'@type':'WebPage','@id':'https://vyrdict.com/#webpage',url:'https://vyrdict.com/',name:'VYRDICT — Viral Product Intelligence & Discovery',isPartOf:{'@id':'https://vyrdict.com/#website'},about:{'@id':'https://vyrdict.com/#organization'},description:D}
       ]
