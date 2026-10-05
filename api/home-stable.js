@@ -30,6 +30,8 @@ function currentHomePatch(input){
     html=html.replace('<html','<html data-vyrdict-home-rev="'+REV+'"');
   }
 
+  const seoMeta=`<meta name="description" content="VYRDICT tracks viral products and tells you what’s actually worth it with Viral Scores, Worth Scores, evidence-backed context, and clear editorial verdicts."><meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1"><link rel="canonical" href="https://vyrdict.com/"><link rel="alternate" type="text/plain" href="/llms.txt" title="VYRDICT AI discovery guide"><meta property="og:type" content="website"><meta property="og:site_name" content="VYRDICT"><meta property="og:title" content="VYRDICT — The verdict on what’s trending."><meta property="og:description" content="Viral product intelligence that separates hype from what is actually worth buying."><meta property="og:url" content="https://vyrdict.com/"><meta property="og:image" content="https://vyrdict.com/vyrdict-social-preview.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="VYRDICT — The verdict on what’s trending."><meta name="twitter:description" content="Viral product intelligence that separates hype from what is actually worth buying."><meta name="twitter:image" content="https://vyrdict.com/vyrdict-social-preview.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://vyrdict.com/#organization","name":"VYRDICT","alternateName":"Vyrdict","url":"https://vyrdict.com/","logo":{"@type":"ImageObject","url":"https://vyrdict.com/vyrdict-logo.svg"},"description":"VYRDICT is a viral product intelligence and discovery platform that tracks what is trending, separates hype from value, and helps shoppers decide what is actually worth buying.","slogan":"The verdict on what's trending.","sameAs":["https://www.instagram.com/vyrdict.co/","https://www.tiktok.com/@vyrdict"]},{"@type":"WebSite","@id":"https://vyrdict.com/#website","url":"https://vyrdict.com/","name":"VYRDICT","alternateName":"Vyrdict","publisher":{"@id":"https://vyrdict.com/#organization"}},{"@type":"WebPage","@id":"https://vyrdict.com/#webpage","url":"https://vyrdict.com/","name":"VYRDICT — The verdict on what’s trending.","isPartOf":{"@id":"https://vyrdict.com/#website"},"about":{"@id":"https://vyrdict.com/#organization"},"description":"VYRDICT tracks viral products and tells shoppers what is actually worth the hype."}]}</script>`;
+
   const css=`<style id="vyrdict-editorial-restore-${REV}">
 html,body{background:#f1efe9!important}
 html.vyrdict-home-entry-lock{scroll-behavior:auto!important}
@@ -96,7 +98,7 @@ html.vyrdict-home-entry-lock body:before{
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
 })();<\/script>`;
 
-  if(html.includes('</head>'))html=html.replace('</head>',css+lock+editorial+'</head>');
+  if(html.includes('</head>'))html=html.replace('</head>',seoMeta+css+lock+editorial+'</head>');
   return html;
 }
 

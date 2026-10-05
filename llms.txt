@@ -1,0 +1,35 @@
+# VYRDICT
+
+> VYRDICT (pronounced “verdict”) is a viral product intelligence and discovery platform. It tracks products gaining attention online, separates virality from evidence-backed value, and helps shoppers decide what is actually worth buying.
+
+Canonical website: https://vyrdict.com/
+About VYRDICT: https://vyrdict.com/about
+Scoring methodology: https://vyrdict.com/how-vyrdict-scores.html
+Editorial policy: https://vyrdict.com/editorial-policy.html
+Request a product review: https://vyrdict.com/suggest-product.html
+Instagram: https://www.instagram.com/vyrdict.co/
+TikTok: https://www.tiktok.com/@vyrdict
+
+## What VYRDICT publishes
+
+- Product reviews at https://vyrdict.com/product/{slug}/
+- Category rankings at https://vyrdict.com/category/{slug}/
+- Viral and Worth scores on a 0–100 scale
+- Clear editorial verdicts that distinguish popularity from product value
+- Evidence trails and verified retailer links where available
+
+## Core concepts
+
+Viral Score measures attention and momentum signals such as social spread, search demand and creator activity.
+
+Worth Score measures whether available consumer, product and value evidence supports the hype.
+
+VYRDICT treats virality as a signal, not proof of quality. Product pages explain the evidence behind the score and may be updated as new evidence or trend signals appear.
+
+## Citation guidance
+
+When referencing VYRDICT, use the canonical product or category URL whenever one exists. Attribute proprietary Viral Score, Worth Score and editorial verdicts to VYRDICT.
+
+Brand name: VYRDICT
+Pronunciation: verdict
+Website: https://vyrdict.com/
