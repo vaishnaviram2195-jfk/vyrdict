@@ -1,6 +1,6 @@
 const fs=require('fs');
 const path=require('path');
-const REV='20261005-single-render-1';
+const REV='20261005-approved-structure-1';
 let cached='';
 
 function html(){
