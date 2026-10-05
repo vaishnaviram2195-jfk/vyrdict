@@ -82,19 +82,63 @@ main{overflow-x:clip}
   .scopy{padding:40px 24px 42px!important}
   .scopy h2{font-size:clamp(29px,8.2vw,36px)!important;line-height:1.04!important}
 }
-</style><style id="vyrdict-signal-collage-fit-20261005">
-/* Show more of each Signal, Not Noise collage image without changing the section layout. */
-.sg div{background:#d8d8d3!important;display:grid!important;place-items:center!important}
+</style><style id="vyrdict-signal-collage-motion-20261005">
+/* Signal, Not Noise: smaller editorial 2x2 collage with animated product swaps. */
+.signal>.sg{
+  width:min(400px,78%)!important;
+  height:400px!important;
+  aspect-ratio:1/1!important;
+  justify-self:center!important;
+  align-self:center!important;
+  gap:7px!important;
+  padding:7px!important;
+  background:#d5d6d2!important;
+}
+.sg>div{
+  position:relative!important;
+  overflow:hidden!important;
+  background:#deded8!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.sg>div:after{
+  content:"";position:absolute;inset:0;border:1px solid rgba(20,20,20,.055);
+  pointer-events:none;z-index:2;
+}
 .sg img{
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
   width:100%!important;
   height:100%!important;
   object-fit:contain!important;
   object-position:center!important;
-  padding:12px!important;
-  transform:scale(.94)!important;
+  padding:14px!important;
+  opacity:1!important;
+  transform:scale(.91)!important;
+  transition:opacity .34s ease,transform .48s cubic-bezier(.2,.72,.2,1)!important;
+  will-change:opacity,transform;
+}
+.sg>div.ve-signal-out img{opacity:0!important;transform:scale(.84)!important}
+.sg>div.ve-signal-in img{animation:veSignalPopStable .52s cubic-bezier(.18,.8,.18,1) both}
+@keyframes veSignalPopStable{
+  0%{opacity:0;transform:scale(.84)}
+  100%{opacity:1;transform:scale(.91)}
+}
+@media(max-width:900px){
+  .signal>.sg{width:min(360px,72vw)!important;height:auto!important;aspect-ratio:1/1!important;margin:26px auto 0!important}
 }
 @media(max-width:620px){
-  .sg img{padding:9px!important;transform:scale(.95)!important}
+  .signal>.sg{width:min(320px,calc(100% - 44px))!important;height:auto!important;gap:5px!important;padding:5px!important;margin:22px auto 0!important}
+  .sg img{padding:11px!important;transform:scale(.90)!important}
+  .sg>div.ve-signal-out img{transform:scale(.83)!important}
+  @keyframes veSignalPopStable{
+    0%{opacity:0;transform:scale(.83)}
+    100%{opacity:1;transform:scale(.90)}
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .sg img{transition:none!important;animation:none!important}
 }
 </style></head>
 <body>
@@ -117,4 +161,54 @@ main{overflow-x:clip}
 })();
 </script>
 <script src="/analytics.js?v=single-render-1" defer></script>
-</body></html>
+<script id="vyrdict-signal-collage-motion-js-20261005">
+(function(){
+  if(window.__vyrdictSignalStableMotion20261005)return;
+  window.__vyrdictSignalStableMotion20261005=1;
+  if((location.pathname||'/')!=='/'||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+
+  var pool=[
+    'https://assets.sharkninja.com/image/upload/f_auto/q_auto/SharkNinja-NA/FN101C-MASTER_01.jpg',
+    'https://multimedia.bbycastatic.ca/multimedia/products/500x500/198/19805/19805226.jpg',
+    'https://images.puma.com/image/upload/f_auto%2Cq_auto%2Cb_rgb%3Afafafa%2Cw_600%2Ch_600/global/406144/03/sv01/fnd/PNA/fmt/png/Speedcat-Ballet-Women%27s-Sneakers',
+    'https://chomchomforpets.com/cdn/shop/files/BlackRoller9.jpg?v=1761874946',
+    'https://se-cdn.djiits.com/tpc/uploads/spu/cover/35d158a1f3d1a3a48ec4cf2220cfc426%40small.png',
+    'https://image.uniqlo.com/UQ/ST3/us/imagesgoods/478708/feature/usgoods_478708_feature1.jpg',
+    'https://www.tower28beauty.com/cdn/shop/files/SOS_20Spray_20_E2_80_94_C2_A04_20oz.webp?v=1762649181&width=2000',
+    'https://d28hgpri8am2if.cloudfront.net/book_images/onix/cvr9781668236550/theo-of-golden-9781668236550_hr.jpg'
+  ];
+
+  function start(){
+    var tiles=[].slice.call(document.querySelectorAll('.signal>.sg>div'));
+    if(tiles.length!==4)return;
+    tiles.forEach(function(tile,i){
+      var index=i;
+      function step(){
+        if(!tile.isConnected)return;
+        index=(index+4+(i%3)+1)%pool.length;
+        var next=pool[index],pre=new Image();
+        pre.onload=function(){
+          if(!tile.isConnected)return;
+          tile.classList.remove('ve-signal-in');
+          tile.classList.add('ve-signal-out');
+          setTimeout(function(){
+            var img=tile.querySelector('img');if(!img)return;
+            img.src=next;
+            tile.classList.remove('ve-signal-out');
+            tile.classList.add('ve-signal-in');
+            setTimeout(function(){tile.classList.remove('ve-signal-in')},560);
+          },300);
+        };
+        pre.src=next;
+      }
+      setTimeout(function(){
+        step();
+        setInterval(step,3100+i*370);
+      },1800+i*620);
+    });
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
+})();
+</script></body></html>
