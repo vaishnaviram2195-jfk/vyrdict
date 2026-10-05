@@ -58,13 +58,6 @@
       "dest": "/api/product-seo?slug=$slug"
     },
     {
-      "src": "/category/gifts/?$",
-      "status": 308,
-      "headers": {
-        "Location": "/collection/gifts/"
-      }
-    },
-    {
       "src": "/category/(?<slug>[^/]+)/?$",
       "dest": "/api/category-seo?slug=$slug"
     },
@@ -83,6 +76,13 @@
     {
       "src": "/collection/seen-on-screen/?$",
       "dest": "/seen-on-screen.html"
+    },
+    {
+      "src": "/collection/gifts/?$",
+      "status": 308,
+      "headers": {
+        "Location": "/category/gifts/"
+      }
     },
     {
       "src": "/collection(?:/.*)?$",
