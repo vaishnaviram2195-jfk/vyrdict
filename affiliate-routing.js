@@ -1,9 +1,10 @@
 (()=>{
-  if(window.__vyrdictAffiliateRoutingV4)return;
-  window.__vyrdictAffiliateRoutingV4=1;
+  if(window.__vyrdictAffiliateRoutingV5)return;
+  window.__vyrdictAffiliateRoutingV5=1;
 
   const DETAIL='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-product-detail';
   const STYLE_ID='vyrdict-affiliate-style';
+  const AMAZON_CA_TAG='vyrdictsite-20';
   const norm=s=>String(s||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();
   const slug=()=>{
     const m=decodeURIComponent(location.pathname||'').match(/^\/product\/([^/?#]+)/i);
@@ -37,9 +38,25 @@
     document.head?.appendChild(st);
   }
 
+  function affiliateUrl(row){
+    const current=String(row?.affiliate_url||'').trim();
+    const country=String(row?.country_code||'').toUpperCase();
+    const retailer=norm(row?.retailer_name);
+    if(country==='CA'&&retailer.includes('amazon')&&validHttp(row?.retailer_url)){
+      try{
+        const u=new URL(String(row.retailer_url));
+        if(u.hostname==='amazon.ca'||u.hostname.endsWith('.amazon.ca')){
+          u.searchParams.set('tag',AMAZON_CA_TAG);
+          return u.toString();
+        }
+      }catch{}
+    }
+    return current;
+  }
+
   function activeRows(data){
     return (Array.isArray(data?.retailers)?data.retailers:[]).filter(r=>
-      String(r?.affiliate_status||'').toLowerCase()==='active'&&validHttp(r?.affiliate_url)
+      String(r?.affiliate_status||'').toLowerCase()==='active'&&validHttp(affiliateUrl(r))
     );
   }
 
@@ -54,7 +71,7 @@
   }
 
   function chooseLinks(row,links){
-    const normal=urlKey(row.retailer_url),affiliate=urlKey(row.affiliate_url);
+    const normal=urlKey(row.retailer_url),affiliate=urlKey(affiliateUrl(row));
     let hits=links.filter(a=>{
       const href=urlKey(a.dataset.vyrdictOriginalHref||a.getAttribute('href')||a.href);
       return href===normal||href===affiliate;
@@ -105,7 +122,7 @@
       const country=String(row.country_code||'GLOBAL').toUpperCase();
       for(const a of chooseLinks(row,links)){
         if(!a.dataset.vyrdictOriginalHref)a.dataset.vyrdictOriginalHref=row.retailer_url||a.getAttribute('href')||'';
-        a.href=row.affiliate_url;
+        a.href=affiliateUrl(row);
         a.dataset.vyrdictAffiliate='1';
         a.dataset.vyrdictAffiliateNetwork=String(row.affiliate_network||'');
         a.dataset.vyrdictAffiliateProgram=String(row.affiliate_program||'');
