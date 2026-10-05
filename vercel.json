@@ -9,7 +9,10 @@
     {
       "source": "/(.*\\.js)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, s-maxage=300, stale-while-revalidate=60, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=300, stale-while-revalidate=60, must-revalidate"
+        }
       ]
     }
   ],
@@ -22,23 +25,87 @@
       },
       "dest": "/api/home-stable"
     },
-    { "src": "/about/?$", "dest": "/about.html" },
-    { "src": "/vti-image", "dest": "/api/vti-image" },
-    { "src": "/score-discovery/?$", "dest": "/api/score-discovery" },
-    { "src": "/viral-10/?$", "dest": "/api/removed-growth" },
-    { "src": "/edit/nightstand-essentials/?$", "dest": "/api/removed-growth" },
-    { "src": "/battle/dyson-airwrap-vs-shark-flexstyle/?$", "dest": "/api/removed-growth" },
-    { "src": "/product/oura-ring-4/?$", "dest": "/api/product-legacy-redirect?to=oura-ring-5" },
-    { "src": "/product/(?<slug>[^/]+)/?$", "dest": "/api/product-seo?slug=$slug" },
-    { "src": "/category/gifts/?$", "status": 308, "headers": { "Location": "/collection/gifts/" } },
-    { "src": "/category/(?<slug>[^/]+)/?$", "dest": "/api/category-seo?slug=$slug" },
-    { "src": "/category/?$", "dest": "/index.html" },
-    { "src": "/collection/viral-right-now/?$", "dest": "/viral-now.html" },
-    { "src": "/collection(?:/.*)?$", "dest": "/index.html" },
-    { "src": "/saved$", "dest": "/saved.html" },
-    { "src": "/search/?$", "dest": "/index.html" },
-    { "src": "/careers/?$", "dest": "/careers.html" },
-    { "src": "/command-center/?$", "dest": "/analytics-dashboard.html" },
-    { "handle": "filesystem" }
+    {
+      "src": "/about/?$",
+      "dest": "/about.html"
+    },
+    {
+      "src": "/vti-image",
+      "dest": "/api/vti-image"
+    },
+    {
+      "src": "/score-discovery/?$",
+      "dest": "/api/score-discovery"
+    },
+    {
+      "src": "/viral-10/?$",
+      "dest": "/api/removed-growth"
+    },
+    {
+      "src": "/edit/nightstand-essentials/?$",
+      "dest": "/api/removed-growth"
+    },
+    {
+      "src": "/battle/dyson-airwrap-vs-shark-flexstyle/?$",
+      "dest": "/api/removed-growth"
+    },
+    {
+      "src": "/product/oura-ring-4/?$",
+      "dest": "/api/product-legacy-redirect?to=oura-ring-5"
+    },
+    {
+      "src": "/product/(?<slug>[^/]+)/?$",
+      "dest": "/api/product-seo?slug=$slug"
+    },
+    {
+      "src": "/category/gifts/?$",
+      "status": 308,
+      "headers": {
+        "Location": "/collection/gifts/"
+      }
+    },
+    {
+      "src": "/category/(?<slug>[^/]+)/?$",
+      "dest": "/api/category-seo?slug=$slug"
+    },
+    {
+      "src": "/category/?$",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/collection/viral-right-now/?$",
+      "dest": "/viral-now.html"
+    },
+    {
+      "src": "/collection/celebrity-effect/?$",
+      "dest": "/celebrity-effect.html"
+    },
+    {
+      "src": "/collection/seen-on-screen/?$",
+      "dest": "/seen-on-screen.html"
+    },
+    {
+      "src": "/collection(?:/.*)?$",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/saved$",
+      "dest": "/saved.html"
+    },
+    {
+      "src": "/search/?$",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/careers/?$",
+      "dest": "/careers.html"
+    },
+    {
+      "src": "/command-center/?$",
+      "dest": "/analytics-dashboard.html"
+    },
+    {
+      "handle": "filesystem"
+    }
   ]
 }

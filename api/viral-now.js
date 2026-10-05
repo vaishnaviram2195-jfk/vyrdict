@@ -1,8 +1,8 @@
 const SB='https://shmbvkjzeqqxybweyowj.supabase.co/rest/v1/products';
 const KEY='sb_publishable_XEsFSPQsuq8AXxBVSnIKgQ_kbGegBtG';
 
-const ACTIVE_STATUSES=new Set(['peak','viral-now','surging','breaking_out','breakout','flash_viral','resurgence','resurgent','viral']);
-const STATUS_BOOST={peak:8,'viral-now':7,surging:7,breaking_out:6,breakout:6,flash_viral:5,resurgence:4,resurgent:4,viral:3};
+const ACTIVE_STATUSES=new Set(['peak','viral-now','surging','breaking_out','breakout','flash_viral','resurgence','resurgent','viral','rising']);
+const STATUS_BOOST={peak:8,'viral-now':7,surging:7,breaking_out:6,breakout:6,flash_viral:5,rising:5,resurgence:4,resurgent:4,viral:3};
 
 function freshnessTs(p){
   return Math.max(...[p.last_verified_at,p.published_at,p.created_at].map(v=>v?Date.parse(v):0));
