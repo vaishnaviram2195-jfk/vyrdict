@@ -64,7 +64,7 @@ module.exports=async function handler(req,res){
     const pricedRetailers=retailers.filter(r=>http(r.retailer_url)&&Number(r.price)>0&&/^[A-Z]{3}$/.test(String(r.currency||'').toUpperCase()));
 
     const orgId='https://vyrdict.com/#organization',siteId='https://vyrdict.com/#website',crumbId=canonical+'#breadcrumb',pageId=canonical+'#webpage',entityId=canonical+(isBook?'#book':'#product');
-    const organization={'@type':'Organization','@id':orgId,name:'VYRDICT',url:'https://vyrdict.com/',logo:{'@type':'ImageObject',url:'https://vyrdict.com/vyrdict-logo.svg'},description:'Product scoring for the viral economy.',sameAs:['https://www.tiktok.com/@vyrdict']};
+    const organization={'@type':'Organization','@id':orgId,name:'VYRDICT',alternateName:'Vyrdict',url:'https://vyrdict.com/',logo:{'@type':'ImageObject',url:'https://vyrdict.com/vyrdict-logo.svg'},description:"VYRDICT is a viral product intelligence and discovery platform that tracks what is trending, separates hype from value, and helps shoppers decide what is actually worth buying.",slogan:"The verdict on what's trending.",sameAs:['https://www.instagram.com/vyrdict.co/','https://www.tiktok.com/@vyrdict']};
     const website={'@type':'WebSite','@id':siteId,url:'https://vyrdict.com/',name:'VYRDICT',publisher:{'@id':orgId}};
     const breadcrumb={'@type':'BreadcrumbList','@id':crumbId,itemListElement:[
       {'@type':'ListItem',position:1,name:'VYRDICT',item:'https://vyrdict.com/'},
