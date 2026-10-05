@@ -70,7 +70,7 @@
     },
     {
       "src": "/category/?$",
-      "dest": "/index.html"
+      "dest": "/shop.html"
     },
     {
       "src": "/collection/viral-right-now/?$",
