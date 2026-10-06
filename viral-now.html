@@ -38,7 +38,7 @@
   </main>
   <script>
     (()=>{
-      const CACHE_KEY='vyrdict:viral-now:v1';
+      const CACHE_KEY='vyrdict:viral-now:v2';
       const CACHE_TTL=10*60*1000;
       const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
       const img=u=>{const s=String(u||'').trim();return !s?'':(s.startsWith('/')||/^https:\/\/(?:www\.)?vyrdict\.com\//i.test(s)?s:'/vti-image?url='+encodeURIComponent(s))};
