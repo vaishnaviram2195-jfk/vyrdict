@@ -1,6 +1,6 @@
 const fs=require('fs');
 const path=require('path');
-const REV='20261006-product-engagement-1';
+const REV='20261006-product-images-2';
 let cached='';
 
 function html(){
