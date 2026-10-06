@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-vyrdict-home-rev="20261006-product-engagement-1">
+<html lang="en" data-vyrdict-home-rev="20261006-product-images-2">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f1efe9">
 <title>VYRDICT — The verdict on what’s trending.</title>
@@ -213,13 +213,15 @@ main{overflow-x:clip}
   if(window.__vyrdictHomeProductEngagement20261006)return;
   window.__vyrdictHomeProductEngagement20261006=1;
   function e(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+  function img(u){var s=String(u||'').trim();if(!s)return'';if(s.charAt(0)==='/'||/^https:\/\/(?:www\.)?vyrdict\.com\//i.test(s))return s;return '/vti-image?url='+encodeURIComponent(s)}
+  function imgAttrs(u){var o=String(u||'').trim();return 'src="'+e(img(o))+'" data-original="'+e(o)+'" onerror="this.onerror=null;if(this.dataset.original)this.src=this.dataset.original"'}
   function score(v){var n=Number(v);return Number.isFinite(n)?Math.round(n):'—'}
   function renderTrending(rows){
     var track=document.getElementById('home-trending-track');if(!track)return;
     var ps=(Array.isArray(rows)?rows:[]).filter(function(p){return p&&p.slug&&p.image_url}).slice(0,8);
     if(!ps.length){track.innerHTML='<div class="lt-card"><div class="lt-copy">Fresh verified products are refreshing now.</div></div>';return}
     track.innerHTML=ps.map(function(p){
-      return '<a class="lt-card" href="/product/'+encodeURIComponent(p.slug)+'/"><div class="lt-media"><img loading="lazy" decoding="async" src="'+e(p.image_url)+'" alt="'+e(((p.brand||'')+' '+(p.name||'')).trim())+'"><span class="lt-badge">Verified VYRDICT</span></div><div class="lt-copy"><div class="lt-meta">'+e(p.category||'Viral')+' · '+e(p.brand||'')+'</div><h3 class="lt-name">'+e(p.name||'')+'</h3><div class="lt-scores"><span>Viral <b>'+score(p.viral_score)+'</b></span><span>Worth <b>'+score(p.worth_score)+'</b></span></div><span class="lt-verdict">See verdict →</span></div></a>'
+      return '<a class="lt-card" href="/product/'+encodeURIComponent(p.slug)+'/"><div class="lt-media"><img loading="lazy" decoding="async" '+imgAttrs(p.image_url)+' alt="'+e(((p.brand||'')+' '+(p.name||'')).trim())+'"><span class="lt-badge">Verified VYRDICT</span></div><div class="lt-copy"><div class="lt-meta">'+e(p.category||'Viral')+' · '+e(p.brand||'')+'</div><h3 class="lt-name">'+e(p.name||'')+'</h3><div class="lt-scores"><span>Viral <b>'+score(p.viral_score)+'</b></span><span>Worth <b>'+score(p.worth_score)+'</b></span></div><span class="lt-verdict">See verdict →</span></div></a>'
     }).join('');
   }
   function updateCulture(id,linkId,item,screen){
@@ -230,7 +232,7 @@ main{overflow-x:clip}
     if(item.slug){meta='Viral '+score(item.viral_score)+' · Worth '+score(item.worth_score)}
     else if(screen){meta=[item.show_title,'score in progress'].filter(Boolean).join(' · ')}
     else{meta='Fresh celebrity signal'}
-    box.innerHTML='<img src="'+e(image)+'" alt=""><div><b>'+e(name)+'</b><span>'+e(meta)+'</span></div>';
+    box.innerHTML='<img '+imgAttrs(image)+' alt=""><div><b>'+e(name)+'</b><span>'+e(meta)+'</span></div>';
     if(linkId&&item.slug){var a=document.getElementById(linkId);if(a)a.href='/product/'+encodeURIComponent(item.slug)+'/'}
   }
   fetch('/api/viral-now?limit=8',{headers:{accept:'application/json'},cache:'no-store'})
@@ -267,9 +269,11 @@ main{overflow-x:clip}
     {src:'https://www.tower28beauty.com/cdn/shop/files/SOS_20Spray_20_E2_80_94_C2_A04_20oz.webp?v=1762649181&width=2000',slug:'tower-28-sos-rescue-spray',name:'Tower 28 SOS Rescue Spray'},
     {src:'https://d28hgpri8am2if.cloudfront.net/book_images/onix/cvr9781668236550/theo-of-golden-9781668236550_hr.jpg',slug:'theo-of-golden',name:'Theo of Golden'}
   ];
+  function prox(u){var s=String(u||'').trim();return s?'/vti-image?url='+encodeURIComponent(s):''}
   function apply(tile,item){
-    var img=tile.querySelector('img'),label=tile.querySelector('.signal-product-label');if(!img)return;
-    img.src=item.src;img.alt=item.name;tile.href='/product/'+encodeURIComponent(item.slug)+'/';tile.setAttribute('aria-label','Open '+item.name+' on VYRDICT');
+    var image=tile.querySelector('img'),label=tile.querySelector('.signal-product-label');if(!image)return;
+    image.onerror=function(){image.onerror=null;image.src=item.src};
+    image.src=prox(item.src);image.alt=item.name;tile.href='/product/'+encodeURIComponent(item.slug)+'/';tile.setAttribute('aria-label','Open '+item.name+' on VYRDICT');
     if(label)label.textContent=item.name+' · See verdict';
   }
   function start(){
