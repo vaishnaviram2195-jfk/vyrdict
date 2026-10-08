@@ -10,7 +10,6 @@
   const POLISH_ID='vyrdict-editorial-polish-v2';
   const VIDEO_ID='vyrdict-editorial-video-pass-v1';
   const CULTURE_ID='vyrdict-culture-trio-stable-v1';
-  const CULTURE_HORIZONTAL_ID='vyrdict-culture-horizontal-stable-v1';
   const NEWS_ID='vyrdict-news-desk-stable-v1';
   const MOBILE_STABILITY_ID='vyrdict-mobile-home-stability-v1';
   const FALLBACK=[
@@ -74,8 +73,7 @@
     if(!document.getElementById('vyrdict-editorial-home'))return;
     addScript('/homepage-editorial-polish.js?v=2-20260929-audiofix',POLISH_ID);
     addScript('/homepage-video-pass.js?v=1-20260929-video685',VIDEO_ID);
-    addScript('/homepage-culture-trio.js?v=3-20261001-stable',CULTURE_ID);
-    addScript('/homepage-culture-horizontal.js?v=2-20261001-stable',CULTURE_HORIZONTAL_ID);
+    addScript('/homepage-culture-trio.js?v=4-20261008-restored',CULTURE_ID);
     addScript('/homepage-news-desk.js?v=3-20261001-stable',NEWS_ID);
   }
 
@@ -93,6 +91,8 @@
     if(root){
       recoveries=0;
       purgeMobileLegacy();
+      // Restore all three culture cards on mobile as well as desktop.
+      addScript('/homepage-culture-trio.js?v=4-20261008-restored',CULTURE_ID);
       if(!matchMedia('(max-width:900px)').matches)loadEnhancements();
       document.getElementById(BRIDGE_ID)?.remove();
       return true;
@@ -103,7 +103,7 @@
   function mount(recovery=false){
     if(!isHome())return;
     const root=document.getElementById('vyrdict-editorial-home');
-    if(root){return;}
+    if(root){addScript('/homepage-culture-trio.js?v=4-20261008-restored',CULTURE_ID);return;}
     if(mounting)return;
     const now=Date.now();
     if(now-lastAttempt<1800)return;
@@ -138,7 +138,10 @@
 
   function ensure(){
     if(!isHome())return;
-    if(document.getElementById('vyrdict-editorial-home'))return;
+    if(document.getElementById('vyrdict-editorial-home')){
+      addScript('/homepage-culture-trio.js?v=4-20261008-restored',CULTURE_ID);
+      return;
+    }
     if(!mounting&&Date.now()-lastAttempt>3000&&recoveries<1){recoveries++;mount(true)}
   }
 
