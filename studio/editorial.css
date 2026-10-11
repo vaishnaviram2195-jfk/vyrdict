@@ -1,0 +1,66 @@
+/* Editorial presentation for the Studio overview, scoring guide and contact area. */
+#scoring{background:#eddae2;color:#543442;padding:88px 0 78px}
+#scoring .eyebrow{font-size:10px;color:#783e57}
+.sc-home-layout,.sc-home-bottom{display:grid;grid-template-columns:.85fr 1.15fr;gap:7vw}
+.sc-home-intro h2{font:400 clamp(42px,4.35vw,62px)/1.05 var(--serif);letter-spacing:-.025em;color:#6b344b;margin:22px 0 26px}
+.sc-home-intro h2 em{font-weight:400}
+.sc-home-intro>p{font-size:16px;line-height:1.8;max-width:390px;margin:0;color:#684c59}
+.sc-home-question{display:grid;grid-template-columns:25px 1fr 84px;gap:18px;align-items:baseline;padding:18px 0;border-bottom:1px solid #c9a9b8}
+.sc-home-question:first-child{padding-top:0}
+.sc-home-number{font:500 11px/1.5 var(--sans);color:#7f4c62}
+.sc-home-question h3{font:400 27px/1.15 var(--serif);color:#6b344b;margin:0 0 6px}
+.sc-home-question p{font-size:15px;line-height:1.65;color:#684c59;margin:0}
+.sc-home-weight{font-size:11px;line-height:1.5;color:#7f4c62;text-align:right}
+.sc-home-bottom{border-top:1px solid #c9a9b8;margin-top:36px;padding-top:26px;align-items:start}
+.sc-home-link{display:inline-flex;align-items:center;gap:18px;min-height:44px;padding:6px 0;border-bottom:1px solid #8f5770;color:#6b344b;font-size:15px;font-weight:700}
+.sc-home-link span{font-size:22px;font-weight:400}
+.sc-home-bottom>div>p{font-size:14px;line-height:1.75;max-width:390px;color:#684c59;margin:18px 0 0}
+.sc-home-decisions{font-size:14px;line-height:1.6;color:#684c59}
+.sc-home-decisions summary{cursor:pointer;min-height:44px;padding:10px 0;color:#6b344b;font-size:15px}
+.sc-home-decisions dl{margin:16px 0 0}
+.sc-home-decisions dl>div{display:grid;grid-template-columns:122px 1fr;gap:18px;padding:14px 0;border-top:1px solid #c9a9b8}
+.sc-home-decisions dt strong{display:block;font-weight:700;color:#6b344b}
+.sc-home-decisions dt span{font-size:12px}
+.sc-home-decisions dd{margin:0}
+#scoring a:focus-visible,#scoring summary:focus-visible{outline:2px solid #772f48;outline-offset:5px}
+
+#contact{background:linear-gradient(115deg,#f8eef0,#f3e8ed 56%,#eddce4);color:#543442}
+#contact:before{background:linear-gradient(90deg,rgba(249,240,243,.60),rgba(244,233,237,.70) 66%,rgba(244,233,237,1)),url("https://images.pexels.com/photos/38700711/pexels-photo-38700711/free-photo-of-flat-lay-of-coffee-camera-and-notepad-on-desk.jpeg?auto=compress&cs=tinysrgb&w=1800") center/cover no-repeat;filter:saturate(.68) contrast(.96) brightness(1.05)}
+#contact:after{background:#d3a6bb;opacity:.15}
+#contact h2{color:#6b344b}
+#contact .eyebrow{color:#783e57}
+#contact .form{background:rgba(233,206,220,.96);border-color:rgba(119,47,72,.13);box-shadow:0 20px 60px rgba(109,59,83,.08)}
+#contact .field label,#contact .fine{color:#624653}
+#contact .field input,#contact .field textarea,#contact .field select{color:#432b37;border-bottom-color:#ad8598}
+#contact .field input:focus,#contact .field textarea:focus,#contact .field select:focus{border-bottom-color:#772f48}
+#contact .field select option{color:#432b37;background:#f2e0e9}
+#contact .button{background:#772f48;color:#fffdfa}
+#contact .button:focus-visible{outline:2px solid #772f48;outline-offset:4px}
+
+.scoring-guide-page{background:#fdf8f6;color:#543442}
+.scoring-guide-page .nav{background:rgba(249,240,244,.97);border-bottom-color:#d7bdca}
+.scoring-guide-page .brand{color:#6b344b}
+.scoring-guide-page .brand-dot{background:#8b4764}
+.scoring-guide-page .navlinks .active{background:#772f48;color:#fffdfa}
+.scoring-guide-page .sc-guide{background:#fdf8f6;color:#543442}
+.scoring-guide-page .sc-guide .sc-hero{background:#eddae2}
+.scoring-guide-page .sc-guide .sc-section{background:#fdf8f6;color:#543442;border-top-color:#dcc5cf}
+.scoring-guide-page .sc-guide h1,.scoring-guide-page .sc-guide h2,.scoring-guide-page .sc-guide h3{color:#6b344b}
+.scoring-guide-page .sc-guide .eyebrow{color:#783e57}
+.scoring-guide-page .sc-guide .sc-intro,.scoring-guide-page .sc-guide .sc-how p,.scoring-guide-page .sc-guide .sc-copy,.scoring-guide-page .sc-guide .sc-detail-body p,.scoring-guide-page .sc-guide .sc-details summary span,.scoring-guide-page .sc-guide .sc-ranges dd{color:#684c59}
+.scoring-guide-page .sc-guide .sc-how li,.scoring-guide-page .sc-guide .sc-details details,.scoring-guide-page .sc-guide .sc-rubric-key div,.scoring-guide-page .sc-guide .sc-example-list li{border-color:#cfb2c0}
+.scoring-guide-page .sc-guide .sc-how span,.scoring-guide-page .sc-guide .sc-ranges dt,.scoring-guide-page .sc-guide .sc-rubric-key strong,.scoring-guide-page .sc-guide .sc-maths{color:#783e57}
+.scoring-guide-page .sc-guide .sc-note{background:#f0e0e7;border-left-color:#a56580;color:#624653}
+.scoring-guide-page .sc-guide .sc-band{border-color:#d7bdca;background:#f5e8ee}
+.scoring-guide-page .sc-guide .sc-band>span,.scoring-guide-page .sc-guide .sc-band p{color:#684c59}
+.scoring-guide-page .sc-guide .sc-band strong{color:#6b344b}
+.scoring-guide-page .sc-guide .sc-example-total{border-color:#d1b3c2;background:#eddae2}
+.scoring-guide-page .sc-guide .sc-number,.scoring-guide-page .sc-guide .sc-example-total .sc-status{color:#6b344b}
+.scoring-guide-page .sc-guide .sc-number small,.scoring-guide-page .sc-guide .sc-example-total p,.scoring-guide-page .sc-guide .sc-example-list p,.scoring-guide-page .sc-guide .sc-evidence-list,.scoring-guide-page .sc-guide .sc-bottom p{color:#684c59}
+.scoring-guide-page .sc-guide .sc-link{border-color:#9d647e;background:#f0dee7;color:#6b344b;font-weight:600}
+.scoring-guide-page .sc-guide .sc-jumps a{color:#6b344b}
+.scoring-guide-page footer{background:#eddae2;border-top-color:#d0afbf;color:#6b344b}
+.scoring-guide-page a:focus-visible,.scoring-guide-page .sc-guide a:focus-visible,.scoring-guide-page .sc-guide summary:focus-visible{outline-color:#772f48}
+
+@media(max-width:880px){#contact:before{background:linear-gradient(180deg,rgba(249,240,243,.5),rgba(244,233,237,.90)),url("https://images.pexels.com/photos/38700711/pexels-photo-38700711/free-photo-of-flat-lay-of-coffee-camera-and-notepad-on-desk.jpeg?auto=compress&cs=tinysrgb&w=1400") center/cover no-repeat}.sc-home-layout,.sc-home-bottom{gap:5vw}.sc-home-question{grid-template-columns:20px 1fr 72px;gap:12px}.sc-home-question h3{font-size:24px}}
+@media(max-width:640px){#scoring{padding:60px 0}.sc-home-layout,.sc-home-bottom{grid-template-columns:1fr;gap:30px}.sc-home-intro h2{font-size:44px}.sc-home-intro>p,.sc-home-bottom>div>p{max-width:100%}.sc-home-bottom{margin-top:26px;padding-top:18px;gap:24px}.sc-home-question{grid-template-columns:20px 1fr 68px;gap:10px;padding:18px 0}.sc-home-question h3{font-size:24px}.sc-home-question p{font-size:14px}.sc-home-weight{font-size:10px}.sc-home-decisions dl>div{grid-template-columns:100px 1fr}}
