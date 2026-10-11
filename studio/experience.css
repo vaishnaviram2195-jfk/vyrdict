@@ -18,8 +18,8 @@
 .studio-motion .method{background:var(--scene-bg,#243a41)}
 .studio-motion #scoring{background:var(--scene-bg,#eddae2)}
 .studio-motion #work{background:var(--scene-bg,#f1ece8)}
-.studio-motion #packages{background:var(--scene-bg,#e9eeed)}
-.studio-motion .statement,.studio-motion .method,.studio-motion #scoring,.studio-motion #work,.studio-motion #packages{transition:background-color .35s linear}
+.studio-motion #packages{background:#292b2d}
+.studio-motion .statement,.studio-motion .method,.studio-motion #scoring,.studio-motion #work{transition:background-color .35s linear}
 .studio-motion .method article{background:rgba(22,43,49,.5);transition:background .45s ease,box-shadow .45s ease,transform .65s ease}
 .studio-motion .method article:nth-child(2){background:#772f48}
 .studio-motion .method article:last-child{background:rgba(53,60,80,.5)}
@@ -29,6 +29,7 @@
 .studio-motion .method article p{color:#e2e8e6}
 .studio-motion .sprint .studio-atmosphere{opacity:.62}
 .studio-motion #contact .studio-atmosphere{opacity:.36}
+.studio-motion #packages .studio-atmosphere{display:none}
 .studio-motion #contact .studio-ribbon{right:-30%;top:-24%}
 .studio-motion .nav:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:linear-gradient(90deg,var(--studio-accent),#90b1b6,#c598ad);transform:scaleX(var(--studio-progress,0));transform-origin:left;pointer-events:none}
 .studio-motion .brand-dot{background:var(--studio-accent);transition:background-color .45s ease}
@@ -40,7 +41,7 @@
 .studio-motion .scene-active h2 em:after{transform:scaleX(1)}
 .studio-motion #packages .package-card{position:relative;isolation:isolate;overflow:hidden;transform:perspective(1000px) translateY(var(--card-lift,0px)) rotateX(var(--card-tilt-x,0deg)) rotateY(var(--card-tilt-y,0deg));transition:opacity .65s ease var(--enter-delay,0ms),transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .4s ease}
 .studio-motion #packages .package-card>*{position:relative;z-index:1}
-.studio-motion #packages .package-card:before{content:"";position:absolute;inset:0;z-index:0;background:radial-gradient(circle 320px at var(--card-x,50%) var(--card-y,50%),rgba(255,255,255,.8),transparent 72%);opacity:0;pointer-events:none;transition:opacity .3s ease}
+.studio-motion #packages .package-card:before{content:"";position:absolute;inset:0;z-index:0;background:radial-gradient(circle 320px at var(--card-x,50%) var(--card-y,50%),rgba(255,255,255,.10),transparent 72%);opacity:0;pointer-events:none;transition:opacity .3s ease}
 .studio-motion #packages .package-card:after{content:"";position:absolute;left:-100%;top:0;width:80%;height:100%;z-index:0;background:linear-gradient(110deg,transparent,rgba(255,255,255,.3),transparent);transform:skewX(-16deg);pointer-events:none}
 .studio-motion #packages .package-card.scene-visible:after{animation:studio-card-sheen 1s ease both;animation-delay:var(--enter-delay,0ms)}
 .studio-motion #packages .package-card.is-hovered{--card-lift:-8px;box-shadow:0 20px 34px rgba(53,74,74,.13)}
