@@ -118,6 +118,34 @@ footer{display:flex;justify-content:space-between;gap:20px;padding:26px 4.5vw;bo
 
 </style>
 <link rel="stylesheet" href="/studio/scoring.css">
+<style id="studio-light-sections">
+
+/* Light palettes for the two homepage sections. */
+#scoring{background:#f8f2ee;color:#30212a}
+#scoring .eyebrow,#scoring .sc-factor>span{color:#7d3f57}
+#scoring .sc-heading,#scoring .sc-factor h3,#scoring .sc-max strong{color:#6b344b}
+#scoring .sc-intro,#scoring .sc-factor p,#scoring .sc-max span,#scoring .sc-bottom p{color:#66535d}
+#scoring .sc-factor{border-color:#ceb4c0}
+#scoring .sc-max{border-color:#ceb4c0}
+#scoring .sc-band{background:#fffaf6;border-color:#d3bbc7}
+#scoring .sc-band>span,#scoring .sc-band p{color:#66535d}
+#scoring .sc-band strong{color:#772f48}
+#scoring .sc-link{background:#772f48;border-color:#772f48;color:#fffdfa}
+#scoring a:focus-visible{outline-color:#772f48}
+#contact{background:linear-gradient(135deg,#f7efe7,#ece1d6 56%,#f2e8df);color:#35282e}
+#contact:before{background:linear-gradient(90deg,rgba(248,242,235,.24),rgba(240,231,220,.6) 75%,rgba(240,231,220,1)),url("https://images.pexels.com/photos/38700711/pexels-photo-38700711/free-photo-of-flat-lay-of-coffee-camera-and-notepad-on-desk.jpeg?auto=compress&cs=tinysrgb&w=1800") center/cover no-repeat;filter:saturate(.75) contrast(.96) brightness(1.05)}
+#contact:after{background:#d8bcc7;opacity:.24}
+#contact h2{color:#6b344b}
+#contact .eyebrow{color:#7d3f57}
+#contact .form{background:rgba(255,253,250,.92);border-color:rgba(119,47,72,.2);box-shadow:0 26px 70px rgba(91,53,69,.09)}
+#contact .field label,#contact .fine{color:#66535d}
+#contact .field input,#contact .field textarea,#contact .field select{color:#35282e;border-bottom-color:#af919f}
+#contact .field input:focus,#contact .field textarea:focus,#contact .field select:focus{border-bottom-color:#772f48}
+#contact .field select option{color:#35282e;background:#fffdfa}
+#contact .button{background:#772f48;color:#fffdfa}
+#contact .button:focus-visible{outline:2px solid #772f48;outline-offset:4px}
+@media(max-width:880px){#contact:before{background:linear-gradient(180deg,rgba(248,242,235,.18),rgba(240,231,220,.88)),url("https://images.pexels.com/photos/38700711/pexels-photo-38700711/free-photo-of-flat-lay-of-coffee-camera-and-notepad-on-desk.jpeg?auto=compress&cs=tinysrgb&w=1400") center/cover no-repeat}}
+</style>
 </head>
 <body>
 <nav class="nav">
@@ -198,7 +226,7 @@ footer{display:flex;justify-content:space-between;gap:20px;padding:26px 4.5vw;bo
 </div></div></section>
 
 <section class="contact" id="contact"><div class="wrap contactgrid">
- <div class="reveal" style="align-self:end;padding:28px 30px 30px;background:linear-gradient(180deg,rgba(12,11,10,.18),rgba(12,11,10,.52));backdrop-filter:blur(4px);border-left:1px solid rgba(255,255,255,.22)"><div class="eyebrow">WORK WITH VYRDICT</div><h2>HAVE SOMETHING<br>WORTH LAUNCHING?</h2><p style="color:#efe9df;line-height:1.65;max-width:560px">Tell us what you are launching, what you are trying to solve, or what you are seeing in culture.</p></div>
+ <div class="reveal" style="align-self:end;padding:28px 30px 30px;background:linear-gradient(180deg,rgba(255,253,250,.62),rgba(248,241,234,.9));backdrop-filter:blur(4px);border-left:1px solid rgba(119,47,72,.22)"><div class="eyebrow">WORK WITH VYRDICT</div><h2>HAVE SOMETHING<br>WORTH LAUNCHING?</h2><p style="color:#66535d;line-height:1.65;max-width:560px">Tell us what you are launching, what you are trying to solve, or what you are seeing in culture.</p></div>
  <form class="form reveal" id="inquiry">
   <div class="field"><label>Name</label><input required name="name"></div><div class="field"><label>Company</label><input required name="company"></div><div class="field"><label>Email</label><input required type="email" name="email"></div>
   <div class="field"><label>What are you working on?</label><textarea required name="brief"></textarea></div>
