@@ -64,3 +64,29 @@
 @media(max-width:880px){.studio-motion .studio-rail{display:none}.studio-motion .studio-ribbon{width:100vw;height:65vw;right:-34%}.studio-motion .studio-orbit{width:70vw;height:54vw}.studio-motion .studio-atmosphere:before{inset:-12%}}
 @media(hover:none){.studio-motion #packages .package-card,.studio-motion .work-card{--card-lift:0px;--card-tilt-x:0deg;--card-tilt-y:0deg}.studio-motion .studio-atmosphere:after{display:none}}
 @media(prefers-reduced-motion:reduce){html:has(.studio-motion){scroll-behavior:auto}.studio-motion *,.studio-motion *:before,.studio-motion *:after{animation:none!important;transition:none!important}.studio-motion.studio-ready .scene-item,.studio-motion.studio-ready #packages .package-card,.studio-motion .work-card{opacity:1!important;transform:none!important}.studio-motion .studio-ribbon,.studio-motion .studio-orbit{transform:none}.studio-motion .studio-atmosphere:after{display:none}}
+
+
+/* VYRDICT STUDIO: REMOVE DECORATIVE ORBS
+   Art direction: editorial photography, real imagery, restrained linear color.
+   Intentionally retains existing palettes, page typography, service cards,
+   forms, image-based movement, and functional hover/reveal interactions.
+*/
+body.studio-motion .studio-atmosphere,
+body.studio-motion .studio-ribbon,
+body.studio-motion .studio-orbit{
+  display:none!important;
+}
+body.studio-motion #studio.hero::before,
+body.studio-motion #studio.hero::after,
+body.studio-motion #culture-sprint.sprint::after,
+body.studio-motion #contact.contact::after,
+body.studio-motion #contact .contactgrid>.reveal:not(form)::before,
+body.studio-motion #contact .contactgrid>.reveal:not(form)::after,
+body.studio-motion #packages .package-card::before{
+  content:none!important;
+  display:none!important;
+  animation:none!important;
+}
+body.studio-motion #contact .contactgrid>.reveal:not(form){
+  background:linear-gradient(135deg,#f5f1e7 0%,#ece6d6 54%,#dfd9c3 100%)!important;
+}
