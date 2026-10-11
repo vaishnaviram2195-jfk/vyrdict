@@ -69,3 +69,113 @@
 
 @media(max-width:880px){#contact:before{background:linear-gradient(180deg,rgba(214,215,213,.36),rgba(191,194,195,.92)),url("https://images.pexels.com/photos/38700711/pexels-photo-38700711/free-photo-of-flat-lay-of-coffee-camera-and-notepad-on-desk.jpeg?auto=compress&cs=tinysrgb&w=1400") center/cover no-repeat}.sc-home-layout,.sc-home-bottom{gap:5vw}.sc-home-question{grid-template-columns:20px 1fr 72px;gap:12px}.sc-home-question h3{font-size:24px}}
 @media(max-width:640px){#scoring{padding:60px 0}.sc-home-layout,.sc-home-bottom{grid-template-columns:1fr;gap:30px}.sc-home-intro h2{font-size:44px}.sc-home-intro>p,.sc-home-bottom>div>p{max-width:100%}.sc-home-bottom{margin-top:26px;padding-top:18px;gap:24px}.sc-home-question{grid-template-columns:20px 1fr 68px;gap:10px;padding:18px 0}.sc-home-question h3{font-size:24px}.sc-home-question p{font-size:14px}.sc-home-weight{font-size:10px}.sc-home-decisions dl>div{grid-template-columns:100px 1fr}}
+
+
+/* STUDIO CONTACT: BUTTERCREAM LAUNCH PANEL
+   Restrained pale butter / oat tones, with warm-grey balance rather than metallic gold.
+   Scope strictly to the left-hand copy panel. Inquiry fields and all other sections remain unchanged.
+*/
+#contact{
+  background:linear-gradient(118deg,#e8e3d7 0%,#e8e3d8 42%,#d6d6d0 100%);
+}
+#contact:before{
+  background:linear-gradient(90deg,rgba(234,229,218,.91),rgba(222,220,212,.82) 72%,rgba(214,215,211,.92)),
+    url("https://images.pexels.com/photos/38700711/pexels-photo-3870-11/free-photo-of-flat-lay-of-coffee-camera-and-notepad-on-desk.jpeg?auto=compress&cs=tinysrgb&w=1800") center/cover no-repeat;
+  filter:none;
+}
+#contact:after{background:#ded0a8;opacity:.12}
+#contact .contactgrid>.reveal:not(form){
+  align-self:stretch!important;
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  min-height:450px;
+  padding:clamp(30px,4.2vw,58px);
+  border:1px solid rgba(255,255,255,.65);
+  border-radius:22px;
+  background:
+    radial-gradient(ellipse at 19% 12%,rgba(255,253,244,.93),transparent 55%),
+    linear-gradient(135deg,#f5f1e7 0%,#ece6d6 54%,#dfd9c3 100%);
+  color:#302c27;
+  box-shadow:0 25px 54px rgba(54,50,43,.08),inset 0 1px rgba(255,255,255,.56);
+}
+#contact .contactgrid>.reveal:not(form)::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  pointer-events:none;
+  width:440px;
+  height:440px;
+  top:-210px;
+  right:-150px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(248,233,176,.47),rgba(251,241,216,.21) 48%,transparent 70%);
+  filter:blur(11px);
+  animation:vyrdict-launch-cream-light 15s ease-in-out infinite alternate;
+}
+#contact .contactgrid>.reveal:not(form)::after{
+  content:"";
+  position:absolute;
+  pointer-events:none;
+  z-index:0;
+  width:290px;
+  height:290px;
+  right:-128px;
+  bottom:-150px;
+  border:1px solid rgba(133,127,100,.19);
+  border-radius:50%;
+  box-shadow:0 0 0 32px rgba(244,237,215,.2),0 0 0 68px rgba(248,245,234,.15);
+  animation:vyrdict-launch-paper-float 22s ease-in-out infinite alternate;
+}
+#contact .contactgrid>.reveal:not(form)>*{
+  position:relative;
+  z-index:2;
+}
+#contact .contactgrid>.reveal:not(form) .eyebrow{
+  color:#686452;
+  margin-bottom:12px;
+}
+#contact .contactgrid>.reveal:not(form) h2{
+  color:#282824;
+  max-width:620px;
+  letter-spacing:-.028em;
+}
+#contact .contactgrid>.reveal:not(form) p{
+  color:#656159!important;
+  max-width:520px;
+  font-size:15px;
+}
+#contact .studio-atmosphere{opacity:.13!important;filter:saturate(.3)}
+@keyframes vyrdict-launch-cream-light{
+  from{transform:translate3d(-14px,-10px,0) scale(.98)}
+  to{transform:translate3d(26px,24px,0) scale(1.07)}
+}
+@keyframes vyrdict-launch-paper-float{
+  from{transform:translate3d(0,12px,0) rotate(-8deg)}
+  to{transform:translate3d(-20px,-20px,0) rotate(5deg)}
+}
+@media(max-width:880px){
+  #contact .contactgrid{padding-top:32px!important}
+  #contact .contactgrid>.reveal:not(form){min-height:300px;padding:38px 32px}
+}
+@media(max-width:560px){
+  #contact .contactgrid{padding-top:20px!important}
+  #contact .contactgrid>.reveal:not(form){
+    min-height:275px;
+    padding:32px 27px;
+    border-radius:17px;
+  }
+  #contact .contactgrid>.reveal:not(form)::before{
+    width:300px;height:300px;top:-125px;right:-150px
+  }
+  #contact .contactgrid>.reveal:not(form)::after{
+    width:190px;height:190px;right:-110px;bottom:-110px
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #contact .contactgrid>.reveal:not(form)::before,
+  #contact .contactgrid>.reveal:not(form)::after{animation:none!important}
+}
