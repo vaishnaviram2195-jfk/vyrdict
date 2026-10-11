@@ -119,6 +119,7 @@ footer{display:flex;justify-content:space-between;gap:20px;padding:26px 4.5vw;bo
 </style>
 <link rel="stylesheet" href="/studio/scoring.css">
 <link rel="stylesheet" href="/studio/editorial.css">
+<link rel="stylesheet" href="/studio/packages.css">
 </head>
 <body>
 <nav class="nav">
@@ -199,6 +200,43 @@ footer{display:flex;justify-content:space-between;gap:20px;padding:26px 4.5vw;bo
  <div class="module"><b>04</b><span>Opportunity score</span></div><div class="module"><b>05</b><span>Three ways to respond</span></div><div class="module"><b>06</b><span>GO / ADAPT / WATCH / PASS</span></div>
 </div></div></section>
 
+
+<section id="packages" aria-labelledby="packages-title">
+ <div class="wrap">
+  <div class="package-head">
+   <div><div class="eyebrow">THREE WAYS IN</div><h2 id="packages-title">Ways to work<br><em>with us.</em></h2></div>
+   <p>Find the opportunity, shape the launch or bring the right creators into the story. Start where your brand needs us.</p>
+  </div>
+  <div class="package-grid">
+   <article class="package-card package-card--culture" aria-labelledby="package-culture-title">
+    <div class="package-kicker">01 / FIND THE OPPORTUNITY</div>
+    <h3 id="package-culture-title">Trend &amp; Culture<br>Sprint</h3>
+    <p class="package-for">For brands deciding which trends are worth acting on.</p>
+    <h4>What you get</h4>
+    <ul><li>Category and competitor research</li><li>Emerging trends worth watching</li><li>Vyrdict Opportunity Scores</li><li>3–5 recommended directions</li></ul>
+    <a class="package-link" href="#contact" data-studio-package="Trend &amp; Culture Sprint" aria-label="Ask about the Trend and Culture Sprint">Ask about this package <span aria-hidden="true">↗</span></a>
+   </article>
+   <article class="package-card package-card--launch" aria-labelledby="package-launch-title">
+    <div class="package-kicker">02 / SHAPE THE LAUNCH</div>
+    <h3 id="package-launch-title">Launch &amp;<br>Creative Strategy</h3>
+    <p class="package-for">For a product or campaign that needs a clear idea and a plan.</p>
+    <h4>What you get</h4>
+    <ul><li>Brand positioning and story</li><li>A central campaign idea</li><li>Social and creator concepts</li><li>A practical launch roadmap</li></ul>
+    <a class="package-link" href="#contact" data-studio-package="Launch &amp; Creative Strategy" aria-label="Ask about Launch and Creative Strategy">Ask about this package <span aria-hidden="true">↗</span></a>
+   </article>
+   <article class="package-card package-card--creators" aria-labelledby="package-creators-title">
+    <div class="package-kicker">03 / FIND THE RIGHT VOICES</div>
+    <h3 id="package-creators-title">Creator<br>Campaigns</h3>
+    <p class="package-for">For brands looking for creators who fit the audience and the idea.</p>
+    <h4>What you get</h4>
+    <ul><li>Creator discovery and fit checks</li><li>Outreach and negotiation</li><li>Campaign briefs and approvals</li><li>Coordination and performance review</li></ul>
+    <a class="package-link" href="#contact" data-studio-package="Creator Campaign" aria-label="Ask about Creator Campaigns">Ask about this package <span aria-hidden="true">↗</span></a>
+   </article>
+  </div>
+  <div class="package-pricing"><p><strong>Pricing tailored to your brief.</strong> Share your goals, timing and budget, and we’ll recommend the right scope.</p><a href="#contact">Not sure where to start? <span aria-hidden="true">→</span></a></div>
+ </div>
+</section>
+
 <section class="contact" id="contact"><div class="wrap contactgrid">
  <div class="reveal" style="align-self:end"><div class="eyebrow">WORK WITH VYRDICT</div><h2>HAVE SOMETHING<br>WORTH LAUNCHING?</h2><p style="color:#66535d;line-height:1.65;max-width:560px">Tell us what you are launching, what you are trying to solve, or what you are seeing in culture.</p></div>
  <form class="form reveal" id="inquiry">
@@ -213,6 +251,12 @@ footer{display:flex;justify-content:space-between;gap:20px;padding:26px 4.5vw;bo
 <script>
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add("on")}),{threshold:.12});
 document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+document.querySelectorAll("[data-studio-package]").forEach(link=>{
+  link.addEventListener("click",()=>{
+    const service=document.querySelector('#inquiry select[name="service"]');
+    if(service)service.value=link.dataset.studioPackage;
+  });
+});
 document.getElementById("inquiry").addEventListener("submit",async function(e){
   e.preventDefault();
   const form=e.currentTarget,note=document.getElementById("formnote"),btn=document.getElementById("submitbtn");
