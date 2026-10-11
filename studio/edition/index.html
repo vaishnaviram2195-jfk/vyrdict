@@ -153,6 +153,91 @@ form .status{font-size:12px;line-height:1.5;min-height:17px;margin:0;color:#5661
 .end-footer{flex-wrap:wrap;margin-top:60px;font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
+
+/* VYRDICT EDITION / MOTION + GENUINE PHOTOGRAPHY
+   No service boxes, no scrapbook imagery, no invented photo assets. */
+.hero{padding-bottom:clamp(38px,5vw,70px)}
+.hero-canvas{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,.75fr);gap:clamp(24px,5.1vw,85px);align-items:center}
+.hero-type{position:relative;min-width:0}
+.hero-canvas h1{font-size:clamp(67px,9.2vw,146px);position:relative;z-index:2}
+.hero-canvas .hero-bottom{display:block;margin-top:clamp(25px,4vw,60px)}
+.hero-canvas .hero-intro{max-width:570px}
+.hero-canvas .hero-cta{justify-content:space-between;margin-top:27px}
+.hero-canvas .hero-cta .small{max-width:200px}
+.hero-visual{min-height:535px;height:clamp(475px,42vw,720px);position:relative;overflow:hidden;background:#d1dec5;isolation:isolate}
+.hero-photo{position:absolute;inset:0;opacity:0;transition:opacity 900ms ease,transform 2400ms cubic-bezier(.18,.75,.27,1);transform:scale(1.14) translateX(2%);z-index:1}
+.hero-photo.is-current{opacity:1;transform:scale(1.01) translateX(0)}
+.hero-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.07);animation:photo-drift 9s ease-in-out infinite alternate}
+.hero-photo-two img{object-position:50% 35%;filter:saturate(1.13)}
+.hero-photo-three img{object-position:45% 40%;filter:saturate(1.25)}
+@keyframes photo-drift{0%{transform:scale(1.05) translateY(0)}100%{transform:scale(1.13) translateY(-1.8%)}}
+.hero-viewfinder,.hero-visual-bottom{position:absolute;z-index:5;left:0;right:0;pointer-events:none}
+.hero-viewfinder{top:0;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:9px;font:500 9px var(--mono);letter-spacing:.04em;color:#101512;background:#f7f8f0b8;mix-blend-mode:normal}
+.hero-viewfinder .view-dot{font-weight:700;letter-spacing:.07em}
+.hero-visual-bottom{bottom:0;padding:22px 20px 18px;display:flex;justify-content:space-between;align-items:end;gap:8px;background:linear-gradient(transparent,#0e1611a9);color:white}
+.hero-visual-bottom strong{font:700 clamp(22px,2.65vw,40px)/1 var(--sans);letter-spacing:-.062em;max-width:240px}
+.hero-visual-bottom em{font:italic 400 1.2em var(--serif)}
+.hero-visual-bottom .photo-count{font:500 10px/1 var(--mono);white-space:nowrap}
+.hero-meta{margin-bottom:27px}
+.hero-canvas .hero-cta a{padding:15px 19px}
+.hero h1 .outline{color:#5e8848;transition:transform .4s ease}
+.hero-type:hover .outline{transform:translate(.05em,-.1em) rotate(-3deg)}
+.ribbon-track{animation-duration:17s}
+.service-row{overflow:hidden}
+.service-btn{position:relative;z-index:2}
+.service-row:nth-child(1) .service-title{--hover-ink:#71924a}
+.service-row:nth-child(2) .service-title{--hover-ink:#d57850}
+.service-row:nth-child(3) .service-title{--hover-ink:#9486a7}
+.service-row:hover .service-title{color:var(--hover-ink)}
+.service-copy{display:grid;grid-template-columns:minmax(0,.65fr) minmax(110px,.35fr);gap:23px;align-items:center}
+.service-copy img{height:165px;width:100%;object-fit:cover}
+.service-expand{grid-template-columns:1.25fr .75fr}
+.service-info{align-content:center}
+.reel{overflow:hidden;border-block:1px solid #191b171c;background:#eef0e8;padding:22px 0}
+.reel-track{display:flex;align-items:stretch;gap:17px;width:max-content;animation:reel-move 33s linear infinite}
+.reel:hover .reel-track{animation-play-state:paused}
+.reel-frame{width:clamp(230px,23vw,340px);height:clamp(190px,24vw,285px);position:relative;overflow:hidden;flex-shrink:0;background:#dee0d9}
+.reel-frame img{width:100%;height:100%;object-fit:cover;transition:transform .65s cubic-bezier(.2,.6,.3,1)}
+.reel-frame:hover img{transform:scale(1.1)}
+.reel-frame span{position:absolute;bottom:0;left:0;right:0;padding:16px 13px 12px;background:linear-gradient(transparent,#08120a81);font:800 10px var(--mono);letter-spacing:.1em;color:white}
+@keyframes reel-move{to{transform:translateX(calc(-50% - 8.5px))}}
+@media(max-width:950px){
+ .hero-canvas{grid-template-columns:minmax(0,1fr) minmax(250px,.85fr);gap:22px}
+ .hero-visual{height:500px;min-height:0}
+ .hero-canvas h1{font-size:clamp(67px,9.5vw,105px)}
+ .hero-canvas .hero-intro{font-size:21px}
+ .hero-canvas .hero-cta{flex-wrap:wrap}
+ .service-expand{grid-template-columns:1fr .8fr}
+ .service-copy img{height:142px}
+}
+@media(max-width:700px){
+ .hero{padding-top:40px}
+ .hero-canvas{display:flex;flex-direction:column;gap:30px;align-items:stretch}
+ .hero-canvas h1{font-size:clamp(76px,15.4vw,112px)}
+ .hero-canvas .hero-bottom{margin-top:22px}
+ .hero-canvas .hero-cta{margin-top:16px}
+ .hero-visual{height:clamp(330px,99vw,530px);width:100%}
+ .hero-photo img{object-position:center 35%}
+ .hero-meta{margin-bottom:26px}
+ .reel-frame{height:180px;width:225px}
+ .reel{padding:12px 0}
+ .service-expand{display:block}
+ .service-copy{grid-template-columns:minmax(0,1fr) 108px;gap:10px}
+ .service-copy img{height:120px}
+}
+@media(max-width:380px){
+ .hero-canvas h1{font-size:clamp(63px,15.3vw,82px)}
+ .hero-visual{height:310px}
+ .hero-viewfinder{font-size:8px}
+ .service-copy{grid-template-columns:1fr}
+ .service-copy img{width:100%;height:150px}
+}
+@media(prefers-reduced-motion:reduce){
+ .hero-photo img,.reel-track{animation:none!important}
+ .hero-photo{transition:none!important}
+ .reel-track{transform:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -165,23 +250,47 @@ form .status{font-size:12px;line-height:1.5;min-height:17px;margin:0;color:#5661
 <main>
 <section class="hero">
  <div class="hero-meta"><span>VYRDICT STUDIO / CREATIVE + CULTURE</span><span class="side"><span class="rule"></span>THE INTERNET NEVER STANDS STILL</span></div>
+ <div class="hero-canvas">
+ <div class="hero-type">
  <h1>MAKE<br><span class="second">IT <span class="outline">matter.</span></span></h1>
  <div class="hero-bottom"><p class="hero-intro">We turn what's happening on the internet into ideas worth talking about.</p>
  <div class="hero-cta"><span class="small">Trend intelligence. Creative strategy. Creator-led campaigns.</span><a href="#services">See what we do <span aria-hidden="true">↘</span></a></div></div>
+ </div>
+ <div class="hero-visual" aria-label="Rotating real editorial photography of fashion and creative culture">
+   <div class="hero-viewfinder" aria-hidden="true"><span>IN THE CULTURE / NOT JUST WATCHING IT</span><span class="view-dot">LIVE EDIT ✳</span></div>
+   <div class="hero-photo hero-photo-one is-current"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1050&q=86" alt="Real street-style fashion photography" fetchpriority="high"></div>
+   <div class="hero-photo hero-photo-two"><img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1050&q=86" alt="Contemporary street-style fashion" loading="lazy"></div>
+   <div class="hero-photo hero-photo-three"><img src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=1050&q=86" alt="Professional photography at work" loading="lazy"></div>
+   <div class="hero-visual-bottom"><strong>Culture happens. <em>Ideas follow.</em></strong><span class="photo-count" aria-live="off">01 — 03</span></div>
+ </div>
+ </div>
+
 </section>
 <div class="ribbon" aria-label="Culture, creativity and creators"><div class="ribbon-track" aria-hidden="true"><span>CULTURE IS THE BRIEF ✳</span><span>THE INTERNET IS OUR <b>BEAT</b> ✳</span><span>GOOD IDEAS TRAVEL ✳</span><span>CULTURE IS THE BRIEF ✳</span><span>THE INTERNET IS OUR <b>BEAT</b> ✳</span><span>GOOD IDEAS TRAVEL ✳</span></div></div>
 <section class="overview" id="services" aria-labelledby="services-title">
 <div class="index-head"><div><span class="section-label">01 / CAPABILITIES</span><h2 id="services-title">What we do<span style="color:#738e57">.</span></h2></div><p class="aside">Three ways to make your brand part of the moment—not just part of the noise.</p></div>
 <div class="service-list">
   <div class="service-row"><button class="service-btn" aria-expanded="false" aria-controls="service-one"><span class="service-num">01</span><span class="service-title">Trend intelligence</span><span class="service-icon" aria-hidden="true">↗</span></button>
-  <div class="service-expand" id="service-one" hidden><p>Know which cultural moments are worth your brand's attention.</p><div class="service-info"><span>Audience signals</span><span>Cultural opportunities</span><span>What to do next</span><button type="button" data-open-form="Trend & Culture Sprint">Ask about a culture sprint ↗</button></div></div></div>
+  <div class="service-expand" id="service-one" hidden><div class="service-copy"><p>Know which cultural moments are worth your brand's attention.</p><img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=650&q=82" alt="Beauty and product culture photography" loading="lazy"></div><div class="service-info"><span>Audience signals</span><span>Cultural opportunities</span><span>What to do next</span><button type="button" data-open-form="Trend & Culture Sprint">Ask about a culture sprint ↗</button></div></div></div>
   <div class="service-row"><button class="service-btn" aria-expanded="false" aria-controls="service-two"><span class="service-num">02</span><span class="service-title">Creative &amp; launches</span><span class="service-icon" aria-hidden="true">↗</span></button>
-  <div class="service-expand" id="service-two" hidden><p>Take a product, a story or a spark and make people actually care.</p><div class="service-info"><span>Creative direction</span><span>Launch concepts</span><span>Social-first thinking</span><button type="button" data-open-form="Launch & Creative Strategy">Discuss a launch ↗</button></div></div></div>
+  <div class="service-expand" id="service-two" hidden><div class="service-copy"><p>Take a product, a story or a spark and make people actually care.</p><img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=650&q=82" alt="Fashion and personal style photography" loading="lazy"></div><div class="service-info"><span>Creative direction</span><span>Launch concepts</span><span>Social-first thinking</span><button type="button" data-open-form="Launch & Creative Strategy">Discuss a launch ↗</button></div></div></div>
   <div class="service-row"><button class="service-btn" aria-expanded="false" aria-controls="service-three"><span class="service-num">03</span><span class="service-title">Creator campaigns</span><span class="service-icon" aria-hidden="true">↗</span></button>
-  <div class="service-expand" id="service-three" hidden><p>The right people, telling the right story, in a way that feels real.</p><div class="service-info"><span>Creator discovery</span><span>Briefs &amp; coordination</span><span>Campaign review</span><button type="button" data-open-form="Creator Campaign">Explore creator campaigns ↗</button></div></div></div>
+  <div class="service-expand" id="service-three" hidden><div class="service-copy"><p>The right people, telling the right story, in a way that feels real.</p><img src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=650&q=82" alt="Real photography production" loading="lazy"></div><div class="service-info"><span>Creator discovery</span><span>Briefs &amp; coordination</span><span>Campaign review</span><button type="button" data-open-form="Creator Campaign">Explore creator campaigns ↗</button></div></div></div>
 </div>
 </section>
 <section class="studio-thought" aria-label="Studio perspective"><div class="thought-label section-label">02 / OUR POINT OF VIEW</div><p>Not every trend deserves a brand.<br><em>The right one can change everything.</em></p><div class="thought-marker" aria-hidden="true">✳</div></section>
+<div class="reel" aria-label="A moving edit of fashion, beauty and creative culture">
+<div class="reel-track">
+ <div class="reel-frame" style="--t:-3deg"><img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=650&q=83" loading="lazy" alt="Photographed beauty products"><span>THE PRODUCT</span></div>
+ <div class="reel-frame" style="--t:2deg"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=650&q=83" loading="lazy" alt="Fashion street-style photograph"><span>THE MOMENT</span></div>
+ <div class="reel-frame" style="--t:-1deg"><img src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=650&q=83" loading="lazy" alt="Photographer at work"><span>THE CREATOR</span></div>
+ <div class="reel-frame" style="--t:2deg"><img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=650&q=83" loading="lazy" alt="Fashion and personal style"><span>THE STORY</span></div>
+ <div class="reel-frame" style="--t:-3deg"><img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=650&q=83" loading="lazy" alt="" aria-hidden="true"><span>THE PRODUCT</span></div>
+ <div class="reel-frame" style="--t:2deg"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=650&q=83" loading="lazy" alt="" aria-hidden="true"><span>THE MOMENT</span></div>
+ <div class="reel-frame" style="--t:-1deg"><img src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=650&q=83" loading="lazy" alt="" aria-hidden="true"><span>THE CREATOR</span></div>
+ <div class="reel-frame" style="--t:2deg"><img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=650&q=83" loading="lazy" alt="" aria-hidden="true"><span>THE STORY</span></div>
+</div>
+</div>
 <section class="work" id="work" aria-labelledby="work-title">
 <div class="work-top"><div><span class="section-label">03 / THE EDIT</span><h2 id="work-title">Selected thinking<span style="color:#728e53">.</span></h2></div><p>Ideas, analyses and independent cultural explorations—our point of view, in practice.</p></div>
 <div class="work-rows">
@@ -241,6 +350,26 @@ form.addEventListener('submit',async e=>{
  btn.textContent='Sent ✓';form.reset();
  }catch(err){status.textContent="Couldn't send right now. Email hello@vyrdict.com or try again.";btn.disabled=false;btn.textContent='Send your brief ↗'}
 });
+
+/* Visibly moving hero sequence; honor reduced-motion and background tabs. */
+const heroSlides=[...document.querySelectorAll('.hero-photo')];
+const count=document.querySelector('.photo-count');
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+let photoIndex=0;
+let photoTimer=null;
+function showPhoto(next){
+ photoIndex=(next+heroSlides.length)%heroSlides.length;
+ heroSlides.forEach((slide,i)=>slide.classList.toggle('is-current',i===photoIndex));
+ if(count)count.textContent=String(photoIndex+1).padStart(2,'0')+' — '+String(heroSlides.length).padStart(2,'0');
+}
+function stopPhotoTimer(){if(photoTimer){clearInterval(photoTimer);photoTimer=null;}}
+function photoTimerSync(){
+ stopPhotoTimer();
+ if(!reduce.matches&&!document.hidden&&heroSlides.length>1)photoTimer=setInterval(()=>showPhoto(photoIndex+1),3600);
+}
+document.addEventListener('visibilitychange',photoTimerSync);
+reduce.addEventListener('change',photoTimerSync);
+photoTimerSync();
 })();
 </script>
 </body></html>
