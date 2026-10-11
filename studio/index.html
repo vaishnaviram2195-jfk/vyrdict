@@ -108,12 +108,12 @@ footer{display:flex;justify-content:space-between;gap:20px;padding:26px 4.5vw;bo
 .work-card--rhode .work-card-media img{object-fit:contain;padding:20px}
 .work-card-copy{display:flex;flex-direction:column;flex:1;padding:24px}
 .work-card .eyebrow{font-size:8px;letter-spacing:.17em;color:var(--burg)}
-.work-card h3{font:400 32px/1.05 var(--serif);letter-spacing:-.02em;margin:15px 0 8px}.work-brand{margin:0 0 15px;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#756d71}
+.work-card h3{font:400 clamp(38px,3.7vw,54px)/.98 var(--serif);letter-spacing:-.035em;margin:15px 0 8px}.work-brand{margin:0 0 15px;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#756d71}
 .work-hook{font-size:15px;line-height:1.5;margin:0 0 22px;max-width:290px}
 .work-note{font-size:9px;line-height:1.5;color:#756d71;margin:auto 0 15px}
 .work-link{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--burg)}
-@media(max-width:880px){.work{padding:68px 0}.work-head{display:block}.work-head>p{margin-top:20px;max-width:540px}.work-grid{gap:16px}.work-card-copy{padding:20px}.work-card h3{font-size:28px}.work-hook{font-size:13px}}
-@media(max-width:700px){.work-grid{grid-template-columns:1fr}.work-card-media{aspect-ratio:16/9}.work-card-copy{padding:24px}.work-hook{max-width:none}.work-card h3{font-size:32px}}
+@media(max-width:880px){.work{padding:68px 0}.work-head{display:block}.work-head>p{margin-top:20px;max-width:540px}.work-grid{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(72vw,1fr);grid-template-columns:none;gap:16px;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:inline mandatory;scroll-padding-inline:4.5vw;padding:2px 4.5vw 18px;margin-inline:-4.5vw;scrollbar-width:none}.work-grid::-webkit-scrollbar{display:none}.work-card{scroll-snap-align:start}.work-card-copy{padding:22px}.work-card h3{font-size:42px}.work-hook{font-size:13px}}
+@media(max-width:700px){.work-grid{grid-auto-columns:84vw;gap:14px}.work-card-media{aspect-ratio:16/9}.work-card-copy{padding:24px}.work-hook{max-width:none}.work-card h3{font-size:44px}}
 @media(prefers-reduced-motion:reduce){.work-card,.work-card-media img{transition:none}.work-card:hover,.work-card:hover img{transform:none}}
 
 </style>
@@ -157,7 +157,7 @@ footer{display:flex;justify-content:space-between;gap:20px;padding:26px 4.5vw;bo
    </a>
    <a class="work-card work-card--rothys" href="/studio/work/rothys/" aria-label="See the Rothy’s strategy">
     <div class="work-card-media"><img src="https://www.modernretail.co/wp-content/uploads/sites/5/2025/06/Contentful_sponsor1.jpg?crop=1&amp;h=600&amp;w=1140" alt="Rothy’s community creator activation" loading="lazy" decoding="async"></div>
-    <div class="work-card-copy"><div class="eyebrow">02 / OUR WORK</div><h3>Creator Strategy</h3><p class="work-brand">Rothy’s</p><p class="work-hook">Who would actually show up for this person?</p><p class="work-note">Independent sample strategy</p><span class="work-link">See the strategy →</span></div>
+    <div class="work-card-copy"><div class="eyebrow">02 / OUR WORK</div><h3>Creative Strategy</h3><p class="work-brand">Rothy’s</p><p class="work-hook">Who would actually show up for this person?</p><p class="work-note">Independent sample strategy</p><span class="work-link">See the strategy →</span></div>
    </a>
    <a class="work-card work-card--rhode" href="/studio/work/rhode/" aria-label="See the Rhode strategy">
     <div class="work-card-media"><img src="https://www.rhodeskin.com/cdn/shop/files/hp-spotwear-tertiary-1.jpg?v=1791239877&amp;width=2400" alt="Rhode Spotwear skincare patches" loading="lazy" decoding="async"></div>
