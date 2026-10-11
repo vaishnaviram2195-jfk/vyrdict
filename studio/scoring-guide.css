@@ -1,0 +1,37 @@
+/* Muted gray, slate and sage palette, loaded only by the full scoring guide. */
+.scoring-guide-page{background:#e9edeb;color:#394748}
+.scoring-guide-page .nav{background:rgba(238,242,241,.97);border-bottom-color:#bcc9c6}
+.scoring-guide-page .brand{color:#4b3944}
+.scoring-guide-page .brand-dot{background:#8b4764}
+.scoring-guide-page .navlinks .active{background:#772f48;color:#fffdfa}
+.scoring-guide-page .sc-guide{background:#e9edeb;color:#394748}
+.scoring-guide-page .sc-guide .sc-hero{position:relative;isolation:isolate;overflow:hidden;background:#dfe4e4}
+.scoring-guide-page .sc-guide .sc-hero:before{content:"";position:absolute;inset:0 0 0 auto;width:35%;background:#c8d4d9;z-index:-1}
+.scoring-guide-page .sc-guide .sc-hero:after{content:"";position:absolute;width:23%;height:150%;right:-5%;top:-25%;background:#c9d4c9;transform:rotate(18deg);border-left:1px solid rgba(68,89,81,.13);z-index:-1}
+.scoring-guide-page .sc-guide .sc-section{background:#f0f3f1;color:#394748;border-top-color:#becbc6}
+.scoring-guide-page .sc-guide #factors{background:#e3e8e3}
+.scoring-guide-page .sc-guide #decisions{background:#d8e1e5}
+.scoring-guide-page .sc-guide #example{background:#dce5da}
+.scoring-guide-page .sc-guide .sc-section:last-child{background:#e9edeb}
+.scoring-guide-page .sc-guide h1,.scoring-guide-page .sc-guide h2,.scoring-guide-page .sc-guide h3{color:#354449}
+.scoring-guide-page .sc-guide h1 .sc-guide-title-accent{color:#425864;font-style:italic}
+.scoring-guide-page .sc-guide .eyebrow{color:#53685e}
+.scoring-guide-page .sc-guide .sc-intro,.scoring-guide-page .sc-guide .sc-how p,.scoring-guide-page .sc-guide .sc-copy,.scoring-guide-page .sc-guide .sc-detail-body p,.scoring-guide-page .sc-guide .sc-details summary span,.scoring-guide-page .sc-guide .sc-ranges dd{color:#4b595a}
+.scoring-guide-page .sc-guide .sc-how li,.scoring-guide-page .sc-guide .sc-details details,.scoring-guide-page .sc-guide .sc-rubric-key div,.scoring-guide-page .sc-guide .sc-example-list li{border-color:#b4c2bc}
+.scoring-guide-page .sc-guide .sc-how span,.scoring-guide-page .sc-guide .sc-ranges dt,.scoring-guide-page .sc-guide .sc-rubric-key strong,.scoring-guide-page .sc-guide .sc-maths{color:#4c6458}
+.scoring-guide-page .sc-guide .sc-details details[open]{background:rgba(247,250,247,.42)}
+.scoring-guide-page .sc-guide .sc-note{background:#d0ddce;border-left-color:#829b88;color:#405648}
+.scoring-guide-page .sc-guide .sc-band{border:0;border-top:2px solid #91a59e;background:#ccd9cb}
+.scoring-guide-page .sc-guide .sc-band:nth-child(2){background:#c8d5dc;border-top-color:#819aa6}
+.scoring-guide-page .sc-guide .sc-band:nth-child(3){background:#d7dbe0;border-top-color:#939dab}
+.scoring-guide-page .sc-guide .sc-band:nth-child(4){background:#e0e3df;border-top-color:#a2ada3}
+.scoring-guide-page .sc-guide .sc-band>span,.scoring-guide-page .sc-guide .sc-band p{color:#4b595a}
+.scoring-guide-page .sc-guide .sc-band strong{color:#354449}
+.scoring-guide-page .sc-guide .sc-example-total{border-color:#a7bcb0;background:#cbd9cd}
+.scoring-guide-page .sc-guide .sc-number,.scoring-guide-page .sc-guide .sc-example-total .sc-status{color:#385347}
+.scoring-guide-page .sc-guide .sc-number small,.scoring-guide-page .sc-guide .sc-example-total p,.scoring-guide-page .sc-guide .sc-example-list p,.scoring-guide-page .sc-guide .sc-evidence-list,.scoring-guide-page .sc-guide .sc-bottom p{color:#4b595a}
+.scoring-guide-page .sc-guide .sc-link{border-color:#99b0a5;background:#d2dfd5;color:#334d40}
+.scoring-guide-page .sc-guide .sc-jumps a{color:#3e5864;text-decoration-color:#869fa9}
+.scoring-guide-page footer{background:#536a70;border-top-color:#536a70;color:#eef3f0}
+.scoring-guide-page a:focus-visible,.scoring-guide-page .sc-guide a:focus-visible,.scoring-guide-page .sc-guide summary:focus-visible{outline-color:#526c60}
+@media(max-width:800px){.scoring-guide-page .sc-guide .sc-hero:before{width:27%;opacity:.48}.scoring-guide-page .sc-guide .sc-hero:after{width:20%;right:-10%;opacity:.58}}
