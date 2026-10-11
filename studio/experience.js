@@ -15,6 +15,27 @@
     {id:"packages",label:"Packages",accent:"#557f8d",a:"110 157 168",b:"189 134 164",c:"126 168 140",from:[234,239,231],to:[210,228,234]},
     {id:"contact",label:"Get in touch",accent:"#a96888",a:"195 148 172",b:"145 169 191",c:"160 182 157"}
   ].map(scene=>({...scene,el:document.getElementById(scene.id)})).filter(scene=>scene.el);
+  // Use authentic campaign imagery already shown in the Studio work section.
+  // Decorative only: never changes the existing service cards, copy, or CTAs.
+  const packages=document.getElementById("packages");
+  const images=[...document.querySelectorAll("#work .work-card-media img")].slice(0,3);
+  if(packages&&images.length===3&&!packages.querySelector(".package-motion")){
+    const layer=document.createElement("div");
+    layer.className="package-motion";
+    layer.setAttribute("aria-hidden","true");
+    images.forEach(source=>{
+      const card=document.createElement("figure");
+      card.className="package-motion-card";
+      const image=document.createElement("img");
+      image.src=source.getAttribute("src")||"";
+      image.alt="";
+      image.loading="lazy";
+      image.decoding="async";
+      card.append(image);
+      layer.append(card);
+    });
+    packages.prepend(layer);
+  }
   const rail=document.createElement("nav");
   rail.className="studio-rail";
   rail.setAttribute("aria-label","Studio sections");
