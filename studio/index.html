@@ -47,51 +47,48 @@ footer{display:flex;justify-content:space-between;gap:20px;padding:26px 4.5vw;bo
 
 
 
-/* VYRDICT Studio motion polish */
-.signal-visual{position:absolute;right:2vw;top:50%;width:min(42vw,620px);aspect-ratio:1;transform:translateY(-48%);pointer-events:none;opacity:.92;z-index:-1}
-.signal-orbit,.signal-core,.signal-scan,.signal-thread{position:absolute;inset:0;border-radius:50%}
-.signal-orbit{border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 0 80px rgba(161,83,112,.08);animation:orbitPulse 7s ease-in-out infinite alternate}
-.signal-orbit.o2{inset:12%;border-color:rgba(229,191,205,.2);animation-duration:10s;animation-direction:alternate-reverse}
-.signal-orbit.o3{inset:28%;border-color:rgba(255,255,255,.25);animation-duration:6s}
-.signal-core{inset:35%;background:radial-gradient(circle at 36% 30%,#f0ccd9 0 8%,#a15370 18%,#622139 48%,#171217 76%);box-shadow:0 0 90px rgba(161,83,112,.6),0 0 180px rgba(119,47,72,.26);animation:coreFloat 6s ease-in-out infinite alternate}
-.signal-scan{inset:8%;background:conic-gradient(from 10deg,transparent 0 78%,rgba(240,204,217,.16) 83%,transparent 89%);animation:scanSpin 9s linear infinite}
-.signal-thread{inset:20%;border:1px solid rgba(255,255,255,.12);transform:scaleY(.48) rotate(-18deg);animation:threadShift 8s ease-in-out infinite alternate}
-.signal-dot{position:absolute;width:7px;height:7px;border-radius:50%;background:#f4d6e0;box-shadow:0 0 16px #f4d6e0}
-.signal-dot.d1{left:16%;top:44%;animation:dotFloat 5s ease-in-out infinite alternate}.signal-dot.d2{right:18%;top:25%;animation:dotFloat 7s ease-in-out infinite alternate-reverse}.signal-dot.d3{right:26%;bottom:18%;animation:dotFloat 6s ease-in-out infinite alternate}
-@keyframes orbitPulse{from{transform:scale(.96);opacity:.45}to{transform:scale(1.03);opacity:1}}
-@keyframes coreFloat{from{transform:translate(-8px,8px) scale(.96)}to{transform:translate(10px,-12px) scale(1.04)}}
-@keyframes scanSpin{to{transform:rotate(360deg)}}@keyframes threadShift{to{transform:scaleY(.58) rotate(14deg)}}@keyframes dotFloat{to{transform:translate(12px,-16px)}}
 
-.statement-collage{display:grid;grid-template-columns:1fr .78fr;gap:6vw;align-items:center}
-.signal-field{position:relative;min-height:430px;overflow:hidden;border-radius:38px;background:
-radial-gradient(circle at 30% 30%,rgba(161,83,112,.45),transparent 28%),
-radial-gradient(circle at 72% 62%,rgba(119,47,72,.34),transparent 31%),
-linear-gradient(145deg,#1b1719,#494246 62%,#24171c);box-shadow:0 22px 58px rgba(46,34,38,.18)}
-.signal-field:before{content:"";position:absolute;inset:-40%;background:conic-gradient(from 180deg,transparent 0 18%,rgba(255,255,255,.12) 25%,transparent 36% 62%,rgba(214,170,186,.15) 70%,transparent 78%);animation:fieldSpin 17s linear infinite}
-.signal-field:after{content:"SIGNAL";position:absolute;left:6%;bottom:4%;font:400 clamp(70px,9vw,140px)/.8 var(--serif);letter-spacing:-.06em;color:rgba(255,255,255,.08)}
-.field-line{position:absolute;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);filter:drop-shadow(0 0 9px rgba(255,255,255,.25));animation:lineSweep 5s ease-in-out infinite alternate}
-.field-line.l1{top:31%;transform:rotate(-8deg)}.field-line.l2{top:53%;transform:rotate(5deg);animation-delay:-2s}.field-line.l3{top:70%;transform:rotate(-3deg);animation-delay:-3.5s}
-.field-ring{position:absolute;border:1px solid rgba(255,255,255,.16);border-radius:50%;animation:ringBreathe 6s ease-in-out infinite alternate}
-.field-ring.r1{width:58%;aspect-ratio:1;right:-8%;top:-8%}.field-ring.r2{width:38%;aspect-ratio:1;left:8%;bottom:8%;animation-delay:-2s}.field-ring.r3{width:22%;aspect-ratio:1;right:23%;bottom:21%;animation-delay:-4s}
-.field-caption{position:absolute;right:5%;top:5%;font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:#d5c8cd}
-@keyframes fieldSpin{to{transform:rotate(360deg)}}@keyframes lineSweep{to{transform:translateY(20px) rotate(7deg);opacity:.45}}@keyframes ringBreathe{to{transform:scale(1.08);opacity:.42}}
+/* VYRDICT Studio retro editorial motion */
+.hero-retro{position:absolute;right:0;top:70px;bottom:42px;width:43vw;overflow:hidden;z-index:-1}
+.hero-retro img{width:100%;height:108%;object-fit:cover;object-position:center;filter:grayscale(100%) contrast(1.1) brightness(.72);animation:retroPan 18s ease-in-out infinite alternate}
+.hero-retro:before{content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(90deg,#0d0b0c 0%,rgba(13,11,12,.74) 22%,rgba(13,11,12,.14) 65%,rgba(13,11,12,.3) 100%)}
+.hero-retro:after{content:"";position:absolute;inset:0;z-index:3;opacity:.18;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E")}
+.retro-line{position:absolute;z-index:4;left:0;right:0;height:1px;top:45%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);box-shadow:0 0 24px rgba(255,255,255,.18);animation:retroSweep 6.5s ease-in-out infinite alternate}
+.retro-caption{position:absolute;z-index:4;right:3vw;bottom:5vh;font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:#fff;opacity:.78}
+@keyframes retroPan{from{transform:scale(1.02) translateY(-1.5%)}to{transform:scale(1.08) translateY(2.5%)}}
+@keyframes retroSweep{from{transform:translateY(-24px);opacity:.25}to{transform:translateY(34px);opacity:.72}}
 
-.rhode-visual{background-image:url("https://www.rhodeskin.com/cdn/shop/files/hp-spotwear-tertiary-1.jpg?v=1791239877")!important;background-size:cover!important;background-position:center!important;filter:none!important}
+.statement-collage{display:grid;grid-template-columns:1fr .82fr;gap:6vw;align-items:center}
+.retro-window{position:relative;min-height:460px;overflow:hidden;background:#111}
+.retro-window img{width:100%;height:110%;object-fit:cover;object-position:center;filter:grayscale(100%) contrast(1.12) brightness(.88);animation:retroPan2 20s ease-in-out infinite alternate}
+.retro-window:before{content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(119,47,72,.08),rgba(0,0,0,.2));mix-blend-mode:multiply}
+.retro-window:after{content:"CITY / CULTURE / COMMERCE";position:absolute;z-index:3;left:18px;bottom:16px;font:700 9px/1 var(--sans);letter-spacing:.22em;color:#fff}
+.retro-frame{position:absolute;z-index:4;inset:18px;border:1px solid rgba(255,255,255,.55);pointer-events:none}
+.retro-cross-h,.retro-cross-v{position:absolute;z-index:4;background:rgba(255,255,255,.48);pointer-events:none}
+.retro-cross-h{left:0;right:0;top:50%;height:1px;animation:crossH 7s ease-in-out infinite alternate}
+.retro-cross-v{top:0;bottom:0;left:62%;width:1px;animation:crossV 9s ease-in-out infinite alternate}
+@keyframes retroPan2{from{transform:scale(1.01) translateX(-1.5%)}to{transform:scale(1.07) translateX(1.5%)}}
+@keyframes crossH{to{transform:translateY(-30px)}}@keyframes crossV{to{transform:translateX(24px)}}
 
 .sprint{isolation:isolate}
-.sprint-fx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
-.sprint-fx .radar{position:absolute;width:min(64vw,920px);aspect-ratio:1;border-radius:50%;right:-12vw;top:50%;transform:translateY(-50%);background:
-repeating-radial-gradient(circle,rgba(255,255,255,.10) 0 1px,transparent 1px 68px);
-opacity:.42}
-.sprint-fx .radar:before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 73%,rgba(255,255,255,.14) 82%,transparent 89%);animation:scanSpin 12s linear infinite}
-.sprint-fx .beam{position:absolute;left:-8%;right:-8%;top:54%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.62),transparent);box-shadow:0 0 28px rgba(255,255,255,.22);animation:beamMove 5.5s ease-in-out infinite alternate}
-.sprint-fx .ghost{position:absolute;left:3%;bottom:-4%;font:400 clamp(90px,13vw,190px)/.75 var(--serif);letter-spacing:-.065em;color:rgba(255,255,255,.055);white-space:nowrap;animation:ghostDrift 9s ease-in-out infinite alternate}
-.sprint-fx .pulse{position:absolute;width:36vw;height:36vw;border-radius:50%;left:13%;top:-20%;background:#bd6686;filter:blur(120px);opacity:.18;animation:pulseGlow 8s ease-in-out infinite alternate}
-@keyframes beamMove{to{transform:translateY(85px) rotate(-2deg);opacity:.34}}@keyframes ghostDrift{to{transform:translateX(4vw)}}@keyframes pulseGlow{to{transform:translate(8vw,5vw) scale(1.2);opacity:.28}}
+.sprint-bgphoto{position:absolute;inset:0;z-index:0;overflow:hidden}
+.sprint-bgphoto img{width:100%;height:110%;object-fit:cover;object-position:center;filter:grayscale(100%) contrast(1.08) brightness(.55);animation:sprintPan 22s ease-in-out infinite alternate}
+.sprint-bgphoto:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(51,18,31,.96),rgba(113,48,71,.78) 48%,rgba(20,17,19,.42))}
 .sprint>.wrap{position:relative;z-index:2}
+.sprint-ghost{position:absolute;z-index:1;left:-2%;bottom:2%;font:400 clamp(76px,11vw,165px)/.8 var(--serif);letter-spacing:-.06em;color:rgba(255,255,255,.07);white-space:nowrap;animation:ghostSlide 10s ease-in-out infinite alternate}
+.sprint-scan{position:absolute;z-index:2;left:0;right:0;top:52%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.72),transparent);box-shadow:0 0 22px rgba(255,255,255,.16);animation:retroSweep 7s ease-in-out infinite alternate}
+@keyframes sprintPan{from{transform:scale(1.02) translateY(-2%)}to{transform:scale(1.08) translateY(2%)}}
+@keyframes ghostSlide{to{transform:translateX(4vw)}}
 
-@media(max-width:980px){.signal-visual{width:55vw;right:-14vw;opacity:.58}.statement-collage{grid-template-columns:1fr}.signal-field{min-height:360px;margin-top:28px}}
-@media(max-width:700px){.signal-visual{width:78vw;right:-35vw;opacity:.42}.signal-field{min-height:290px}.sprint-fx .radar{width:110vw;right:-55vw}}
+@media(max-width:980px){
+  .hero-retro{width:58vw;opacity:.58}
+  .statement-collage{grid-template-columns:1fr}
+  .retro-window{min-height:360px;margin-top:26px}
+}
+@media(max-width:700px){
+  .hero-retro{width:100vw;opacity:.35}
+  .retro-window{min-height:300px}
+}
 
 </style>
 </head>
@@ -103,10 +100,10 @@ opacity:.42}
 
 <section class="hero" id="studio">
  <div class="grain"></div>
- <div class="signal-visual" aria-hidden="true">
-   <div class="signal-orbit"></div><div class="signal-orbit o2"></div><div class="signal-orbit o3"></div>
-   <div class="signal-scan"></div><div class="signal-thread"></div><div class="signal-core"></div>
-   <i class="signal-dot d1"></i><i class="signal-dot d2"></i><i class="signal-dot d3"></i>
+ <div class="hero-retro" aria-hidden="true">
+   <img src="https://images.pexels.com/photos/33402319/pexels-photo-33402319/free-photo-of-chic-woman-crossing-urban-street-in-retro-black-and-white.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="">
+   <div class="retro-line"></div>
+   <div class="retro-caption">CITY / FASHION / INTERNET CULTURE</div>
  </div>
  <div class="wrap"><div class="hero-copy reveal"><div class="eyebrow">VYRDICT STUDIO · CULTURE / CREATIVE / CREATORS</div><h1>THE INTERNET IS LOUD.<br><em>WE FIND WHAT MATTERS.</em></h1><p>VYRDICT Studio helps consumer brands spot what deserves attention, shape ideas people care about, and prove what actually worked.</p><a class="cta" href="#contact">Start a conversation</a></div></div>
  <div class="ticker"><div><span>NOT EVERYTHING VIRAL IS VALUABLE</span><span>SPOT → SHAPE → PROVE</span><span>RIGHT CREATOR. RIGHT AUDIENCE. RIGHT REASON.</span><span>NOT EVERYTHING VIRAL IS VALUABLE</span><span>SPOT → SHAPE → PROVE</span><span>RIGHT CREATOR. RIGHT AUDIENCE. RIGHT REASON.</span></div></div>
@@ -114,10 +111,9 @@ opacity:.42}
 
 <section class="statement"><div class="wrap statement-collage">
    <div class="reveal"><div class="eyebrow" style="color:var(--burg)">WHY VYRDICT</div><h2>NOT EVERY TREND DESERVES <em>YOUR BRAND.</em></h2><p>We track what people are watching, sharing, buying and talking about — then help brands decide what is useful, what is noise, and what has room to become something bigger.</p></div>
-   <div class="signal-field reveal" aria-label="Animated VYRDICT signal field">
-     <div class="field-caption">CULTURE SIGNAL / LIVE</div>
-     <div class="field-line l1"></div><div class="field-line l2"></div><div class="field-line l3"></div>
-     <div class="field-ring r1"></div><div class="field-ring r2"></div><div class="field-ring r3"></div>
+   <div class="retro-window reveal" aria-label="Black and white editorial culture image">
+     <img src="https://images.unsplash.com/photo-1774359535371-c9ea5ad2e8ec?auto=format&fit=crop&fm=jpg&q=82&w=1800" alt="Stylish woman crossing a New York street">
+     <div class="retro-frame"></div><div class="retro-cross-h"></div><div class="retro-cross-v"></div>
    </div>
  </div></section>
 
@@ -157,7 +153,10 @@ opacity:.42}
 </div></section>
 
 <section class="sprint">
- <div class="sprint-fx" aria-hidden="true"><div class="pulse"></div><div class="radar"></div><div class="beam"></div><div class="ghost">GO / ADAPT / WATCH / PASS</div></div>
+ <div class="sprint-bgphoto" aria-hidden="true">
+   <img src="https://images.unsplash.com/photo-1621265335525-b9496f26a903?fm=jpg&q=82&w=1800" alt="">
+ </div>
+ <div class="sprint-ghost">GO / ADAPT / WATCH / PASS</div><div class="sprint-scan"></div>
  <div class="wrap reveal"><div class="eyebrow">72-HOUR CULTURE SPRINT</div><h2>SOMETHING JUST BLEW UP.<br>SHOULD YOUR BRAND CARE?</h2><div class="modules">
  <div class="module"><b>01</b><span>What happened</span></div><div class="module"><b>02</b><span>Why it is spreading</span></div><div class="module"><b>03</b><span>Does it fit the brand?</span></div>
  <div class="module"><b>04</b><span>Opportunity score</span></div><div class="module"><b>05</b><span>Three ways to respond</span></div><div class="module"><b>06</b><span>GO / ADAPT / WATCH / PASS</span></div>
