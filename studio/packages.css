@@ -45,20 +45,21 @@
   flex-direction:column;
   min-width:0;
   padding:26px 27px 23px;
-  background:#373a3d;
-  border:1px solid rgba(255,255,255,.09);
-  border-top:2px solid #aeb4b8
+  background:#d9dde0;
+  color:#222629;
+  border:1px solid rgba(255,255,255,.16);
+  border-top:2px solid #9ca4aa
 }
-#packages .package-card--culture,
-#packages .package-card--launch,
-#packages .package-card--creators{--package-accent:#c9ced1}
-#packages .package-kicker{color:#bfc4c7;font-size:8px;line-height:1.45;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
-#packages h3{font:400 clamp(29px,2.5vw,38px)/1.03 var(--serif);letter-spacing:-.02em;color:#fff;margin:19px 0 13px}
-#packages .package-for{font-size:14px;line-height:1.58;color:#d0d2d4;margin:0 0 20px;min-height:4.45em}
-#packages h4{font:700 9px/1.4 var(--sans);color:#aeb4b8;text-transform:uppercase;letter-spacing:.14em;margin:0 0 8px}
+#packages .package-card--culture{background:#d9dde0;--package-accent:#596168}
+#packages .package-card--launch{background:#cdd2d6;--package-accent:#515960}
+#packages .package-card--creators{background:#d7d0d4;--package-accent:#675a61}
+#packages .package-kicker{color:var(--package-accent);font-size:8px;line-height:1.45;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+#packages h3{font:400 clamp(29px,2.5vw,38px)/1.03 var(--serif);letter-spacing:-.02em;color:#202427;margin:19px 0 13px}
+#packages .package-for{font-size:14px;line-height:1.58;color:#4d555a;margin:0 0 20px;min-height:4.45em}
+#packages h4{font:700 9px/1.4 var(--sans);color:var(--package-accent);text-transform:uppercase;letter-spacing:.14em;margin:0 0 8px}
 #packages ul{list-style:none;padding:0;margin:0 0 8px;font-size:13px;line-height:1.52}
-#packages li{padding:9px 0;border-top:1px solid rgba(255,255,255,.1);color:#f0eeee}
-#packages .package-link{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:42px;margin-top:auto;padding:16px 0 3px;color:#d8dcde;font-size:12px;font-weight:700;letter-spacing:.02em}
+#packages li{padding:9px 0;border-top:1px solid rgba(32,36,39,.14);color:#2e3337}
+#packages .package-link{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:42px;margin-top:auto;padding:16px 0 3px;color:#31373b;font-size:12px;font-weight:700;letter-spacing:.02em}
 #packages .package-link span{font-size:20px;font-weight:400}
 #packages .package-link:hover{text-decoration:underline;text-underline-offset:5px}
 #packages .package-pricing{display:flex;justify-content:space-between;align-items:baseline;gap:28px;margin-top:24px;padding-top:19px;border-top:1px solid rgba(255,255,255,.14)}
