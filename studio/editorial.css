@@ -24,18 +24,23 @@
 .sc-home-decisions dd{margin:0}
 #scoring a:focus-visible,#scoring summary:focus-visible{outline:2px solid #772f48;outline-offset:5px}
 
-#contact{background:linear-gradient(115deg,#f8eef0,#f3e8ed 56%,#eddce4);color:#543442}
-#contact:before{background:linear-gradient(90deg,rgba(249,240,243,.60),rgba(244,233,237,.70) 66%,rgba(244,233,237,1)),url("https://images.pexels.com/photos/38700711/pexels-photo-38700711/free-photo-of-flat-lay-of-coffee-camera-and-notepad-on-desk.jpeg?auto=compress&cs=tinysrgb&w=1800") center/cover no-repeat;filter:saturate(.68) contrast(.96) brightness(1.05)}
-#contact:after{background:#d3a6bb;opacity:.15}
-#contact h2{color:#6b344b}
-#contact .eyebrow{color:#783e57}
-#contact .form{background:rgba(233,206,220,.96);border-color:rgba(119,47,72,.13);box-shadow:0 20px 60px rgba(109,59,83,.08)}
-#contact .field label,#contact .fine{color:#624653}
-#contact .field input,#contact .field textarea,#contact .field select{color:#432b37;border-bottom-color:#ad8598}
-#contact .field input:focus,#contact .field textarea:focus,#contact .field select:focus{border-bottom-color:#772f48}
-#contact .field select option{color:#432b37;background:#f2e0e9}
-#contact .button{background:#772f48;color:#fffdfa}
-#contact .button:focus-visible{outline:2px solid #772f48;outline-offset:4px}
+#contact{background:linear-gradient(120deg,#d6d7d5,#c9cbcb 58%,#bfc2c3);color:#202326}
+#contact:before{background:linear-gradient(90deg,rgba(214,215,213,.46),rgba(201,203,203,.72) 68%,rgba(191,194,195,.96)),url("https://images.pexels.com/photos/38700711/pexels-photo-38700711/free-photo-of-flat-lay-of-coffee-camera-and-notepad-on-desk.jpeg?auto=compress&cs=tinysrgb&w=1800") center/cover no-repeat;filter:grayscale(100%) contrast(.94) brightness(.96)}
+#contact:after{background:#6f7579;opacity:.10}
+#contact h2{color:#202326}
+#contact .eyebrow{color:#52595e}
+#contact .form{background:rgba(35,38,41,.96);border-color:rgba(255,255,255,.12);box-shadow:0 24px 70px rgba(24,27,29,.18)}
+#contact .form-kicker{margin:0 0 18px;color:#bfc5c9;font:700 9px/1.4 var(--sans);letter-spacing:.16em;text-transform:uppercase}
+#contact .field{margin:12px 0}
+#contact .field label{color:#d9dddf;font-size:9px}
+#contact .fine{color:#aeb5b9}
+#contact .field input,#contact .field textarea,#contact .field select{color:#fff;background:#2c3033;border:1px solid #4c5358;border-radius:12px;padding:13px 14px}
+#contact .field input::placeholder,#contact .field textarea::placeholder{color:#899196}
+#contact .field input:focus,#contact .field textarea:focus,#contact .field select:focus{border-color:#b8c0c4;box-shadow:0 0 0 3px rgba(184,192,196,.10)}
+#contact .field select option{color:#111;background:#eceeed}
+#contact .button{background:#eef0ef;color:#202326;border:1px solid rgba(255,255,255,.18)}
+#contact .button:hover{background:#fff}
+#contact .button:focus-visible{outline:2px solid #eef0ef;outline-offset:4px}
 
 .scoring-guide-page{background:#fdf8f6;color:#543442}
 .scoring-guide-page .nav{background:rgba(249,240,244,.97);border-bottom-color:#d7bdca}
@@ -62,5 +67,5 @@
 .scoring-guide-page footer{background:#eddae2;border-top-color:#d0afbf;color:#6b344b}
 .scoring-guide-page a:focus-visible,.scoring-guide-page .sc-guide a:focus-visible,.scoring-guide-page .sc-guide summary:focus-visible{outline-color:#772f48}
 
-@media(max-width:880px){#contact:before{background:linear-gradient(180deg,rgba(249,240,243,.5),rgba(244,233,237,.90)),url("https://images.pexels.com/photos/38700711/pexels-photo-38700711/free-photo-of-flat-lay-of-coffee-camera-and-notepad-on-desk.jpeg?auto=compress&cs=tinysrgb&w=1400") center/cover no-repeat}.sc-home-layout,.sc-home-bottom{gap:5vw}.sc-home-question{grid-template-columns:20px 1fr 72px;gap:12px}.sc-home-question h3{font-size:24px}}
+@media(max-width:880px){#contact:before{background:linear-gradient(180deg,rgba(214,215,213,.36),rgba(191,194,195,.92)),url("https://images.pexels.com/photos/38700711/pexels-photo-38700711/free-photo-of-flat-lay-of-coffee-camera-and-notepad-on-desk.jpeg?auto=compress&cs=tinysrgb&w=1400") center/cover no-repeat}.sc-home-layout,.sc-home-bottom{gap:5vw}.sc-home-question{grid-template-columns:20px 1fr 72px;gap:12px}.sc-home-question h3{font-size:24px}}
 @media(max-width:640px){#scoring{padding:60px 0}.sc-home-layout,.sc-home-bottom{grid-template-columns:1fr;gap:30px}.sc-home-intro h2{font-size:44px}.sc-home-intro>p,.sc-home-bottom>div>p{max-width:100%}.sc-home-bottom{margin-top:26px;padding-top:18px;gap:24px}.sc-home-question{grid-template-columns:20px 1fr 68px;gap:10px;padding:18px 0}.sc-home-question h3{font-size:24px}.sc-home-question p{font-size:14px}.sc-home-weight{font-size:10px}.sc-home-decisions dl>div{grid-template-columns:100px 1fr}}
