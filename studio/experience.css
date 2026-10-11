@@ -87,6 +87,19 @@ body.studio-motion #packages .package-card::before{
   display:none!important;
   animation:none!important;
 }
+/* Keep the buttercream section background, but let the heading stand on its own. */
 body.studio-motion #contact .contactgrid>.reveal:not(form){
-  background:linear-gradient(135deg,#f5f1e7 0%,#ece6d6 54%,#dfd9c3 100%)!important;
+  align-self:center!important;
+  display:block!important;
+  min-height:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+  isolation:auto!important;
+}
+body.studio-motion #contact .contactgrid>.reveal:not(form) h2{
+  margin:0;
 }
