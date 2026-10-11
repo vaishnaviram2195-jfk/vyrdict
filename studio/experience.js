@@ -40,13 +40,7 @@
   rail.className="studio-rail";
   rail.setAttribute("aria-label","Studio sections");
   scenes.forEach((scene,index)=>{
-    const layer=document.createElement("div");
-    layer.className="studio-atmosphere";
-    layer.setAttribute("aria-hidden","true");
-    const ribbon=document.createElement("i"),orbit=document.createElement("i");
-    ribbon.className="studio-ribbon";orbit.className="studio-orbit";
-    layer.append(ribbon,orbit);scene.el.prepend(layer);
-    scene.el.style.setProperty("--scene-a",scene.a);
+    // The abstract ring/orbit atmosphere is intentionally retired; retain the\n    // section navigation, palette, scene scroll, and photo-card motion.\n    scene.el.style.setProperty("--scene-a",scene.a);
     scene.el.style.setProperty("--scene-b",scene.b);
     scene.el.style.setProperty("--scene-c",scene.c);
     scene.el.style.setProperty("--scene-angle",(-27+index%3*11)+"deg");
