@@ -80,7 +80,7 @@
 }
 #contact:before{
   background:linear-gradient(90deg,rgba(234,229,218,.91),rgba(222,220,212,.82) 72%,rgba(214,215,211,.92)),
-    url("https://images.pexels.com/photos/38700711/pexels-photo-3870-11/free-photo-of-flat-lay-of-coffee-camera-and-notepad-on-desk.jpeg?auto=compress&cs=tinysrgb&w=1800") center/cover no-repeat;
+    url("https://images.pexels.com/photos/38700711/pexels-photo-38700711/free-photo-of-flat-lay-of-coffee-camera-and-notepad-on-desk.jpeg?auto=compress&cs=tinysrgb&w=1800") center/cover no-repeat;
   filter:none;
 }
 #contact:after{background:#ded0a8;opacity:.12}
