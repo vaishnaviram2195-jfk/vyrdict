@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FCFAF6">
+<meta name="robots" content="noindex,nofollow">
+<title>VYRDICT Studio — New Direction Preview</title>
+<meta name="description" content="A culture-first creative studio: trend intelligence, launch strategy and creator campaigns.">
+<link rel="icon" href="/vyrdict-logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fcfaf6;--ink:#22231e;--sub:#5f625b;--line:#dedfd7;--citron:#e2f3a4;--peach:#f9e3d1;--lilac:#e9e3fc;--cream:#fff;--sans:"DM Sans",Arial,sans-serif;--serif:"Instrument Serif",Georgia,serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+button,a,input,textarea,select{font:inherit}
+button{cursor:pointer}
+a{color:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #6e8d48;outline-offset:3px}
+.topbar{height:65px;display:flex;justify-content:space-between;align-items:center;max-width:1070px;margin:0 auto;padding:0 32px}
+.wordmark{display:inline-flex;align-items:center;gap:5px;font-size:16px;font-weight:800;letter-spacing:-.07em;text-decoration:none}
+.wordmark .dot{display:inline-block;width:7px;height:7px;background:#e77f63;margin-left:-3px;align-self:center}
+.toplink{font-size:11px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;font-weight:700;display:inline-flex;gap:8px;align-items:center}
+.toplink:hover{text-decoration:underline;text-underline-offset:5px}
+main{max-width:734px;margin:0 auto;padding:8px 22px 70px}
+.cover{height:230px;position:relative;display:grid;grid-template-columns:62% 38%;overflow:hidden;border-radius:18px;background:#e8e9df}
+.cover .photo{width:100%;height:100%;display:block;object-fit:cover;object-position:center 44%;background:#d7d0c9}
+.cover .right{background:var(--citron);display:flex;flex-direction:column;justify-content:flex-end;padding:24px 23px 25px}
+.cover .micro{font-size:10px;letter-spacing:.15em;font-weight:800;margin-bottom:auto}
+.cover .right strong{font:italic 400 clamp(31px,4vw,43px)/.94 var(--serif);letter-spacing:-.014em}
+.cover .right .tiny{font-size:10px;letter-spacing:.05em;margin-top:20px}
+.profile{padding:27px 4px 18px}
+.identity{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.logoblock{width:37px;height:37px;flex:0 0 37px;border-radius:9px;background:#22231e;color:white;display:grid;place-items:center;font:600 20px/1 var(--serif);letter-spacing:-.05em}
+.logoblock span{color:#e8886e}
+.profile .eyebrow{font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+.profile .eyebrow .light{color:#747973;font-weight:500}
+.profile h1{font-size:clamp(37px,5.4vw,56px);line-height:1.015;letter-spacing:-.071em;font-weight:700;margin:0 0 12px;max-width:620px}
+.profile h1 em{font:italic 400 1.04em/0.85 var(--serif);letter-spacing:-.015em}
+.profile p{font-size:14px;line-height:1.55;color:#54594f;margin:0;max-width:605px}
+.profile .tags{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:18px}
+.tag{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:50px;padding:6px 10px;font-size:10px;letter-spacing:.015em;font-weight:700;background:#fff}
+.actions{display:flex;gap:9px;margin-top:20px;flex-wrap:wrap}
+.action{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:42px;text-decoration:none;border-radius:50px;font-size:12px;font-weight:700;padding:12px 17px;border:1px solid var(--ink);transition:transform .2s}
+.action:hover{transform:translateY(-2px)}
+.action.primary{background:var(--ink);color:white}
+.action.secondary{background:white;color:var(--ink)}
+.section-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:27px 3px 12px}
+.section-heading h2{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;margin:0}
+.section-heading .hint{font-size:10px;color:#777b71}
+.links{display:grid;gap:10px}
+.service{border-radius:15px;overflow:hidden;border:1px solid #22231e16;background:#fff;transition:box-shadow .2s}
+.service:hover{box-shadow:0 10px 28px #2f32240e}
+.service.tone-lime{background:var(--citron)}
+.service.tone-peach{background:var(--peach)}
+.service.tone-lilac{background:var(--lilac)}
+.service-toggle{width:100%;background:none;border:0;display:grid;grid-template-columns:52px minmax(0,1fr) 37px;align-items:center;text-align:left;gap:9px;padding:17px 20px;min-height:94px;color:var(--ink)}
+.mark{font:italic 400 29px/1 var(--serif);align-self:center;white-space:nowrap}
+.service-name{font-size:22px;line-height:1.1;letter-spacing:-.045em;font-weight:800;display:block}
+.service-desc{display:block;font-size:12px;font-weight:500;line-height:1.4;letter-spacing:0;margin-top:5px;color:#444940}
+.service .arrow{width:33px;height:33px;display:grid;place-items:center;border:1px solid #22231e32;background:#ffffff82;border-radius:50%;font-size:17px;transition:transform .25s}
+.service-toggle[aria-expanded="true"] .arrow{transform:rotate(45deg)}
+.service-body{padding:0 20px 19px 81px}
+.service-body[hidden]{display:none}
+.service-body .divider{height:1px;background:#292d222e;margin-bottom:14px}
+.service-body .short{font-size:12px;color:#40453e;margin:0 0 8px;line-height:1.5}
+.service-body ul{margin:0 0 13px;padding:0 0 0 17px;display:grid;gap:5px;font-size:12px;line-height:1.4}
+.service-body .service-cta{display:inline-flex;align-items:center;gap:6px;background:#22231e;color:white;border:0;border-radius:40px;padding:10px 13px;font-weight:700;font-size:11px}
+.work{margin:28px 0 0}
+.work-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:13px}
+.work-head h2{font-weight:800;letter-spacing:-.047em;font-size:24px;margin:0}
+.work-head p{margin:0;color:#777b74;font-size:10px}
+.worklist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.workcard{display:block;min-width:0;text-decoration:none;position:relative}
+.workcard .thumb{display:block;width:100%;height:118px;object-fit:cover;border-radius:11px;background:#e6e1d7;transition:filter .2s}
+.workcard:hover .thumb{filter:saturate(1.12)}
+.workcard .name{font-size:12px;letter-spacing:-.02em;font-weight:800;margin-top:8px;display:flex;justify-content:space-between;gap:5px}
+.workcard .category{font-size:10px;color:#666c65;line-height:1.4;margin-top:3px}
+.worknote{font-size:10px;color:#777b74;line-height:1.5;margin:9px 0 0}
+.contact{margin:28px 0 0;padding:24px 27px;border-radius:14px;background:#f5e6c1;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.contact h2{font-size:27px;line-height:1.04;letter-spacing:-.055em;margin:0 0 5px}
+.contact p{font-size:12px;color:#616054;margin:0}
+.contact button{border:0;background:#22231e;border-radius:35px;color:white;padding:13px 16px;font-size:12px;font-weight:700;white-space:nowrap}
+.bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:24px 4px 0;font-size:10px;color:#72756c}
+.bottom a{text-decoration:none;border-bottom:1px solid #c2c4b9}
+.previewnote{font-size:10px;color:#83877f;text-align:center;padding:0 12px 28px}
+dialog{padding:0;border:0;background:transparent;max-width:min(480px,calc(100vw - 22px));width:100%;max-height:min(92dvh,880px);overflow-y:auto;box-shadow:0 25px 90px #1118;border-radius:20px;color:var(--ink)}
+dialog::backdrop{background:#15191180;backdrop-filter:blur(4px)}
+.dialogbox{background:#fcfaf6;padding:26px 29px 28px}
+.modal-top{display:flex;justify-content:space-between;align-items:center}
+.modal-kicker{font-size:10px;letter-spacing:.12em;font-weight:800}
+.close{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:19px}
+.dialogbox h2{font-size:30px;letter-spacing:-.06em;line-height:1.05;margin:14px 0 8px}
+.dialogbox .description{font-size:12px;line-height:1.5;color:var(--sub);margin:0 0 16px}
+form{display:grid;gap:11px}
+label{display:grid;gap:5px;font-size:11px;font-weight:700}
+input,textarea,select{border:1px solid #d9d9ce;background:white;border-radius:9px;padding:11px 12px;font-size:13px;color:var(--ink);width:100%;min-width:0}
+textarea{resize:vertical;min-height:86px}
+.submit{border:0;border-radius:45px;background:#22231e;color:white;font-size:12px;font-weight:800;padding:15px;min-height:45px}
+.submit:disabled{opacity:.6}
+.formnote{font-size:11px;line-height:1.5;color:#62675c;min-height:16px;margin:0}
+.honeypot{position:absolute;left:-9999px;opacity:0;pointer-events:none}
+@media(max-width:680px){
+.topbar{height:57px;padding:0 20px}
+main{padding:5px 16px 50px}
+.cover{height:159px;border-radius:12px;grid-template-columns:60% 40%}
+.cover .right{padding:13px 12px 14px}
+.cover .micro{font-size:8px;letter-spacing:.1em}
+.cover .right strong{font-size:clamp(25px,6.2vw,36px)}
+.cover .right .tiny{font-size:8px;margin-top:10px}
+.profile{padding:22px 3px 13px}
+.profile h1{font-size:clamp(37px,9.2vw,49px);margin-bottom:10px}
+.profile p{font-size:13px}
+.profile .tags{margin-top:13px;gap:5px}
+.tag{font-size:9px;padding:6px 8px}
+.actions{margin-top:16px}
+.section-heading{margin:24px 2px 11px}
+.service-toggle{grid-template-columns:40px minmax(0,1fr) 32px;gap:7px;min-height:83px;padding:14px}
+.mark{font-size:25px}
+.service-name{font-size:19px}
+.service-desc{font-size:11px}
+.service .arrow{width:29px;height:29px}
+.service-body{padding:0 14px 16px 61px}
+.work-head h2{font-size:22px}
+.worklist{gap:8px}
+.workcard .thumb{height:clamp(85px,27vw,119px)}
+.workcard .category{font-size:9px}
+.contact{padding:19px;align-items:flex-start;flex-direction:column;gap:13px}
+.contact h2{font-size:27px}
+.bottom{flex-wrap:wrap}
+}
+@media(max-width:360px){
+.cover{height:144px}
+.cover .right strong{font-size:23px}
+.service-name{font-size:17px}
+.service-toggle{grid-template-columns:33px minmax(0,1fr) 29px}
+.service-body{padding-left:54px}
+.workcard .name{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="wordmark" href="/" aria-label="Explore VYRDICT">VYRDICT<span class="dot" aria-hidden="true"></span></a>
+  <a class="toplink" href="/">Explore VYRDICT <span aria-hidden="true">↗</span></a>
+</header>
+<main>
+  <div class="cover" aria-label="VYRDICT Studio editorial cover">
+    <img class="photo" src="https://images.pexels.com/photos/3419643/pexels-photo-3419643.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1200" alt="Fashion and creative editorial photography" fetchpriority="high">
+    <div class="right"><div class="micro">VYRDICT / STUDIO</div><strong>Culture moves.<br>We make<br>moves.</strong><div class="tiny">CREATIVE THINKING FOR WHAT'S NEXT ↗</div></div>
+  </div>
+  <section class="profile" aria-labelledby="main-title">
+    <div class="identity"><div class="logoblock" aria-hidden="true">V<span>▪</span></div><div class="eyebrow">VYRDICT Studio <span class="light">/ creative & culture</span></div></div>
+    <h1 id="main-title">We make brands <em>part of</em> the conversation.</h1>
+    <p>Culture moves fast. We help brands spot what matters, find their angle and make creative work people actually care about.</p>
+    <div class="tags" aria-label="Studio specialties"><span class="tag">Trend intelligence</span><span class="tag">Creative strategy</span><span class="tag">Creator campaigns</span></div>
+    <div class="actions"><button class="action primary" type="button" data-open-form="">Work with us <span aria-hidden="true">↗</span></button><a class="action secondary" href="#work">See our work <span aria-hidden="true">↓</span></a></div>
+  </section>
+  <div class="section-heading"><h2>Work with VYRDICT</h2><span class="hint">Pick what you need ↓</span></div>
+  <section class="links" aria-label="Studio services">
+    <article class="service tone-lime">
+      <button type="button" class="service-toggle" data-service-toggle="trend" aria-expanded="false" aria-controls="detail-trend">
+        <span class="mark">01</span><span><span class="service-name">Trend &amp; Culture Sprint</span><span class="service-desc">What's worth jumping on? We'll tell you.</span></span><span class="arrow" aria-hidden="true">↗</span>
+      </button>
+      <div class="service-body" id="detail-trend" hidden><div class="divider"></div><p class="short">A focused read on the cultural moment and where your brand fits.</p><ul><li>Relevant trends and audience signals</li><li>What's useful, what's noise</li><li>Clear next-step ideas for your brand</li></ul><button type="button" class="service-cta" data-open-form="Trend & Culture Sprint">Ask about this ↗</button></div>
+    </article>
+    <article class="service tone-peach">
+      <button type="button" class="service-toggle" data-service-toggle="launch" aria-expanded="false" aria-controls="detail-launch">
+        <span class="mark">02</span><span><span class="service-name">Launch &amp; Creative Strategy</span><span class="service-desc">A sharper idea. A better story. A smarter launch.</span></span><span class="arrow" aria-hidden="true">↗</span>
+      </button>
+      <div class="service-body" id="detail-launch" hidden><div class="divider"></div><p class="short">For new products, fresh positioning and launch moments that deserve attention.</p><ul><li>Campaign concept and creative direction</li><li>Messaging and social-first ideas</li><li>An actionable launch plan</li></ul><button type="button" class="service-cta" data-open-form="Launch & Creative Strategy">Ask about this ↗</button></div>
+    </article>
+    <article class="service tone-lilac">
+      <button type="button" class="service-toggle" data-service-toggle="creator" aria-expanded="false" aria-controls="detail-creator">
+        <span class="mark">03</span><span><span class="service-name">Creator Campaigns</span><span class="service-desc">Good creators. Good chemistry. Better stories.</span></span><span class="arrow" aria-hidden="true">↗</span>
+      </button>
+      <div class="service-body" id="detail-creator" hidden><div class="divider"></div><p class="short">Connect the right creators to the right idea, without forcing the fit.</p><ul><li>Creator discovery and fit</li><li>Creative briefs and campaign coordination</li><li>A simple performance review</li></ul><button type="button" class="service-cta" data-open-form="Creator Campaign">Ask about this ↗</button></div>
+    </article>
+  </section>
+  <section class="work" id="work" aria-labelledby="worktitle">
+    <div class="work-head"><h2 id="worktitle">A little of our thinking <span aria-hidden="true">↘</span></h2><p>Explore the work</p></div>
+    <div class="worklist">
+      <a class="workcard" href="/studio/work/mccafe/"><img class="thumb" src="https://www.mcdonalds.com/content/dam/sites/au/nfl/homepage/MCD-TrayBag-Website%20Banner-%401x.jpg" alt="McCafé campaign imagery" loading="lazy"><div class="name">McCafé <span aria-hidden="true">↗</span></div><div class="category">Culture &amp; trend strategy</div></a>
+      <a class="workcard" href="/studio/work/rothys/"><img class="thumb" src="https://www.modernretail.co/wp-content/uploads/sites/5/2025/06/Contentful_sponsor1.jpg?crop=1&amp;h=600&amp;w=1140" alt="Rothy's campaign photography" loading="lazy"><div class="name">Rothy's <span aria-hidden="true">↗</span></div><div class="category">Brand &amp; creative thinking</div></a>
+      <a class="workcard" href="/studio/work/rhode/"><img class="thumb" src="https://www.rhodeskin.com/cdn/shop/files/hp-spotwear-tertiary-1.jpg?v=1791239877&amp;width=2400" alt="rhode skincare product photography" loading="lazy"><div class="name">rhode <span aria-hidden="true">↗</span></div><div class="category">Product culture &amp; creators</div></a>
+    </div>
+    <p class="worknote">Independent brand explorations—not commissioned client campaigns.</p>
+  </section>
+  <section class="contact" aria-label="Get in touch"><div><h2>Have something <em style="font:italic 400 1.04em var(--serif)">worth launching?</em></h2><p>Big idea, small brief, or just curious? Say hello.</p></div><button type="button" data-open-form="">Let's talk ↗</button></section>
+  <footer class="bottom"><span>© VYRDICT Studio · Culture, creative &amp; creators.</span><a href="mailto:hello@vyrdict.com">hello@vyrdict.com ↗</a></footer>
+</main>
+<p class="previewnote">STUDIO CONCEPT PREVIEW · THE EXISTING STUDIO WEBSITE IS UNCHANGED</p>
+<dialog id="inquiryDialog" aria-labelledby="formTitle">
+<div class="dialogbox"><div class="modal-top"><span class="modal-kicker">LET'S MAKE SOMETHING HAPPEN</span><button type="button" class="close" id="closeDialog" aria-label="Close inquiry">×</button></div>
+<h2 id="formTitle">Tell us what's on your mind.</h2><p class="description">No pitch deck needed. Just the essentials, and we'll take it from there.</p>
+<form id="inquiry">
+<label>Your name <input name="name" autocomplete="name" required placeholder="First and last name"></label>
+<label>Brand / company <input name="company" autocomplete="organization" required placeholder="Who are we talking about?"></label>
+<label>Your email <input name="email" type="email" autocomplete="email" required placeholder="you@brand.com"></label>
+<label>Interested in <select name="service" id="serviceSelect"><option value="Not sure yet">Not sure yet</option><option value="Trend & Culture Sprint">Trend &amp; Culture Sprint</option><option value="Launch & Creative Strategy">Launch &amp; Creative Strategy</option><option value="Creator Campaign">Creator Campaigns</option></select></label>
+<label>A little about your idea <textarea name="brief" required placeholder="What are you working on?"></textarea></label>
+<label class="honeypot" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>
+<button class="submit" id="submitBtn" type="submit">Send the brief ↗</button><p class="formnote" id="formNote" role="status" aria-live="polite">Prefer email? <a href="mailto:hello@vyrdict.com">hello@vyrdict.com</a></p>
+</form>
+</div></dialog>
+<script>
+(function(){
+  "use strict";
+  var toggles=document.querySelectorAll("[data-service-toggle]");
+  toggles.forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var panel=document.getElementById(btn.getAttribute("aria-controls"));
+      var isOpen=btn.getAttribute("aria-expanded")==="true";
+      toggles.forEach(function(other){other.setAttribute("aria-expanded","false");document.getElementById(other.getAttribute("aria-controls")).hidden=true});
+      if(!isOpen){btn.setAttribute("aria-expanded","true");panel.hidden=false;}
+    });
+  });
+  var dialog=document.getElementById("inquiryDialog");
+  var select=document.getElementById("serviceSelect");
+  document.querySelectorAll("[data-open-form]").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      select.value=btn.getAttribute("data-open-form")||"Not sure yet";
+      if(typeof dialog.showModal==="function")dialog.showModal();
+    });
+  });
+  document.getElementById("closeDialog").addEventListener("click",function(){dialog.close()});
+  dialog.addEventListener("click",function(e){if(e.target===dialog)dialog.close()});
+  var form=document.getElementById("inquiry");
+  form.addEventListener("submit",async function(e){
+    e.preventDefault();
+    if(!form.reportValidity())return;
+    var btn=document.getElementById("submitBtn"),note=document.getElementById("formNote");
+    var data=Object.fromEntries(new FormData(form).entries());
+    btn.disabled=true;btn.textContent="Sending…";note.textContent="Sending your enquiry…";
+    try{
+      var r=await fetch("https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-studio-inquiry",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(data)});
+      var out=await r.json().catch(function(){return {}});
+      if(!r.ok)throw new Error(out.error||"Request failed");
+      note.textContent="Received! We'll follow up using the email you provided.";
+      btn.textContent="Sent ✓";form.reset();
+    }catch(error){
+      note.textContent="We couldn't send that right now. Please email hello@vyrdict.com or try again.";
+      btn.disabled=false;btn.textContent="Send the brief ↗";
+    }
+  });
+})();
+</script>
+</body>
+</html>
