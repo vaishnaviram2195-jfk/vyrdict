@@ -3,10 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>VYRDICT Studio — Culture, Creative & Creator Strategy</title>
-<meta name="description" content="VYRDICT Studio helps consumer brands spot what matters, shape ideas people care about, and prove what actually worked.">
+<title>McCafé — Culture strategy | VYRDICT Studio</title>
+<meta name="description" content="The coffee tray that became an it-bag. An independent culture strategy sample strategy from VYRDICT Studio.">
 <meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://vyrdict.com/studio/work/mccafe/">
 <link rel="icon" href="/vyrdict-logo.svg" type="image/svg+xml">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="VYRDICT Studio">
+<meta property="og:title" content="McCafé — The coffee tray that became an it-bag.">
+<meta property="og:description" content="An independent sample strategy from VYRDICT Studio.">
+<meta property="og:url" content="https://vyrdict.com/studio/work/mccafe/">
+<meta property="og:image" content="https://www.mcdonalds.com/content/dam/sites/au/nfl/homepage/MCD-TrayBag-Website%20Banner-%401x.jpg">
 <style>
 :root{
   --ink:#0d0b0c;--coffee:#1b1517;--graphite:#272226;--burg:#772f48;--burg2:#a15370;--dust:#c6a7b3;
@@ -91,141 +98,56 @@ footer{display:flex;justify-content:space-between;gap:20px;padding:26px 4.5vw;bo
 }
 
 
-/* Compact previews of the Studio's independent case studies. */
-.work{background:var(--paper);color:#181416;padding:88px 0 94px;scroll-margin-top:90px}
-.work-head{display:flex;justify-content:space-between;align-items:flex-end;gap:34px;margin-bottom:34px}
-.work-head .eyebrow{color:var(--burg)}
-.work-head h2{font:400 clamp(40px,4.8vw,66px)/1 var(--serif);letter-spacing:-.025em;margin:13px 0 0}
-.work-head>p{max-width:410px;margin:0;color:#665e62;font-size:14px;line-height:1.65}
-.work-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
-.work-card{display:flex;flex-direction:column;min-width:0;border:1px solid rgba(24,20,22,.15);background:var(--ivory);transition:transform .25s ease,box-shadow .25s ease}
-.work-card:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(24,20,22,.09)}
-.work-card:focus-visible{outline:3px solid var(--burg);outline-offset:5px}
-.work-card-media{aspect-ratio:4/3;overflow:hidden;background:#ded4d7}
-.work-card-media img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
-.work-card:hover img{transform:scale(1.025)}
-.work-card--rhode .work-card-media{background:#efd9df}
-.work-card--rhode .work-card-media img{object-fit:contain;padding:20px}
-.work-card-copy{display:flex;flex-direction:column;flex:1;padding:24px}
-.work-card .eyebrow{font-size:8px;letter-spacing:.17em;color:var(--burg)}
-.work-card h3{font:400 32px/1.05 var(--serif);letter-spacing:-.02em;margin:15px 0 12px}
-.work-hook{font-size:15px;line-height:1.5;margin:0 0 22px;max-width:290px}
-.work-note{font-size:9px;line-height:1.5;color:#756d71;margin:auto 0 15px}
-.work-link{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--burg)}
-@media(max-width:880px){.work{padding:68px 0}.work-head{display:block}.work-head>p{margin-top:20px;max-width:540px}.work-grid{gap:16px}.work-card-copy{padding:20px}.work-card h3{font-size:28px}.work-hook{font-size:13px}}
-@media(max-width:700px){.work-grid{grid-template-columns:1fr}.work-card-media{aspect-ratio:16/9}.work-card-copy{padding:24px}.work-hook{max-width:none}.work-card h3{font-size:32px}}
-@media(prefers-reduced-motion:reduce){.work-card,.work-card-media img{transition:none}.work-card:hover,.work-card:hover img{transform:none}}
-
+/* Dedicated Studio case pages retain the original case artwork and narrative. */
+html{scroll-padding-top:90px}
+.case-page main{padding-top:70px}
+.case-page h1{font-weight:400}
+.case-page .case-hero{min-height:78vh}
+.case-page .case-copy{width:min(780px,88vw)}
+.case-page .case-copy h1{font:400 clamp(42px,5.3vw,78px)/.95 var(--serif);margin:16px 0 20px}
+.case-page .case-copy h1 em{color:#e8c4d1}
+.case-page .case-copy>p:not(.source){max-width:540px;font-size:17px;line-height:1.65;color:#ded6d9}
+.case-page .case-copy .source{max-width:540px}
+.case-page .rothys{padding:100px 0 88px}
+.case-page .rothys h1{font:400 clamp(40px,4.8vw,70px)/.98 var(--serif);margin:14px 0 25px}
+.case-page .rothys h1 em{color:var(--burg)}
+.case-page .rothys-img{aspect-ratio:4/5;object-fit:cover}
+.case-page .rhode{min-height:78vh}
+.case-page .rhode-copy h1{font:400 clamp(40px,4.8vw,70px)/.98 var(--serif);margin:16px 0 24px}
+.case-page .rhode-copy h1 em{color:var(--burg)}
+.case-page .rhode-visual{min-height:78vh}
+.case-page .case-copy .source,.case-page .source{font-size:11px;line-height:1.6}
+.case-page .source a{font-weight:700}
+.case-follow{background:var(--paper);color:#181416;padding:56px 0 64px;border-top:1px solid rgba(24,20,22,.15)}
+.case-follow-head{display:flex;align-items:flex-end;justify-content:space-between;gap:30px}
+.case-follow .eyebrow{color:var(--burg)}
+.case-follow h2{font:400 clamp(30px,3.2vw,44px)/1.1 var(--serif);margin:12px 0 0;max-width:560px}
+.case-follow .cta{margin:0;background:var(--burg);color:var(--white);white-space:nowrap}
+.case-related{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;margin-top:36px;padding-top:24px;border-top:1px solid rgba(24,20,22,.15);font-size:10px;letter-spacing:.08em}
+.case-related>span{color:#756d71}
+.case-related a{text-decoration:underline;text-underline-offset:4px}
+.case-page a:focus-visible{outline:2px solid var(--burg2);outline-offset:5px}
+@media(max-width:880px){.case-page .navlinks a{display:block}.case-page .case-hero{min-height:720px}.case-page .case-copy{width:100%;padding-top:90px}.case-page .rothys{padding:64px 0}.case-page .rothys-img{aspect-ratio:3/2}.case-page .rhode-visual{min-height:50vh}.case-follow-head{display:block}.case-follow .cta{margin-top:24px}.case-page .rhode-copy{padding:52px 6vw}.case-page .case-copy h1{font-size:clamp(40px,8vw,64px)}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.case-page .case-bg{transition:none}.case-page .case-hero:hover .case-bg{transform:none}}
 </style>
 </head>
-<body>
-<nav class="nav">
+<body class="case-page">
+<nav class="nav" aria-label="Studio navigation">
  <a class="brand" href="/">VYRDICT<span class="brand-dot" aria-hidden="true"></span></a>
- <div class="navlinks"><a class="active" href="/">← Back to Main Vyrdict</a></div>
+ <div class="navlinks"><a class="active" href="/studio/">← Back to Studio</a></div>
 </nav>
-
-<section class="hero" id="studio">
- <div class="grain"></div>
- <div class="hero-retro" aria-hidden="true">
-   <img src="https://images.pexels.com/photos/3419643/pexels-photo-3419643.jpeg?auto=compress&cs=tinysrgb&w=1800" alt="">
-   <div class="retro-line"></div>
-   <div class="retro-caption">PEOPLE / FASHION / INTERNET CULTURE</div>
- </div>
- <div class="wrap"><div class="hero-copy reveal"><div class="eyebrow">VYRDICT STUDIO · CULTURE / CREATIVE / CREATORS</div><h1>THE INTERNET IS LOUD.<br><em>WE FIND WHAT MATTERS.</em></h1><p>VYRDICT Studio helps consumer brands spot what deserves attention, shape ideas people care about, and prove what actually worked.</p><a class="cta" href="#contact">Start a conversation</a></div></div>
- <div class="ticker"><div><span>NOT EVERYTHING VIRAL IS VALUABLE</span><span>SPOT → SHAPE → PROVE</span><span>RIGHT CREATOR. RIGHT AUDIENCE. RIGHT REASON.</span><span>NOT EVERYTHING VIRAL IS VALUABLE</span><span>SPOT → SHAPE → PROVE</span><span>RIGHT CREATOR. RIGHT AUDIENCE. RIGHT REASON.</span></div></div>
+<main>
+<section class="case-hero mccafe">
+ <div class="case-bg"></div>
+ <div class="case-copy"><div class="case-label">CASE 01 · CULTURE STRATEGY</div><h1>THE COFFEE TRAY<br>THAT BECAME<br><em>AN IT-BAG.</em></h1><p>What if McCafé did not just sell coffee — but owned the coffee-run lifestyle?</p><div class="scorepill"><strong>91</strong><span>/100 · GO</span></div><p class="source">Independent sample strategy. McDonald’s is not a VYRDICT Studio client. <a href="https://www.mcdonalds.com/au/en-au/newsroom/article/australias-newest-it-bag-doesnt-come-from-paris-it-comes-from-ma.html" target="_blank" rel="noopener">Source</a></p></div>
 </section>
-
-<section class="statement"><div class="wrap statement-collage">
-   <div class="reveal"><div class="eyebrow" style="color:var(--burg)">WHY VYRDICT</div><h2>NOT EVERY TREND DESERVES <em>YOUR BRAND.</em></h2><p>We track what people are watching, sharing, buying and talking about — then help brands decide what is useful, what is noise, and what has room to become something bigger.</p></div>
-   <div class="retro-window reveal" aria-label="Black and white editorial culture image">
-     <img src="https://images.unsplash.com/photo-1774359535371-c9ea5ad2e8ec?auto=format&fit=crop&fm=jpg&q=82&w=1800" alt="Stylish woman crossing a New York street">
-     <div class="retro-frame"></div><div class="retro-cross-h"></div><div class="retro-cross-v"></div>
-   </div>
- </div></section>
-
-<section class="method"><div class="method-grid">
- <article class="reveal"><div class="step">01</div><h3>SPOT</h3><p>Find the thing that is actually worth paying attention to.</p><ul><li>Buzz</li><li>Context</li><li>Brand fit</li><li>Timing</li></ul></article>
- <article class="reveal"><div class="step">02</div><h3>SHAPE</h3><p>Turn the signal into a launch, story or campaign people can care about.</p><ul><li>Creative idea</li><li>Launch strategy</li><li>Creator angle</li><li>Content direction</li></ul></article>
- <article class="reveal"><div class="step">03</div><h3>PROVE</h3><p>Measure what worked, what did not, and what deserves to scale.</p><ul><li>Attention</li><li>Action</li><li>Creator performance</li><li>Commercial impact</li></ul></article>
-</div></section>
-
-<section class="work" id="work" aria-labelledby="work-title">
+<section class="case-follow" aria-label="Explore Studio">
  <div class="wrap">
-  <div class="work-head"><div><div class="eyebrow">VYRDICT STUDIO / INDEPENDENT STRATEGIES</div><h2 id="work-title">Our Work.</h2></div><p>Culture, creators and product design — three ways to see an opportunity through VYRDICT’s lens.</p></div>
-  <div class="work-grid">
-   <a class="work-card work-card--mccafe" href="/studio/work/mccafe/" aria-label="See the McCafé strategy">
-    <div class="work-card-media"><img src="https://www.mcdonalds.com/content/dam/sites/au/nfl/homepage/MCD-TrayBag-Website%20Banner-%401x.jpg" alt="McCafé coffee tray bag campaign" loading="lazy" decoding="async"></div>
-    <div class="work-card-copy"><div class="eyebrow">01 / CULTURE STRATEGY</div><h3>McCafé</h3><p class="work-hook">The coffee tray that became an it-bag.</p><p class="work-note">Independent sample strategy</p><span class="work-link">See the strategy →</span></div>
-   </a>
-   <a class="work-card work-card--rothys" href="/studio/work/rothys/" aria-label="See the Rothy’s strategy">
-    <div class="work-card-media"><img src="https://www.modernretail.co/wp-content/uploads/sites/5/2025/06/Contentful_sponsor1.jpg?crop=1&amp;h=600&amp;w=1140" alt="Rothy’s community creator activation" loading="lazy" decoding="async"></div>
-    <div class="work-card-copy"><div class="eyebrow">02 / CREATOR STRATEGY</div><h3>Rothy’s</h3><p class="work-hook">Who would actually show up for this person?</p><p class="work-note">Independent sample strategy</p><span class="work-link">See the strategy →</span></div>
-   </a>
-   <a class="work-card work-card--rhode" href="/studio/work/rhode/" aria-label="See the Rhode strategy">
-    <div class="work-card-media"><img src="https://www.rhodeskin.com/cdn/shop/files/hp-spotwear-tertiary-1.jpg?v=1791239877&amp;width=2400" alt="Rhode Spotwear skincare patches" loading="lazy" decoding="async"></div>
-    <div class="work-card-copy"><div class="eyebrow">03 / PRODUCT CULTURE</div><h3>Rhode</h3><p class="work-hook">When product design becomes the marketing.</p><p class="work-note">Independent sample strategy</p><span class="work-link">See the strategy →</span></div>
-   </a>
-  </div>
+  <div class="case-follow-head"><div><div class="eyebrow">WORK WITH VYRDICT</div><h2>Have something worth launching?</h2></div><a class="cta" href="/studio/#contact">Start a conversation</a></div>
+  <nav class="case-related" aria-label="More sample strategies"><span>Explore more:</span><a href="/studio/work/rothys/">Rothy’s →</a><a href="/studio/work/rhode/">Rhode →</a><a href="/studio/#work">All Studio work →</a></nav>
  </div>
 </section>
-
-<section class="scores"><div class="wrap score-grid">
- <div class="reveal"><div class="eyebrow">VYRDICT OPPORTUNITY SCORE</div><div class="bigscore">86<small>/100</small></div><span class="go">GO</span></div>
- <div class="bars reveal">
-  <div class="bar"><span>Buzz</span><div class="track"><div class="fill" style="width:70%"></div></div><b>14</b></div>
-  <div class="bar"><span>Brand fit</span><div class="track"><div class="fill" style="width:95%"></div></div><b>19</b></div>
-  <div class="bar"><span>Staying power</span><div class="track"><div class="fill" style="width:85%"></div></div><b>17</b></div>
-  <div class="bar"><span>Creator potential</span><div class="track"><div class="fill" style="width:95%"></div></div><b>19</b></div>
-  <div class="bar"><span>Buying intent</span><div class="track"><div class="fill" style="width:85%"></div></div><b>17</b></div>
-  <p style="color:#aaa;line-height:1.6;margin-top:28px">A simple way to answer one useful question: is this opportunity actually worth chasing?</p>
- </div>
-</div></section>
-
-<section class="sprint">
- <div class="sprint-bgphoto" aria-hidden="true">
-   <img src="https://images.unsplash.com/photo-1621265335525-b9496f26a903?fm=jpg&q=82&w=1800" alt="">
- </div>
- <div class="sprint-ghost">GO / ADAPT / WATCH / PASS</div><div class="sprint-scan"></div>
- <div class="wrap reveal"><div class="eyebrow">72-HOUR CULTURE SPRINT</div><h2>SOMETHING JUST BLEW UP.<br>SHOULD YOUR BRAND CARE?</h2><div class="modules">
- <div class="module"><b>01</b><span>What happened</span></div><div class="module"><b>02</b><span>Why it is spreading</span></div><div class="module"><b>03</b><span>Does it fit the brand?</span></div>
- <div class="module"><b>04</b><span>Opportunity score</span></div><div class="module"><b>05</b><span>Three ways to respond</span></div><div class="module"><b>06</b><span>GO / ADAPT / WATCH / PASS</span></div>
-</div></div></section>
-
-<section class="contact" id="contact"><div class="wrap contactgrid">
- <div class="reveal" style="align-self:end;padding:28px 30px 30px;background:linear-gradient(180deg,rgba(12,11,10,.18),rgba(12,11,10,.52));backdrop-filter:blur(4px);border-left:1px solid rgba(255,255,255,.22)"><div class="eyebrow">WORK WITH VYRDICT</div><h2>HAVE SOMETHING<br>WORTH LAUNCHING?</h2><p style="color:#efe9df;line-height:1.65;max-width:560px">Tell us what you are launching, what you are trying to solve, or what you are seeing in culture.</p></div>
- <form class="form reveal" id="inquiry">
-  <div class="field"><label>Name</label><input required name="name"></div><div class="field"><label>Company</label><input required name="company"></div><div class="field"><label>Email</label><input required type="email" name="email"></div>
-  <div class="field"><label>What are you working on?</label><textarea required name="brief"></textarea></div>
-  <div class="field"><label>Interested in</label><select name="service"><option>Trend & Culture Sprint</option><option>Launch & Creative Strategy</option><option>Creator Campaign</option><option>72-Hour Culture Sprint</option><option>Not sure yet</option></select></div>
-  <div style="position:absolute;left:-9999px;opacity:0;pointer-events:none" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div><button class="button" id="submitbtn" type="submit">Start a conversation</button><div class="fine" id="formnote">Tell us what you’re working on — your message goes directly into the VYRDICT Studio inquiry queue.</div>
- </form>
-</div></section>
-
-<footer><span>VYRDICT Studio · Independent sample strategy</span><a href="/">Back to VYRDICT</a></footer>
-<script>
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add("on")}),{threshold:.12});
-document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
-document.getElementById("inquiry").addEventListener("submit",async function(e){
-  e.preventDefault();
-  const form=e.currentTarget,note=document.getElementById("formnote"),btn=document.getElementById("submitbtn");
-  const data=Object.fromEntries(new FormData(form).entries());
-  if(!String(data.name||"").trim()||!String(data.company||"").trim()||!String(data.email||"").trim()||!String(data.brief||"").trim()){
-    note.textContent="Please complete your name, company, email and project details.";return;
-  }
-  btn.disabled=true;btn.textContent="Sending…";note.textContent="Sending your inquiry…";
-  try{
-    const r=await fetch("https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-studio-inquiry",{
-      method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(data)
-    });
-    const out=await r.json().catch(()=>({}));
-    if(!r.ok)throw new Error(out.error||"failed");
-    form.reset();note.textContent="Received — VYRDICT Studio has your inquiry. We’ll follow up using the email you provided.";
-  }catch(err){
-    note.textContent="We couldn’t send that just now. Please try again in a moment.";
-  }finally{
-    btn.disabled=false;btn.textContent="Start a conversation";
-  }
-});
-</script>
+</main>
+<footer><span>VYRDICT Studio · Independent sample strategy</span><a href="/studio/">Back to Studio</a></footer>
 </body>
 </html>
