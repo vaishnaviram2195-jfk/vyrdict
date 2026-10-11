@@ -180,53 +180,51 @@ main{overflow-x:clip}
 <style id="vyrdict-culture-mobile-fix-20261011">
 .culture-tabs{display:none}
 @media(max-width:620px){
-  .culture{background:linear-gradient(135deg,#b8bdc0 0%,#afb4b7 56%,#a4aaad 100%)!important}
+  .culture{background:linear-gradient(135deg,#aeb4b7 0%,#a5abae 56%,#9ba1a4 100%)!important}
   .culture-tabs{
     display:grid!important;
     grid-template-columns:repeat(3,minmax(0,1fr));
     gap:6px;
-    margin:0 0 12px;
+    margin:0 0 14px;
   }
-  .culture-tabs a{text-decoration:none;display:flex;align-items:center;justify-content:center;
-    border:1px solid rgba(23,23,23,.22);
-    background:rgba(245,246,246,.38);
+  .culture-tabs a{
+    text-decoration:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid rgba(23,23,23,.24);
+    background:rgba(245,246,246,.34);
     color:#222628;
-    min-height:42px;
-    padding:8px 7px;
+    min-height:46px;
+    padding:9px 7px;
     font:800 7px/1.25 var(--sans);
-    letter-spacing:.06em;
+    letter-spacing:.055em;
     text-transform:uppercase;
+    text-align:center;
   }
   .culture-tabs a.is-active{
     background:#222628;
     color:#f6f6f4;
     border-color:#222628;
   }
-  .culture-swipe-note{
-    display:block!important;
-    margin:0 0 12px!important;
-    color:#4c5255!important;
-  }
+  .culture-swipe-note{display:none!important}
   .culture .cgrid{
-    display:flex!important;
-    overflow-x:auto!important;
-    overflow-y:hidden!important;
-    gap:12px!important;
-    scroll-snap-type:x mandatory!important;
-    scroll-behavior:smooth!important;
-    margin-right:-15px!important;
-    padding:0 50px 12px 0!important;
-    scrollbar-width:none!important;
+    display:block!important;
+    overflow:visible!important;
+    margin:0!important;
+    padding:0!important;
   }
-  .culture .cgrid::-webkit-scrollbar{display:none!important}
   .culture .ccard{
-    display:flex!important;
-    flex:0 0 76vw!important;
-    max-width:345px!important;
-    scroll-snap-align:start!important;
+    display:none!important;
+    width:100%!important;
+    max-width:none!important;
     opacity:1!important;
     visibility:visible!important;
   }
+  .culture .ccard.is-active{
+    display:flex!important;
+  }
+  .culture .cmedia{aspect-ratio:.95}
 }
 </style>
 
@@ -256,7 +254,7 @@ main{overflow-x:clip}
   </div>
 </section>
 <section class="culture" id="culture"><div class="wrap"><div class="sh"><div><div class="k">DISCOVER THROUGH CULTURE</div><h2>Beyond the product feed.</h2></div><p>Explore the forces that turn products into cultural moments — geography, celebrity and what we see on screen.</p></div><div class="culture-tabs" aria-label="Culture collections"><a href="#culture-world" data-culture-index="0" class="is-active">Viral Around the World</a><a href="#culture-celebrity" data-culture-index="1">Celebrity Effect</a><a href="#culture-screen" data-culture-index="2">Seen on Screen</a></div><div class="culture-swipe-note" aria-hidden="true">SWIPE OR TAP A COLLECTION →</div><div class="cgrid" aria-label="VYRDICT culture collections">
-<article class="ccard" id="culture-world"><a class="cmedia" href="/collection/viral-around-the-world/"><img src="https://www.ikea.com/us/en/images/products/ikea-ps-2026-chair-with-inflatable-seat-back-cushion-knaebaeck-bright-green__1481191_pe1000447_s5.jpg" alt="IKEA PS 2026 Inflatable Chair"><b>01</b></a><div class="ccopy"><small>GLOBAL DISCOVERY</small><h3>Viral Around the World</h3><p>The products crossing borders, feeds and shopping lists — from Japan to Europe and everywhere in between.</p><div class="culture-now"><img src="https://www.ikea.com/us/en/images/products/ikea-ps-2026-chair-with-inflatable-seat-back-cushion-knaebaeck-bright-green__1481191_pe1000447_s5.jpg" alt=""><div><b>IKEA PS 2026 Inflatable Chair</b><span>Viral 99 · Worth 83</span></div></div><div class="c-actions"><a href="/product/ikea-ps-2026-inflatable-chair/">See verdict →</a><a href="/collection/viral-around-the-world/">Explore collection ↗</a></div></div></article>
+<article class="ccard is-active" id="culture-world"><a class="cmedia" href="/collection/viral-around-the-world/"><img src="https://www.ikea.com/us/en/images/products/ikea-ps-2026-chair-with-inflatable-seat-back-cushion-knaebaeck-bright-green__1481191_pe1000447_s5.jpg" alt="IKEA PS 2026 Inflatable Chair"><b>01</b></a><div class="ccopy"><small>GLOBAL DISCOVERY</small><h3>Viral Around the World</h3><p>The products crossing borders, feeds and shopping lists — from Japan to Europe and everywhere in between.</p><div class="culture-now"><img src="https://www.ikea.com/us/en/images/products/ikea-ps-2026-chair-with-inflatable-seat-back-cushion-knaebaeck-bright-green__1481191_pe1000447_s5.jpg" alt=""><div><b>IKEA PS 2026 Inflatable Chair</b><span>Viral 99 · Worth 83</span></div></div><div class="c-actions"><a href="/product/ikea-ps-2026-inflatable-chair/">See verdict →</a><a href="/collection/viral-around-the-world/">Explore collection ↗</a></div></div></article>
 <article class="ccard" id="culture-celebrity"><a class="cmedia" href="/collection/celebrity-effect/"><img src="https://www.rhodeskin.com/cdn/shop/files/press-pls-hero-d_d381ba3b-cca6-4ec0-a49f-bf4b994b5956_medium.jpg?v=1754344364" alt="rhode campaign"><b>02</b></a><div class="ccopy"><small>CULTURE / PEOPLE</small><h3>Celebrity Effect</h3><p>What happens when a celebrity wears it, uses it, launches it or quietly turns it into the next obsession.</p><div class="culture-now" id="culture-celebrity-now"><img src="https://www.sephora.com/productimages/sku/s3014628-main-zoom.jpg?imwidth=1200" alt=""><div><b>Rare Beauty Hope Faves</b><span>Viral 96 · Worth 89</span></div></div><div class="c-actions"><a id="culture-celebrity-product" href="/product/rare-beauty-hope-faves-4-piece-gift-set-2026/">See verdict →</a><a href="/collection/celebrity-effect/">Explore collection ↗</a></div></div></article>
 <article class="ccard" id="culture-screen"><a class="cmedia" href="/collection/seen-on-screen/"><img src="https://edikted.com/cdn/shop/files/Edikted_Lookbook_07_07_2025268554copy.jpg?v=1753686263&width=1200" alt="Fashion seen on screen"><b>03</b></a><div class="ccopy"><small>TV / FILM / SCREEN CULTURE</small><h3>Seen on Screen</h3><p>The fashion, beauty and objects people start searching for the second they appear on screen.</p><div class="culture-now" id="culture-screen-now"><img src="https://wornontv.net/dottv/assets/products/Cinq-Sept-Reenee-Denim-Tie-Waist-Vest-619131-3257621791009099.jpg" alt=""><div><b>Cinq Sept Reenee Denim Tie Waist Vest</b><span>General Hospital · score in progress</span></div></div><div class="c-actions"><a href="/collection/seen-on-screen/">Open screen edit →</a><a href="/collection/seen-on-screen/">Explore collection ↗</a></div></div></article>
 </div></div></section>
@@ -272,44 +270,32 @@ main{overflow-x:clip}
 
 <script>
 (function(){
-  if(window.__vyrdictCultureReset)return;window.__vyrdictCultureReset=1;
-  function rail(){return document.querySelector('.culture .cgrid')}
-  function cards(){var r=rail();return r?[].slice.call(r.querySelectorAll('.ccard')):[]}
+  if(window.__vyrdictCultureTabs)return;window.__vyrdictCultureTabs=1;
   function tabs(){return [].slice.call(document.querySelectorAll('.culture-tabs [data-culture-index]'))}
-  function go(i){
-    var r=rail(),cs=cards(),ts=tabs();if(!r||!cs[i])return;
-    var rr=r.getBoundingClientRect(),cr=cs[i].getBoundingClientRect();
-    var target=Math.max(0,r.scrollLeft+(cr.left-rr.left));
-    if(typeof r.scrollTo==='function')r.scrollTo({left:target,behavior:'smooth'});
-    else r.scrollLeft=target;
-    ts.forEach(function(t,n){t.classList.toggle('is-active',n===i)});
-  }
-  window.vyrdictCultureGo=go;
-  function resetCultureRail(){
-    var r=rail();if(!r)return;
-    r.scrollLeft=0;
-    tabs().forEach(function(t,n){t.classList.toggle('is-active',n===0)});
-    requestAnimationFrame(function(){r.scrollLeft=0});
-    setTimeout(function(){r.scrollLeft=0},120);
-    setTimeout(function(){r.scrollLeft=0},500);
+  function cards(){return [].slice.call(document.querySelectorAll('.culture .ccard'))}
+  function activate(i){
+    var ts=tabs(),cs=cards();
+    if(!cs.length)return;
+    if(i<0||i>=cs.length)i=0;
+    ts.forEach(function(t,n){
+      t.classList.toggle('is-active',n===i);
+      t.setAttribute('aria-selected',n===i?'true':'false');
+    });
+    cs.forEach(function(c,n){c.classList.toggle('is-active',n===i)});
   }
   function bind(){
-    tabs().forEach(function(t){t.addEventListener('click',function(){go(Number(t.dataset.cultureIndex)||0)})});
-    var r=rail();if(r)r.addEventListener('scroll',function(){
-      var cs=cards();if(!cs.length)return;
-      var left=r.scrollLeft,nearest=0,best=Infinity;
-      cs.forEach(function(c,i){var d=Math.abs((c.offsetLeft-r.offsetLeft)-left);if(d<best){best=d;nearest=i}});
-      tabs().forEach(function(t,n){t.classList.toggle('is-active',n===nearest)});
-    },{passive:true});
-    resetCultureRail();
+    tabs().forEach(function(t){
+      t.addEventListener('click',function(e){
+        if(window.matchMedia('(max-width:620px)').matches){
+          e.preventDefault();
+          activate(Number(t.dataset.cultureIndex)||0);
+        }
+      });
+    });
+    activate(0);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
-  document.addEventListener('click',function(e){
-      var t=e.target.closest&&e.target.closest('.culture-tabs [data-culture-index]');
-      if(!t)return;
-      go(Number(t.dataset.cultureIndex)||0);
-    },true);
-  window.addEventListener('pageshow',resetCultureRail);
+  window.addEventListener('pageshow',function(){activate(0)});
 })();
 </script>
 <script id="vyrdict-home-product-engagement-js-20261006">
