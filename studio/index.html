@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>VYRDICT Studio — Culture, Creative & Creator Strategy</title>
 <meta name="description" content="VYRDICT Studio helps consumer brands spot what matters, shape ideas people care about, and prove what actually worked.">
-<meta name="robots" content="noindex,nofollow">
+<meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="icon" href="/vyrdict-logo.svg" type="image/svg+xml">
 <style>
 :root{
@@ -168,7 +168,7 @@ footer{display:flex;justify-content:space-between;gap:20px;padding:26px 4.5vw;bo
   <div class="field"><label>Name</label><input required name="name"></div><div class="field"><label>Company</label><input required name="company"></div><div class="field"><label>Email</label><input required type="email" name="email"></div>
   <div class="field"><label>What are you working on?</label><textarea required name="brief"></textarea></div>
   <div class="field"><label>Interested in</label><select name="service"><option>Trend & Culture Sprint</option><option>Launch & Creative Strategy</option><option>Creator Campaign</option><option>72-Hour Culture Sprint</option><option>Not sure yet</option></select></div>
-  <button class="button" type="submit">Start a conversation</button><div class="fine" id="formnote">Private staging build. This form does not send data yet.</div>
+  <div style="position:absolute;left:-9999px;opacity:0;pointer-events:none" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div><button class="button" id="submitbtn" type="submit">Start a conversation</button><div class="fine" id="formnote">Tell us what you’re working on — your message goes directly into the VYRDICT Studio inquiry queue.</div>
  </form>
 </div></section>
 
@@ -176,7 +176,27 @@ footer{display:flex;justify-content:space-between;gap:20px;padding:26px 4.5vw;bo
 <script>
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add("on")}),{threshold:.12});
 document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
-document.getElementById("inquiry").addEventListener("submit",function(e){e.preventDefault();document.getElementById("formnote").textContent="Staging inquiry captured locally. Nothing was sent.";});
+document.getElementById("inquiry").addEventListener("submit",async function(e){
+  e.preventDefault();
+  const form=e.currentTarget,note=document.getElementById("formnote"),btn=document.getElementById("submitbtn");
+  const data=Object.fromEntries(new FormData(form).entries());
+  if(!String(data.name||"").trim()||!String(data.company||"").trim()||!String(data.email||"").trim()||!String(data.brief||"").trim()){
+    note.textContent="Please complete your name, company, email and project details.";return;
+  }
+  btn.disabled=true;btn.textContent="Sending…";note.textContent="Sending your inquiry…";
+  try{
+    const r=await fetch("https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-studio-inquiry",{
+      method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(data)
+    });
+    const out=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(out.error||"failed");
+    form.reset();note.textContent="Received — VYRDICT Studio has your inquiry. We’ll follow up using the email you provided.";
+  }catch(err){
+    note.textContent="We couldn’t send that just now. Please try again in a moment.";
+  }finally{
+    btn.disabled=false;btn.textContent="Start a conversation";
+  }
+});
 </script>
 </body>
 </html>
