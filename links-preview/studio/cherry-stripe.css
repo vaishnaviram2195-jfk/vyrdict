@@ -142,3 +142,17 @@ body{color:var(--cola-dark)}
   .letter-head h1{font-size:clamp(26px,7vw,31px);margin:12px auto 9px}
   .letter-lede{font-size:12px}
 }
+
+
+/* Contact page: deliberately legible secondary details, including on phones. */
+.connect-row small{
+  font:700 12.8px/1.48 "DM Sans",Arial,sans-serif;
+  color:#593746!important;
+  text-align:right;
+  max-width:56%;
+  overflow-wrap:anywhere;
+}
+@media(max-width:620px){
+  .connect-row{gap:12px}
+  .connect-row small{font-size:12.5px;max-width:55%}
+}
