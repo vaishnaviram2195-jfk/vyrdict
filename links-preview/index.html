@@ -57,8 +57,31 @@ dialog p{font-size:13px;line-height:1.6;color:#566151;margin:0 0 14px}
 .note{border-top:1px solid #b9c2ae;padding-top:12px;font-size:11px;line-height:1.5;color:#656e61}
 @media (max-width:540px){.shell{align-items:flex-start;padding:58px 13px 38px}.logo{width:68px;height:68px;margin-bottom:13px}.vmark{font-size:45px}.vmark:after{width:8px;height:8px;bottom:10px}h1{font-size:43px}.intro{font-size:13.6px;max-width:390px;margin:11px auto 15px}.socials{margin-bottom:21px}.links{gap:10px}.link{min-height:76px;padding:11px 13px;grid-template-columns:40px 1fr 23px;gap:12px;border-radius:20px}.icon-circle{width:40px;height:40px}.icon-circle svg{height:22px;width:22px}.link-title{font-size:22px}.link-sub{font-size:10px}.arr{width:23px;height:23px}.tagline{margin-top:23px}.preview-panel{margin-top:16px}.preview-flag{top:10px;right:10px;font-size:8px}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}body:after{animation:none}*,*:before,*:after{transition:none!important}}
+
+/* Contrast study: cherry-cola links on the approved icy, iridescent glass background. */
+body[data-shade="cola"]{--button:#633849;--button-hover:#77485a}
+body[data-shade="cola"] .link{
+  border-color:rgba(255,248,241,.72);
+  box-shadow:0 9px 22px rgba(53,29,46,.24),0 2px 5px rgba(53,29,46,.11);
+}
+body[data-shade="cola"] .link-title{color:#fffaf4}
+body[data-shade="cola"] .link-sub{color:#f4e6e8}
+body[data-shade="cola"] .icon-circle{
+  background:#f9f1ec;
+  border-color:rgba(255,255,255,.7);
+}
+body[data-shade="cola"] .icon-circle svg{stroke:#643849}
+body[data-shade="cola"] .arr{
+  background:#f8f0eb;
+  color:#623747;
+  box-shadow:0 2px 6px rgba(40,23,36,.13);
+}
+body[data-shade="cola"] .link:hover{
+  background:#77485a;
+  box-shadow:0 12px 30px rgba(53,29,46,.27);
+}
 </style></head>
-<body data-shade="olive"><span class="preview-flag">DESIGN PREVIEW · NOT LIVE</span>
+<body data-shade="cola"><span class="preview-flag">DESIGN PREVIEW · NOT LIVE</span>
 <div class="shell"><main class="page">
  <div class="logo" role="img" aria-label="VYRDICT V with pink square dot"><span class="vmark">V</span></div>
  <h1>VYRDICT</h1>
