@@ -1,0 +1,136 @@
+/* VYRDICT Studio – striped stationery prototype, October 2026.
+   Inspired by the user's powder-blue / cherry-cola / buttercream stationery reference.
+   Scoped to the 3-page Studio newsletter; never loaded by the glass bio hub. */
+:root{
+ --cola:#5b2937;--cola-dark:#47202d;--cola-muted:#785360;
+ --blue:#c6d6e2;--cream:#f8efd9;--cream-light:#fdf6e6;
+ --cream-deep:#f0e2c5;--hairline:rgba(98,48,57,.20);
+ --letter-ink:var(--cola-dark);--letter-sub:var(--cola-muted);
+ --letter-paper:var(--cream);--letter-olive:var(--blue);--letter-line:var(--hairline);
+}
+body{color:var(--cola);background-color:#c6d8e1}
+.letter-paper{
+ color:var(--cola);background-color:var(--cream);
+ background-image:radial-gradient(circle,rgba(114,62,65,.10) .8px,transparent 1.25px);
+ background-size:25px 25px;
+ border:1px solid rgba(255,250,236,.91);
+ box-shadow:0 12px 38px rgba(72,40,49,.13),0 2px 7px rgba(72,40,49,.08);
+}
+body[data-paper-pattern="grid"] .letter-paper{
+ background-color:var(--cream);
+ background-image:linear-gradient(rgba(142,96,93,.095) 1px,transparent 1px),linear-gradient(90deg,rgba(142,96,93,.095) 1px,transparent 1px);
+ background-size:25px 25px
+}
+body[data-paper-pattern="stripes"] .letter-paper{
+ background-color:var(--cream);
+ background-image:repeating-linear-gradient(94deg,rgba(142,96,93,.065) 0,rgba(142,96,93,.065) 1px,transparent 1px,transparent 24px)
+}
+.letter-frame{max-width:800px}
+.letter-head{
+ padding:38px 26px 32px;
+ background-color:var(--blue);
+ background-image:repeating-linear-gradient(90deg,
+ transparent 0 69px,
+ var(--cola) 69px 74px,
+ transparent 74px 80px,
+ var(--cola) 80px 86px,
+ transparent 86px 115px);
+ border-bottom:0;
+}
+.letter-title-panel{
+ position:relative;
+ background:var(--cream);
+ background-image:radial-gradient(rgba(135,102,75,.07) .6px, transparent .9px);
+ background-size:5px 5px;
+ border:1px solid #e9ddc1;
+ border-radius:17px;
+ padding:23px 29px 25px;
+ box-shadow:0 4px 16px rgba(61,36,44,.16);
+ text-align:center;
+}
+.letter-meta{justify-content:center;color:var(--cola-muted);font-size:9px;font-weight:700}
+.letter-meta>span:last-child{
+ position:absolute;right:15px;top:11px;
+ font-size:8px;letter-spacing:.05em;color:#815d63
+}
+.letter-label{gap:6px}
+.letter-mark{color:var(--cola-dark)}
+.letter-mark i{background:#eb9fb2}
+.letter-head h1{
+ font:500 clamp(22px,4.2vw,29px)/1.24 var(--letter-serif);
+ letter-spacing:-.012em;color:var(--cola-dark);
+ margin:15px auto 12px;max-width:420px
+}
+.letter-head h1 em{
+ font:italic 400 1.0em/1.24 var(--letter-serif);
+ letter-spacing:-.01em;color:var(--cola-dark)
+}
+.letter-lede{
+ font-size:12.5px;line-height:1.55;
+ color:var(--cola-muted);max-width:435px;margin-inline:auto
+}
+.letter-body{background-color:transparent;color:var(--cola)}
+.letter-kicker{color:#9a6676}
+.letter-body h2{color:var(--cola-dark);font-size:20px}
+.letter-body p{color:var(--cola);line-height:1.59}
+.intro-note{border-left:2px solid var(--cola);background:rgba(239,216,197,.43)}
+.intro-note p,.details,.form-help,.form-status{color:var(--cola-muted)}
+.offering{border-color:var(--hairline)}
+.offering:last-of-type{border-color:var(--hairline)}
+.offering .number{color:#a06b79}
+.offering h3{color:var(--cola-dark)}
+.field label,.field .caption{color:var(--cola-dark)}
+.field .optional{color:var(--cola-muted)}
+.field input,.field select,.field textarea{
+ color:var(--cola-dark);border:1px solid #d7beaf;background:#fffaf0
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+ border-color:var(--cola);outline:2px solid #ecd4d0
+}
+.field input::placeholder,.field textarea::placeholder{color:#9b7d7e}
+.submit{background:var(--cola);color:#fff7e7}
+.submit:hover{background:#743a4b}
+.form-help a,.contact-hero a{color:var(--cola-dark)}
+.letter-foot{background:rgba(251,242,224,.73);border-color:var(--hairline)}
+.progress a{color:#8a6b70}
+.progress a[aria-current="page"]{color:var(--cola-dark);text-decoration-color:var(--cola)}
+.progress .slash{color:#b5969c}
+.nav-next a{color:var(--cola-dark)}
+.nav-next .forward{background:#e6c8bd;color:var(--cola-dark)}
+.nav-next .forward:hover{background:#dcb3a8}
+.letter-back,.letter-issue{color:var(--cola-dark)}
+.letter-bottom-note{color:var(--cola-dark)}
+.factor,.decision,.connect-row{border-color:var(--hairline)}
+.factor h3,.factor-index,.factor-score,.score-example strong,.decision b{color:var(--cola-dark)}
+.factor p,.decision p{color:var(--cola)}
+.disclaimer{color:var(--cola-muted)!important}
+.contact-hero{background:#e7ccbf;border:1px solid rgba(104,47,62,.11)}
+.contact-hero p,.connect-row strong{color:var(--cola-dark)}
+.connect-row small{color:var(--cola-muted)}
+.closing{color:var(--cola);font-size:29px}
+.pattern-selector{background:rgba(253,245,231,.88);border-color:#fff5e9}
+.pattern-selector span{color:var(--cola)}
+.pattern-picks button{
+ background:#fff6e6;color:var(--cola-dark);border-color:#9b77805e
+}
+.pattern-picks button:hover{background:#f3deca}
+.pattern-picks button[aria-pressed="true"]{
+ background:#e9c4bb;color:var(--cola-dark);
+ border-color:#a5757f;box-shadow:inset 0 0 0 1px #e2b8b1
+}
+@media(max-width:620px){
+ .letter-head{padding:32px 16px 26px;
+ background-image:repeating-linear-gradient(90deg,
+ transparent 0 45px,
+ var(--cola) 45px 49px,
+ transparent 49px 54px,
+ var(--cola) 54px 59px,
+ transparent 59px 81px)}
+ .letter-title-panel{padding:25px 15px 20px;border-radius:14px}
+ .letter-head h1{font-size:clamp(23px,7vw,28px);max-width:345px;margin:14px auto 9px}
+ .letter-meta>span:last-child{right:9px;top:9px;font-size:7px}
+ .letter-meta{font-size:8px}
+ .letter-lede{font-size:12.5px}
+ .letter-body h2{font-size:20px}
+ .offering h3{font-size:16px}
+}
