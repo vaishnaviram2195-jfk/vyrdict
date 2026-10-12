@@ -194,3 +194,15 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--cola);outline-offse
 }
 
 .letter-lede a{color:inherit;font-weight:600;text-decoration:underline;text-underline-offset:4px}
+
+/* Phone layouts keep controls easy to tap and long contact labels in one column. */
+@media(max-width:620px){
+ .letter-top{flex-wrap:wrap;gap:4px 12px}
+ .letter-back,.letter-issue{min-height:44px}
+ .letter-body,.title-card,.field,.formgrid{min-width:0}
+ .field input,.field select,.field textarea{min-width:0;max-width:100%}
+ .connect-row{flex-direction:column;align-items:flex-start;gap:6px}
+ .connect-row small{text-align:left;max-width:100%;overflow-wrap:anywhere}
+ .progress{align-items:center}
+ .progress a,.nav-next a{display:inline-flex;align-items:center;min-height:44px}
+}

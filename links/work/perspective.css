@@ -177,3 +177,14 @@
 /* VYRDICT's news and pop-culture edit, linked from the services overview. */
 .culture-news-note{font-size:15px;line-height:1.6;font-weight:500;color:#593c4a;max-width:730px;margin:13px auto 0}
 .culture-news-note a{color:inherit;font-weight:700;text-decoration:underline;text-underline-offset:4px}
+
+/* Narrow screens get flexible headings and full-size gallery tap targets. */
+@media(max-width:600px){
+ .hero h1{font-size:clamp(46px,13vw,62px);line-height:1.02}
+ .reach h2{font-size:clamp(44px,12vw,58px);line-height:1.02}
+ .utility a.hub-back{min-height:44px}
+ .case-controls{flex-wrap:wrap;align-items:center}
+ .case-controls>p{flex:1 1 140px;max-width:none}
+ .case-controls-actions{margin-left:auto}
+ .case-arrow{width:44px;height:44px;flex:0 0 44px}
+}

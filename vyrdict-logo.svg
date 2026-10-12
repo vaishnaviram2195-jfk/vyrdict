@@ -2,6 +2,6 @@
   <title id="title">VYRDICT</title>
   <desc id="desc">Dark cherry V with a pink square dot on powder blue</desc>
   <rect width="512" height="512" rx="112" fill="#c1dbe8"/>
-  <text x="56" y="320" font-family="Arial, Helvetica, sans-serif" font-size="246" font-weight="900" letter-spacing="-18" fill="#70000e">V</text>
-  <rect x="315" y="267" width="58" height="58" rx="4" fill="#f3bbca"/>
+  <text x="56" y="320" font-family="Arial, Helvetica, sans-serif" font-size="246" font-weight="900" letter-spacing="-18" fill="#70000e" stroke="#70000e" stroke-width="3.2" paint-order="stroke fill">V</text>
+  <rect x="315" y="281" width="44" height="44" rx="3" fill="#d66c8b"/>
 </svg>
