@@ -173,3 +173,7 @@
 .case-gallery .case-points li::marker,.case-gallery .case-deliver-list li::marker{color:#f3c2d1}
 .case-gallery .case-footer small,.case-gallery .study-photo-credit{color:#e8d5db}
 .case-gallery .case-footer a,.case-gallery .study-photo-credit a{color:#fff5eb}
+
+/* VYRDICT's news and pop-culture edit, linked from the services overview. */
+.culture-news-note{font-size:15px;line-height:1.6;font-weight:500;color:#593c4a;max-width:730px;margin:13px auto 0}
+.culture-news-note a{color:inherit;font-weight:700;text-decoration:underline;text-underline-offset:4px}
