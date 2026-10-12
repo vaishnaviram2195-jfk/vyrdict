@@ -142,6 +142,7 @@
     try{
       const u=new URL(raw,location.href);
       if(u.origin!==location.origin)return null;
+      if(/^\/links(?:\/|$)/i.test(u.pathname)||/^\/studio(?:\/|$)/i.test(u.pathname))return u.pathname+u.search+u.hash;
       if(u.pathname==='/account.html')return '/account.html';
       if(u.pathname==='/saved'||u.pathname==='/saved/')return '/saved';
       if(/^\/collection\/viral-right-now\/?$/i.test(u.pathname))return u.pathname+(u.search||'?live=1');

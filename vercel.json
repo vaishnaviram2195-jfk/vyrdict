@@ -18,6 +18,46 @@
   ],
   "routes": [
     {
+      "src": "^/studio(?:/index\\.html)?/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/links/studio/",
+        "Cache-Control": "no-store, max-age=0"
+      }
+    },
+    {
+      "src": "^/studio/how-scoring-works(?:/index\\.html)?/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/links/studio/scoring/",
+        "Cache-Control": "no-store, max-age=0"
+      }
+    },
+    {
+      "src": "^/studio/work/mccafe(?:/index\\.html)?/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/links/work/#case-01",
+        "Cache-Control": "no-store, max-age=0"
+      }
+    },
+    {
+      "src": "^/studio/work/rothys(?:/index\\.html)?/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/links/work/#case-02",
+        "Cache-Control": "no-store, max-age=0"
+      }
+    },
+    {
+      "src": "^/studio/work/rhode(?:/index\\.html)?/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/links/work/#case-03",
+        "Cache-Control": "no-store, max-age=0"
+      }
+    },
+    {
       "src": "^/$",
       "headers": {
         "Cache-Control": "no-store, max-age=0, must-revalidate",
