@@ -6,13 +6,14 @@
     if(document.getElementById(STYLE))return;
     const s=document.createElement('style');s.id=STYLE;s.textContent=
       '.vyrdict-hub-nav-link{display:inline-flex!important;align-items:center!important;min-height:40px;flex:0 0 auto;color:inherit!important;font-size:11px!important;font-weight:700!important;white-space:nowrap;text-decoration:underline!important;text-underline-offset:4px;letter-spacing:.04em!important}'+
-      '.vyrdict-studio-nav-link{display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#762f48!important;color:#fff!important;border-radius:999px!important;padding:10px 14px!important;text-decoration:none!important;font-weight:900!important;letter-spacing:.08em!important;text-transform:uppercase!important;font-size:9px!important;line-height:1!important}'+
+      '.vyrdict-studio-nav-link,[data-vyrdict-studio-inline="1"]{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-height:36px!important;background:#c1dbe8!important;color:#70000e!important;border:1px solid rgba(112,0,14,.12)!important;border-radius:999px!important;padding:10px 13px!important;text-decoration:none!important;font-weight:650!important;letter-spacing:.08em!important;text-transform:uppercase!important;font-size:11px!important;line-height:1!important;box-shadow:none!important;white-space:nowrap!important}'+
+      '.vyrdict-studio-nav-link:hover,[data-vyrdict-studio-inline="1"]:hover{background:#d5e7ef!important;border-color:rgba(112,0,14,.28)!important}.vyrdict-studio-nav-link:focus-visible,[data-vyrdict-studio-inline="1"]:focus-visible{outline:2px solid #70000e!important;outline-offset:3px!important}'+
       '#vyrdict-studio-home-teaser{margin:56px auto 20px;max-width:1180px;width:calc(100% - 36px);background:linear-gradient(130deg,#191416,#5f2238 58%,#888086);color:#fff;border-radius:28px;padding:38px 42px;box-sizing:border-box;overflow:hidden;position:relative}'+
       '#vyrdict-studio-home-teaser .vs-k{font:900 9px/1 Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#d9b6c3}'+
       '#vyrdict-studio-home-teaser h2{margin:12px 0 12px;font:500 clamp(30px,4vw,52px)/1 Georgia,serif;letter-spacing:-.04em}'+
       '#vyrdict-studio-home-teaser p{margin:0;max-width:680px;color:#e5dde0;font:14px/1.6 Arial,sans-serif}'+
       '#vyrdict-studio-home-teaser a{display:inline-flex;margin-top:20px;padding:11px 15px;background:#fff;color:#171416;border-radius:999px;text-decoration:none;font:900 9px/1 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}'+
-      '@media(max-width:700px){#vyrdict-studio-home-teaser{padding:28px 24px;border-radius:22px}.vyrdict-studio-nav-link{padding:9px 11px!important;font-size:8px!important}}';
+      '@media(max-width:700px){#vyrdict-studio-home-teaser{padding:28px 24px;border-radius:22px}.vyrdict-studio-nav-link,[data-vyrdict-studio-inline="1"]{min-height:34px!important;padding:9px 12px!important;font-size:10px!important}}';
     document.head.appendChild(s);
   };
   const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,' ').trim();
