@@ -61,7 +61,7 @@
 .process-steps h3{font:700 18px/1.3 "DM Sans",Arial,sans-serif;color:var(--deep);margin:0 0 7px;letter-spacing:-.015em}
 .process-steps p{font-size:15px;line-height:1.55;font-weight:500;color:#614b57;margin:0}
 .section-intro p{font-size:15px;line-height:1.65}
-.case-gallery{margin:0 clamp(20px,4vw,66px) 32px}
+.case-gallery{margin:0 0 32px;padding:0 clamp(20px,4vw,66px);background:#714956;color:#f8f4eb;--line:rgba(248,244,235,.28)}
 .case-controls{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:0 0 16px;position:relative}
 .case-controls>p{font-size:14px;line-height:1.5;font-weight:500;color:#614b57;margin:0}
 .case-controls-actions{display:flex;gap:9px;align-items:center;flex-shrink:0}
@@ -70,16 +70,16 @@
 .case-arrow{display:grid;place-items:center;width:42px;height:42px;padding:0;border:1px solid #a0828f;border-radius:50%;background:#f0ece5;color:var(--deep);font:500 24px/1 "DM Sans",Arial,sans-serif;cursor:pointer}
 .case-arrow:hover:enabled{background:#e2d4dc}
 .case-arrow:disabled{opacity:.38;cursor:default}
-.case-arrow:focus-visible,.case-track:focus-visible{outline:3px solid var(--cola);outline-offset:5px}
+.case-arrow:focus-visible,.case-track:focus-visible{outline:3px solid #fffaf4;outline-offset:5px}
 .features.case-track{
   position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:100%;
   gap:24px;align-items:stretch;padding:0;overflow-x:auto;
   scroll-snap-type:x mandatory;scroll-padding-inline:0;overscroll-behavior-x:contain;
-  scrollbar-width:thin;scrollbar-color:#a78795 #ebe4e7;
+  scrollbar-width:thin;scrollbar-color:#e8b6c8 #582f40;
 }
 .case-track::-webkit-scrollbar{height:6px}
-.case-track::-webkit-scrollbar-track{background:#ebe4e7}
-.case-track::-webkit-scrollbar-thumb{background:#a78795;border-radius:8px}
+.case-track::-webkit-scrollbar-track{background:#582f40}
+.case-track::-webkit-scrollbar-thumb{background:#e8b6c8;border-radius:8px}
 .case-gallery .feature{
   min-width:0;scroll-snap-align:start;scroll-snap-stop:always;
   display:flex;flex-direction:column;padding:16px 24px 20px;
@@ -149,7 +149,7 @@
   .overview-note{font-size:15px;margin-top:25px}
   .work-process{padding:28px 22px 31px}
   .process-steps li{padding:18px 17px;gap:13px}
-  .case-gallery{margin:0 19px 25px}
+  .case-gallery{margin:0 0 25px;padding:0 19px}
   .case-controls{align-items:flex-end;gap:10px}
   .case-controls>p{font-size:13px;max-width:52%}
   .case-count{font-size:11px;margin-right:1px}
@@ -159,3 +159,17 @@
   .case-gallery .feature-label{font-size:9px;gap:8px;padding-bottom:15px}
 }
 @media(prefers-reduced-motion:reduce){.folder-mark{transition:none}}
+
+/* The complete case-study section uses the approved Rothy's cherry cola. */
+#cases.section-intro{background:#714956;color:#f8f4eb;border-top-color:rgba(248,244,235,.28)}
+#cases h2{color:#fffaf4}
+#cases .label,#cases p{color:#e8d5db}
+.case-gallery .feature{background:#714956;color:#f8f4eb;--line:rgba(248,244,235,.28);border-top-color:rgba(248,244,235,.28)}
+.case-gallery .case-controls>p,.case-gallery .feature-label,.case-gallery .micro{color:#e8d5db}
+.case-gallery .case-count,.case-gallery .feature-label b,.case-gallery .case-copy h3,.case-gallery .case-headline,.case-gallery .case-deliver-label{color:#fffaf4}
+.case-gallery .full-stop{color:#e8b6c8}
+.case-gallery .case-points,.case-gallery .case-deliver-list{color:#f1e4e6}
+.case-gallery .case-points strong,.case-gallery .case-deliver-list strong{color:#fffaf4}
+.case-gallery .case-points li::marker,.case-gallery .case-deliver-list li::marker{color:#f3c2d1}
+.case-gallery .case-footer small,.case-gallery .study-photo-credit{color:#e8d5db}
+.case-gallery .case-footer a,.case-gallery .study-photo-credit a{color:#fff5eb}
