@@ -104,3 +104,108 @@ a,button{outline-offset:4px}
 .connect-row strong{font-size:24px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important}}
+
+
+/* VYRDICT MINI LETTER / TYPOGRAPHY + BACKGROUND STUDY V2 */
+/* A calm, compact digital newsletter, not a large agency landing page. */
+:root{--letter-paper:rgba(253,252,247,.94);--letter-line:rgba(82,99,73,.20)}
+body{color:#2c352b}
+.letter-frame{padding:46px 16px 34px;max-width:785px}
+.letter-top{max-width:620px;margin:0 auto 12px}
+.letter-back,.letter-issue{font-size:10px;letter-spacing:.035em;font-weight:700}
+.letter-paper{
+  max-width:620px;overflow:hidden;box-shadow:0 8px 38px rgba(42,59,50,.11),0 1px 5px rgba(42,59,50,.08);
+  border:1px solid rgba(255,255,255,.85);border-radius:10px;
+  background-color:var(--letter-paper);
+  background-image:radial-gradient(circle,rgba(99,130,92,.16) .85px,transparent 1.45px);
+  background-position:11px 10px;
+  background-size:24px 24px;
+}
+body[data-paper-pattern="grid"] .letter-paper{
+  background-image:linear-gradient(rgba(114,137,104,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(114,137,104,.08) 1px,transparent 1px);
+  background-size:23px 23px;background-position:center center
+}
+body[data-paper-pattern="stripes"] .letter-paper{
+  background-image:repeating-linear-gradient(95deg,rgba(142,163,129,.085) 0px,rgba(142,163,129,.085) 1px,transparent 1px,transparent 21px);
+  background-size:100% 100%;background-position:0 0
+}
+.letter-head{padding:26px 37px 22px;border-bottom:1px solid var(--letter-line);background:linear-gradient(115deg,rgba(253,252,245,.94) 0%,rgba(238,245,225,.77) 57%,rgba(254,242,237,.70) 100%)}
+.letter-meta{font-size:9px;letter-spacing:.055em;font-weight:700;color:#54634d}
+.letter-mark{font-size:21px}
+.letter-mark i{height:6px;width:6px}
+.letter-head h1{font:700 clamp(24px,4.3vw,31px)/1.18 var(--letter-sans);letter-spacing:-.036em;margin:16px 0 10px;color:#273529}
+.letter-head h1 em{font:italic 400 1.14em/1.07 var(--letter-serif);letter-spacing:-.018em;color:#647e50}
+.letter-lede{font-size:13px;line-height:1.55;max-width:485px;color:#465747}
+.letter-body{padding:24px 37px 29px}
+.letter-kicker{font-size:9px;letter-spacing:.095em;font-weight:800;color:#6b815b}
+.letter-body h2{font:700 clamp(20px,3vw,23px)/1.22 var(--letter-sans);letter-spacing:-.03em;margin:8px 0 13px;color:#29382c}
+.letter-body p{font-size:12.7px;line-height:1.58}
+.intro-note{padding:10px 13px;border-left:2px solid #a1b682;border-radius:0 7px 7px 0;margin:10px 0 21px;background:rgba(226,236,215,.43)}
+.intro-note p{font-size:11.8px;line-height:1.58}
+.offering{grid-template-columns:29px 1fr;gap:11px;padding:15px 0}
+.offering .number{font:700 10px var(--letter-sans);color:#698055;margin-top:5px}
+.offering h3{font:700 17px/1.26 var(--letter-sans);letter-spacing:-.02em;color:#2b3d2f}
+.offering p{font-size:12px;line-height:1.5;margin:6px 0}
+.details{font-size:10.5px;line-height:1.5;color:#63715e;font-weight:600}
+.application{padding-top:25px}
+.application h2{margin-bottom:7px}
+.application>p{margin:0 0 16px}
+.apply{gap:13px}
+.formgrid{gap:12px}
+.field{gap:5px}
+.field label,.field .caption{font-size:11px;font-weight:700}
+.field input,.field select,.field textarea{background:#fffefb;padding:11px;border-radius:6px;border:1px solid #cad3c3;font-size:13px}
+.field textarea{min-height:83px}
+.submit{border-radius:7px;padding:12px 15px;font-size:12px;background:#bacc96}
+.letter-foot{padding:15px 37px 20px;gap:15px;background:rgba(251,252,246,.79)}
+.progress a{font-size:9px;letter-spacing:.02em}
+.nav-next a{font-size:11px}
+.nav-next .forward{padding:10px 14px}
+.letter-bottom-note{max-width:620px;font-size:9px;margin:14px auto 0}
+.factor{grid-template-columns:25px 1fr auto;padding:12px 0;gap:10px}
+.factor-index,.factor-score{font-size:10px;margin-top:4px}
+.factor h3{font:700 15px/1.3 var(--letter-sans);letter-spacing:-.012em;margin:0 0 4px}
+.factor p{font-size:12px;line-height:1.5}
+.score-example{gap:13px;padding:9px 0;margin-top:6px}
+.score-example strong{font:700 26px var(--letter-sans);letter-spacing:-.04em}
+.score-example p{font-size:12px}
+.decision-list{gap:0 12px}
+.decision{grid-template-columns:62px 1fr;gap:8px;padding:11px 0}
+.decision b{font-size:11px}
+.decision p{font-size:11.5px}
+.contact-hero{background:rgba(218,230,193,.69);padding:18px 20px;margin:13px 0 20px;border-radius:7px}
+.contact-hero p{font:700 19px/1.2 var(--letter-sans);letter-spacing:-.02em;margin:0 0 7px}
+.contact-hero a{font-size:12px}
+.connect-row{padding:12px 0}
+.connect-row strong{font:700 15px/1.25 var(--letter-sans)}
+.connect-row small{font-size:10.5px}
+.closing{font:italic 400 29px/1.2 var(--letter-serif);padding:22px 0 4px}
+.pattern-selector{max-width:620px;margin:12px auto 0;padding:10px 12px;border-radius:10px;background:rgba(251,252,246,.79);border:1px solid #ffffffb8;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.pattern-selector span{font:700 10px var(--letter-sans);color:#3c4b36}
+.pattern-picks{display:flex;gap:5px}
+.pattern-picks button{font:700 10px var(--letter-sans);padding:6px 11px;border:1px solid #81907665;border-radius:30px;background:#fffdf7;color:#2b382c;cursor:pointer}
+.pattern-picks button:hover{background:#e4ebd3}
+.pattern-picks button[aria-pressed="true"]{background:#cbd8ab;border-color:#a1b48d;box-shadow:inset 0 0 0 1px #bbcfa0}
+@media(max-width:620px){
+.letter-frame{padding:44px 11px 29px}
+.letter-top{padding-inline:3px}
+.letter-paper{border-radius:9px}
+.letter-head{padding:23px 21px 21px}
+.letter-head h1{font-size:clamp(23px,6.9vw,28px);margin:14px 0 9px}
+.letter-meta{font-size:9px}
+.letter-lede{font-size:12.7px}
+.letter-body{padding:22px 21px 28px}
+.letter-body h2{font-size:20px}
+.offering{grid-template-columns:24px 1fr;gap:9px;padding:14px 0}
+.offering h3{font-size:16px}
+.formgrid{grid-template-columns:1fr;gap:12px}
+.letter-foot{padding:15px 21px 18px}
+.progress{gap:6px}
+.progress a{font-size:9px}
+.nav-next a{font-size:10.5px}
+.contact-hero p{font-size:18px}
+.connect-row strong{font-size:14px}
+.pattern-selector{padding:10px 7px;gap:6px}
+.pattern-selector span{font-size:9px}
+.pattern-picks button{font-size:9px;padding:6px 9px}
+}
