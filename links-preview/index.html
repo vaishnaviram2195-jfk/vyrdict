@@ -14,12 +14,12 @@ body:after{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;back
 @keyframes glimmer{from{background-position:center,0% center}to{background-position:center,100% center}}
 a,button{outline-offset:4px}a:focus-visible,button:focus-visible{outline:3px solid #586e35}
 .shell{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:45px 18px 28px}
-.page{width:min(535px,100%);display:flex;flex-direction:column;align-items:center;text-align:center;position:relative}
+.page{width:min(585px,100%);display:flex;flex-direction:column;align-items:center;text-align:center;position:relative}
 .logo{width:77px;height:77px;border-radius:50%;background:var(--dark);display:flex;justify-content:center;align-items:center;box-shadow:0 8px 23px rgba(15,24,22,.15);margin-bottom:13px}
 .vmark{color:#fffdf7;font:italic 400 52px/1 var(--serif);position:relative;display:inline-block;letter-spacing:-.08em;padding-right:13px;padding-top:3px}
 .vmark:after{content:"";height:9px;width:9px;background:var(--pink);position:absolute;right:1px;bottom:12px;transform:rotate(0deg)}
 h1{font:400 clamp(42px,7vw,51px)/.99 var(--serif);letter-spacing:.006em;margin:0;color:#293229;text-shadow:0 1px 1px rgba(255,255,255,.42)}
-.intro{max-width:408px;margin:13px auto 17px;font-size:12.6px;line-height:1.56;letter-spacing:.005em;font-weight:600;color:#333d32;text-shadow:0 1px 2px #fff9}
+.intro{max-width:408px;margin:13px auto 17px;font-size:14.1px;line-height:1.56;letter-spacing:.005em;font-weight:600;color:#333d32;text-shadow:0 1px 2px #fff9}
 .intro b{font-weight:800}
 .socials{display:flex;gap:19px;align-items:center;justify-content:center;margin:0 0 24px}
 .socials a{color:#28342c;width:29px;height:29px;display:grid;place-items:center;transition:transform .2s,background .2s;border-radius:50%;background:rgba(255,255,255,.16)}
@@ -35,14 +35,14 @@ h1{font:400 clamp(42px,7vw,51px)/.99 var(--serif);letter-spacing:.006em;margin:0
 .link-sub{display:block;font-size:10.4px;line-height:1.45;margin-top:5px;color:#4a5647;font-weight:600;letter-spacing:.003em}
 .arr{background:#2d382c;color:white;display:grid;place-items:center;width:25px;height:25px;border-radius:50%;font-size:16px;line-height:1;box-shadow:0 2px 6px #2234221b}
 .tagline{margin-top:25px;color:#343e36;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;text-shadow:0 1px 2px #fff}
-.preview-panel{margin-top:22px;background:rgba(251,250,244,.71);border:1px solid #fff8;backdrop-filter:blur(10px);padding:9px 11px 11px;border-radius:15px;box-shadow:0 3px 15px #303c3012;display:flex;flex-direction:column;align-items:center;gap:7px}
-.preview-panel .title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.13em;color:#495144}
-.shades{display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
-.shades button{font:700 10px var(--sans);border-radius:30px;padding:7px 10px;border:1px solid #64705e57;color:#2c382d;cursor:pointer;background:#f8faefcc;transition:transform .2s}
-.shades button:hover{transform:translateY(-2px)}.shades button[aria-pressed="true"]{background:#2c382d;color:white;border-color:#2c382d}
+
+
+
+
+.shades button[aria-pressed="true"]{background:#2c382d;color:white;border-color:#2c382d}
 .preview-flag{position:fixed;top:12px;right:14px;font-size:9px;letter-spacing:.08em;font-weight:800;z-index:3;color:#56615a;background:rgba(255,255,255,.76);padding:7px 11px;border-radius:20px;border:1px solid #fffb;pointer-events:none}
-body[data-shade="pistachio"]{--button:#e2edc7;--button-hover:#d1e5aa}
-body[data-shade="sage"]{--button:#d5e4cf;--button-hover:#c4dabb}
+
+
 body[data-shade="olive"]{--button:#cbd8ab;--button-hover:#b9cb8f}
 body:has(dialog[open]){overflow:hidden}
 dialog{width:min(520px,calc(100vw - 30px));max-height:82dvh;overflow:auto;border:1px solid #c3c8b8;border-radius:15px;padding:25px 24px;background:#f9faf3;box-shadow:0 20px 75px #1c2b2340;color:#2b342b}
@@ -55,10 +55,10 @@ dialog p{font-size:13px;line-height:1.6;color:#566151;margin:0 0 14px}
 .study{display:flex;justify-content:space-between;align-items:center;padding:13px 0;text-decoration:none;border-top:1px solid #b9c2ae;font:400 23px var(--serif)}
 .study span{font:700 11px var(--sans);letter-spacing:.01em}.study:hover{color:#567142}
 .note{border-top:1px solid #b9c2ae;padding-top:12px;font-size:11px;line-height:1.5;color:#656e61}
-@media (max-width:540px){.shell{align-items:flex-start;padding:58px 18px 38px}.logo{width:68px;height:68px;margin-bottom:13px}.vmark{font-size:45px}.vmark:after{width:8px;height:8px;bottom:10px}h1{font-size:43px}.intro{font-size:12px;max-width:358px;margin:11px auto 15px}.socials{margin-bottom:21px}.links{gap:10px}.link{min-height:76px;padding:11px 13px;grid-template-columns:40px 1fr 23px;gap:12px;border-radius:20px}.icon-circle{width:40px;height:40px}.icon-circle svg{height:22px;width:22px}.link-title{font-size:22px}.link-sub{font-size:10px}.arr{width:23px;height:23px}.tagline{margin-top:23px}.preview-panel{margin-top:16px}.preview-flag{top:10px;right:10px;font-size:8px}}
+@media (max-width:540px){.shell{align-items:flex-start;padding:58px 13px 38px}.logo{width:68px;height:68px;margin-bottom:13px}.vmark{font-size:45px}.vmark:after{width:8px;height:8px;bottom:10px}h1{font-size:43px}.intro{font-size:13.6px;max-width:390px;margin:11px auto 15px}.socials{margin-bottom:21px}.links{gap:10px}.link{min-height:76px;padding:11px 13px;grid-template-columns:40px 1fr 23px;gap:12px;border-radius:20px}.icon-circle{width:40px;height:40px}.icon-circle svg{height:22px;width:22px}.link-title{font-size:22px}.link-sub{font-size:10px}.arr{width:23px;height:23px}.tagline{margin-top:23px}.preview-panel{margin-top:16px}.preview-flag{top:10px;right:10px;font-size:8px}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}body:after{animation:none}*,*:before,*:after{transition:none!important}}
 </style></head>
-<body data-shade="pistachio"><span class="preview-flag">DESIGN PREVIEW · NOT LIVE</span>
+<body data-shade="olive"><span class="preview-flag">DESIGN PREVIEW · NOT LIVE</span>
 <div class="shell"><main class="page">
  <div class="logo" role="img" aria-label="VYRDICT V with pink square dot"><span class="vmark">V</span></div>
  <h1>VYRDICT</h1>
@@ -69,17 +69,11 @@ dialog p{font-size:13px;line-height:1.6;color:#566151;margin:0 0 14px}
  </nav>
  <nav class="links" aria-label="Explore VYRDICT">
   <a class="link" href="https://vyrdict.com/" aria-label="Viral Products and Scores — Explore VYRDICT"><span class="icon-circle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 6-6 4 4 8-9"/><path d="M15 6h6v6"/></svg></span><span class="link-copy"><span class="link-title">Viral Products + Scores</span><span class="link-sub">What's viral, what's worth it, and why</span></span><span class="arr" aria-hidden="true">›</span></a>
-  <a class="link" href="https://vyrdict.com/studio/edition/" aria-label="VYRDICT Studio — Explore services for brands and creators"><span class="icon-circle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 2.3 7.7L22 12l-7.7 2.3L12 22l-2.3-7.7L2 12l7.7-2.3L12 2Z"/></svg></span><span class="link-copy"><span class="link-title">VYRDICT Studio</span><span class="link-sub">Trends, creative strategy &amp; creator campaigns</span></span><span class="arr" aria-hidden="true">›</span></a>
-  <button class="link" type="button" id="reachButton" aria-label="Explore Our Work and Reach"><span class="icon-circle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20V10l6 4 6-8 6 5v9H3Z"/><path d="M5 6.5h.01M10 3h.01M20 4.5h.01"/></svg></span><span class="link-copy"><span class="link-title">Our Work + Reach</span><span class="link-sub">Our editorial thinking &amp; brand interactions</span></span><span class="arr" aria-hidden="true">›</span></button>
+  <a class="link" href="/links-preview/studio/" aria-label="VYRDICT Studio — Explore services for brands and creators"><span class="icon-circle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 2.3 7.7L22 12l-7.7 2.3L12 22l-2.3-7.7L2 12l7.7-2.3L12 2Z"/></svg></span><span class="link-copy"><span class="link-title">VYRDICT Studio</span><span class="link-sub">Trends, creative strategy &amp; creator campaigns</span></span><span class="arr" aria-hidden="true">›</span></a>
+  <a class="link" href="/links-preview/work/" aria-label="Explore Our Work and Reach"><span class="icon-circle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20V10l6 4 6-8 6 5v9H3Z"/><path d="M5 6.5h.01M10 3h.01M20 4.5h.01"/></svg></span><span class="link-copy"><span class="link-title">Our Work + Reach</span><span class="link-sub">Our editorial thinking &amp; brand interactions</span></span><span class="arr" aria-hidden="true">›</span></a>
  </nav>
  <div class="tagline">VIRAL CULTURE. CONSIDERED CREATIVE.</div>
- <div class="preview-panel"><div class="title">TRY A BUTTON COLOUR</div><div class="shades" role="group" aria-label="Button shade"><button type="button" data-shade="pistachio" aria-pressed="true">Pistachio</button><button type="button" data-shade="sage" aria-pressed="false">Soft sage</button><button type="button" data-shade="olive" aria-pressed="false">Muted olive</button></div></div>
+ 
  </main></div>
- <dialog id="reachDialog" aria-labelledby="reachTitle"><div class="modal-top"><span class="modal-kicker">VYRDICT / THE WORK</span><button type="button" class="close-modal" id="closeModal" aria-label="Close">×</button></div><h2 id="reachTitle">Our Work + Reach.</h2><p>Explore three independent editorial studies. A dedicated showcase of verified brand interactions will follow when the original screenshots are added.</p>
-  <a class="study" href="https://vyrdict.com/studio/edition/work/mccafe/">McCafé <span>CULTURE STRATEGY ↗</span></a><a class="study" href="https://vyrdict.com/studio/edition/work/rothys/">Rothy’s <span>CREATOR STRATEGY ↗</span></a><a class="study" href="https://vyrdict.com/studio/edition/work/rhode/">rhode <span>PRODUCT CULTURE ↗</span></a>
-  <div class="note">Preview only. Independent case explorations are not commissioned client projects. No brand interactions are claimed without verified screenshots.</div></dialog>
-<script>
-(()=>{'use strict';const paletteButtons=[...document.querySelectorAll('[data-shade]')];function chooseShade(color){document.body.dataset.shade=color;paletteButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.shade===color)))}paletteButtons.forEach(b=>b.addEventListener('click',()=>chooseShade(b.dataset.shade)));
- const dialog=document.getElementById('reachDialog');document.getElementById('reachButton').addEventListener('click',()=>dialog.showModal());document.getElementById('closeModal').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
-})();
-</script></body></html>
+ 
+</body></html>
