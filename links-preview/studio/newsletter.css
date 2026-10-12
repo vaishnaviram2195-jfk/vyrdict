@@ -215,14 +215,14 @@ body[data-paper-pattern="stripes"] .letter-paper{
 :root{
  --letter-ink:#54293a;
  --letter-sub:#765262;
- --letter-paper:#f9efd9;
+ --letter-paper:#f6f3ec;
  --letter-olive:#b8c8d7;
  --letter-line:rgba(92,49,64,.17);
  --cherry:#54283a;
  --cherry-dark:#472431;
- --powder:#bfcfdf;
- --cream:#faf0da;
- --butter:#f2e5c4;
+ --powder:#c8d8e5;
+ --cream:#f6f3ec;
+ --butter:#f0eee7;
 }
 body{color:var(--cherry)}
 .letter-frame{max-width:780px;padding:42px 14px 30px}
@@ -233,13 +233,22 @@ body{color:var(--cherry)}
  background-color:var(--cream);
  background-image:none!important;
  color:var(--cherry);
- border:1px solid rgba(250,243,226,.96);
+ border:1px solid rgba(255,255,255,.89);
  box-shadow:0 9px 37px rgba(54,37,48,.15),0 2px 5px rgba(42,45,49,.08);
  max-width:620px;border-radius:8px;backdrop-filter:none
 }
 .letter-head{
  padding:0;
- background:var(--powder);
+ background-color:#77515d;
+ /* ONE background across the entire header guarantees the upper and lower stripes line up */
+ background-image:repeating-linear-gradient(90deg,
+  transparent 0px, transparent 56px,
+  #c8d8e5 56px, #c8d8e5 61px,
+  transparent 61px, transparent 68px,
+  #c8d8e5 68px, #c8d8e5 73px,
+  transparent 73px, transparent 98px);
+ background-repeat:repeat;
+ background-position:left top;
  border-bottom:0;
  text-align:center;
  overflow:hidden
@@ -247,27 +256,20 @@ body{color:var(--cherry)}
 .stripe-band{
  display:block;
  width:100%;
- background-color:var(--powder);
- background-image:repeating-linear-gradient(
- 90deg, transparent 0px,transparent 56px,
- var(--cherry) 56px,var(--cherry) 61px,
- transparent 61px,transparent 68px,
- var(--cherry) 68px,var(--cherry) 73px,
- transparent 73px,transparent 98px);
- background-repeat:repeat;
- opacity:.99
+ background:none;
+ opacity:1
 }
 .stripe-top{height:52px}
 .stripe-bottom{height:32px}
 .title-card{
- background:var(--cream);
+ background:#f4f1ea;
  position:relative;
  margin:-10px 24px -11px;
  border-radius:13px;
  padding:20px 25px 19px;
  z-index:1;
  box-shadow:0 3px 10px rgba(57,38,48,.06);
- border:1px solid rgba(255,249,233,.75);
+ border:1px solid rgba(255,255,255,.83);
 }
 .letter-meta{justify-content:center;color:#805163;gap:12px;font-size:9px;font-weight:700;letter-spacing:.08em}
 .letter-label{justify-content:center;color:var(--cherry)}
@@ -292,7 +294,7 @@ body{color:var(--cherry)}
  color:#775362
 }
 .letter-body{
- background-color:var(--cream);
+ background-color:#f6f3ec;
  background-image:radial-gradient(circle,rgba(101,59,68,.075) .7px,transparent 1.2px);
  background-size:24px 24px;
  background-position:8px 12px;
@@ -302,7 +304,7 @@ body{color:var(--cherry)}
 .letter-body h2{color:var(--cherry);font:700 19px/1.23 var(--letter-sans);letter-spacing:-.025em;margin:8px 0 13px}
 .letter-body p{color:#694552;font-size:12.7px;line-height:1.62}
 .letter-kicker{color:#a06778;font-size:9px;letter-spacing:.12em}
-.intro-note{background:#f3e3ca;border-color:#ac8390;border-width:2px}
+.intro-note{background:#efeee8;border-color:#b9a2a3;border-width:2px}
 .intro-note p{color:#654451;font-size:11.8px}
 .offering{border-color:var(--letter-line);padding:16px 0}
 .offering:last-of-type{border-color:var(--letter-line)}
@@ -314,7 +316,7 @@ body{color:var(--cherry)}
 .field label,.field .caption{color:var(--cherry)}
 .field .optional{color:#986f7c}
 .field input,.field select,.field textarea{
- background:#fffbf1;
+ background:#fffefa;
  border:1px solid #ccb6aa;
  color:var(--cherry);
  font-size:13px;
@@ -324,7 +326,7 @@ body{color:var(--cherry)}
 .submit{background:var(--cherry);color:#fff8e7;border:1px solid #5a3043;padding:13px 15px;font-size:12px}
 .submit:hover{background:#71384d}
 .form-help,.form-help a,.form-status{color:#794e5f}
-.letter-foot{background:#f5e9d0;border-color:var(--letter-line)}
+.letter-foot{background:#efede6;border-color:var(--letter-line)}
 .progress a{color:#8d6b72}
 .progress a[aria-current="page"]{color:var(--cherry)}
 .progress .slash{color:#af8990}
