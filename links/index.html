@@ -81,9 +81,41 @@ body[data-shade="cola"] .link:hover{
   box-shadow:0 12px 30px rgba(53,29,46,.27);
 }
 
-/* Licensed stock photograph: Glass Blocks by Bacho Grigolia / Pexels. Appraised 2026-10-12. */
-body:before{filter:saturate(.62) brightness(1.4) contrast(.82)!important;background-position:center center!important}
-body:after{background:radial-gradient(ellipse at 50% 40%,rgba(255,253,247,.48),rgba(255,252,247,.23) 48%,rgba(255,255,255,.06) 75%),linear-gradient(125deg,transparent 38%,rgba(255,255,255,.17) 48%,transparent 59%),linear-gradient(130deg,rgba(255,236,241,.11),rgba(225,233,249,.08) 55%,rgba(245,240,204,.09))!important;background-size:100% 100%,250% 100%,100% 100%!important}
+/* Soft pastel glass: Bacho Grigolia / Pexels texture, subdued behind the copy. */
+body{background:#e2edf7}
+body:before{
+ inset:-18px;
+ opacity:.15;
+ filter:blur(7px) saturate(.25) brightness(1.4) contrast(.64)!important;
+ background-position:center center!important;
+}
+body:after{
+ background:
+  radial-gradient(ellipse at 12% 20%,rgba(243,195,214,.56),rgba(243,195,214,0) 45%),
+  radial-gradient(ellipse at 86% 15%,rgba(250,239,184,.50),rgba(250,239,184,0) 39%),
+  radial-gradient(ellipse at 78% 82%,rgba(204,224,204,.45),rgba(204,224,204,0) 42%),
+  radial-gradient(ellipse at 22% 84%,rgba(195,216,245,.46),rgba(195,216,245,0) 50%),
+  linear-gradient(115deg,rgba(224,237,249,.32),rgba(224,237,249,.08) 60%,rgba(233,242,249,.15)),
+  linear-gradient(125deg,transparent 38%,rgba(255,255,255,.18) 48%,transparent 59%)!important;
+ background-size:100% 100%,100% 100%,100% 100%,100% 100%,100% 100%,250% 100%!important;
+}
+.page{isolation:isolate}
+.page:before{
+ content:"";position:absolute;left:0;right:0;top:55px;height:225px;
+ z-index:-1;pointer-events:none;
+ background:radial-gradient(ellipse at 50% 48%,rgba(255,254,251,.92),rgba(255,254,251,.64) 38%,rgba(255,254,251,0) 72%);
+ filter:blur(14px);
+}
+.intro{
+ position:relative;color:#3b2e41;
+ font-size:14.5px;line-height:1.65;font-weight:600;
+ text-shadow:0 1px 1px rgba(255,255,255,.7);
+}
+.intro b{color:#342638;font-weight:700}
+@media(max-width:540px){
+ .intro{font-size:13.8px}
+ .page:before{top:48px;height:225px}
+}
 </style><link rel="canonical" href="https://vyrdict.com/links/"><link rel="icon" type="image/svg+xml" href="/vyrdict-logo.svg"><meta property="og:type" content="website"><meta property="og:title" content="VYRDICT — One Link, Every Story"><meta property="og:description" content="Explore viral products, scores, VYRDICT Studio, and our editorial work and brand interactions."><meta property="og:url" content="https://vyrdict.com/links/"><meta property="og:image" content="https://vyrdict.com/vyrdict-social-preview.jpg"></head>
 <body data-shade="cola">
 <div class="shell"><main class="page">
