@@ -209,3 +209,153 @@ body[data-paper-pattern="stripes"] .letter-paper{
 .pattern-selector span{font-size:9px}
 .pattern-picks button{font-size:9px;padding:6px 9px}
 }
+
+
+/* Cherry-cola stationery design — approved powder-blue stripes and warm cream, Studio only. */
+:root{
+ --letter-ink:#54293a;
+ --letter-sub:#765262;
+ --letter-paper:#f9efd9;
+ --letter-olive:#b8c8d7;
+ --letter-line:rgba(92,49,64,.17);
+ --cherry:#54283a;
+ --cherry-dark:#472431;
+ --powder:#bfcfdf;
+ --cream:#faf0da;
+ --butter:#f2e5c4;
+}
+body{color:var(--cherry)}
+.letter-frame{max-width:780px;padding:42px 14px 30px}
+.letter-top{max-width:620px;margin:0 auto 11px}
+.letter-back,.letter-issue{color:var(--cherry);text-shadow:0 1px 2px #fff5;letter-spacing:.055em;font-size:10px}
+.letter-back:hover,.letter-issue:hover{color:#9b4d64}
+.letter-paper{
+ background-color:var(--cream);
+ background-image:none!important;
+ color:var(--cherry);
+ border:1px solid rgba(250,243,226,.96);
+ box-shadow:0 9px 37px rgba(54,37,48,.15),0 2px 5px rgba(42,45,49,.08);
+ max-width:620px;border-radius:8px;backdrop-filter:none
+}
+.letter-head{
+ padding:0;
+ background:var(--powder);
+ border-bottom:0;
+ text-align:center;
+ overflow:hidden
+}
+.stripe-band{
+ display:block;
+ width:100%;
+ background-color:var(--powder);
+ background-image:repeating-linear-gradient(
+ 90deg, transparent 0px,transparent 56px,
+ var(--cherry) 56px,var(--cherry) 61px,
+ transparent 61px,transparent 68px,
+ var(--cherry) 68px,var(--cherry) 73px,
+ transparent 73px,transparent 98px);
+ background-repeat:repeat;
+ opacity:.99
+}
+.stripe-top{height:52px}
+.stripe-bottom{height:32px}
+.title-card{
+ background:var(--cream);
+ position:relative;
+ margin:-10px 24px -11px;
+ border-radius:13px;
+ padding:20px 25px 19px;
+ z-index:1;
+ box-shadow:0 3px 10px rgba(57,38,48,.06);
+ border:1px solid rgba(255,249,233,.75);
+}
+.letter-meta{justify-content:center;color:#805163;gap:12px;font-size:9px;font-weight:700;letter-spacing:.08em}
+.letter-label{justify-content:center;color:var(--cherry)}
+.letter-mark{color:var(--cherry);font-size:21px}
+.letter-mark i{background:#d799ac}
+.letter-meta>span:last-child{font-size:9px;color:#815968}
+.letter-head h1{
+ font:400 clamp(27px,4.8vw,35px)/1.08 var(--letter-serif);
+ letter-spacing:-.009em;
+ margin:15px auto 10px;
+ max-width:470px;
+ color:var(--cherry);
+}
+.letter-head h1 em{
+ font:italic 400 1em/1.08 var(--letter-serif);
+ color:var(--cherry);
+}
+.letter-lede{
+ font:500 12.5px/1.6 var(--letter-sans);
+ max-width:450px;
+ margin:0 auto;
+ color:#775362
+}
+.letter-body{
+ background-color:var(--cream);
+ background-image:radial-gradient(circle,rgba(101,59,68,.075) .7px,transparent 1.2px);
+ background-size:24px 24px;
+ background-position:8px 12px;
+ padding:27px 37px 31px;
+ color:var(--cherry)
+}
+.letter-body h2{color:var(--cherry);font:700 19px/1.23 var(--letter-sans);letter-spacing:-.025em;margin:8px 0 13px}
+.letter-body p{color:#694552;font-size:12.7px;line-height:1.62}
+.letter-kicker{color:#a06778;font-size:9px;letter-spacing:.12em}
+.intro-note{background:#f3e3ca;border-color:#ac8390;border-width:2px}
+.intro-note p{color:#654451;font-size:11.8px}
+.offering{border-color:var(--letter-line);padding:16px 0}
+.offering:last-of-type{border-color:var(--letter-line)}
+.offering .number{color:#96596c}
+.offering h3{color:var(--cherry);font:700 16px/1.3 var(--letter-sans);letter-spacing:-.015em}
+.offering p{color:#6e4e5d;line-height:1.56}
+.details{color:#8a6070;font-size:10.5px}
+.application{padding-top:26px}
+.field label,.field .caption{color:var(--cherry)}
+.field .optional{color:#986f7c}
+.field input,.field select,.field textarea{
+ background:#fffbf1;
+ border:1px solid #ccb6aa;
+ color:var(--cherry);
+ font-size:13px;
+}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid #c9d5e3;border-color:#ad8791}
+.field input::placeholder,.field textarea::placeholder{color:#9b8a89}
+.submit{background:var(--cherry);color:#fff8e7;border:1px solid #5a3043;padding:13px 15px;font-size:12px}
+.submit:hover{background:#71384d}
+.form-help,.form-help a,.form-status{color:#794e5f}
+.letter-foot{background:#f5e9d0;border-color:var(--letter-line)}
+.progress a{color:#8d6b72}
+.progress a[aria-current="page"]{color:var(--cherry)}
+.progress .slash{color:#af8990}
+.nav-next a{color:var(--cherry)}
+.nav-next .forward{background:var(--powder);color:var(--cherry);border:1px solid #a7b9c9}
+.nav-next .forward:hover{background:#aabfd2}
+.letter-bottom-note{color:var(--cherry)}
+.factor,.decision{border-color:var(--letter-line)}
+.factor-index,.factor-score{color:#956071}
+.factor h3{color:var(--cherry);font-size:15px}
+.factor p{color:#714f5d}
+.score-example strong{color:var(--cherry)}
+.decision b{color:var(--cherry)}
+.decision p,.disclaimer{color:#7d5a67!important}
+.contact-hero{background:#e5e8e5;border:1px solid #becbd3;padding:19px 20px}
+.contact-hero p,.contact-hero a{color:var(--cherry)}
+.connect-row{border-color:var(--letter-line)}
+.connect-row strong,.connect-row small{color:var(--cherry)}
+.closing{color:#95596e}
+.pattern-selector{display:none!important}
+@media(max-width:620px){
+ .letter-frame{padding:44px 12px 30px}
+ .stripe-top{height:48px}
+ .stripe-bottom{height:26px}
+ .title-card{margin:-10px 14px -10px;padding:17px 16px 16px;border-radius:11px}
+ .letter-meta{font-size:8px;gap:9px;flex-wrap:wrap}
+ .letter-meta>span:last-child{font-size:8px}
+ .letter-head h1{font-size:clamp(26px,7vw,31px);margin:12px auto 9px;line-height:1.1}
+ .letter-lede{font-size:12px;line-height:1.56}
+ .letter-body{padding:22px 22px 26px}
+ .letter-body h2{font-size:18px}
+ .offering h3{font-size:15px}
+ .letter-foot{padding:15px 22px 18px}
+}
