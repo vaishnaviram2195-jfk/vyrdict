@@ -22,6 +22,7 @@
     .card{display:flex;flex-direction:column;text-decoration:none;min-width:0}.media{aspect-ratio:.88;background:#e9e7e1;display:grid;place-items:center;overflow:hidden;position:relative}.media img{width:88%;height:88%;object-fit:contain;display:block;filter:drop-shadow(0 12px 20px rgba(0,0,0,.08));transition:transform .35s ease}.card:hover .media img{transform:scale(1.02)}
     .rank{position:absolute;top:12px;left:12px;background:rgba(246,244,239,.9);padding:7px 8px;font:800 8px/1 Arial,sans-serif;letter-spacing:.12em}
     .copy{padding:14px 1px 0}.meta{font:800 9px/1.25 Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#74706a;margin-bottom:7px}.name{font:500 16px/1.3 Arial,sans-serif;margin:0;min-height:42px}.scores{display:flex;gap:14px;margin-top:11px;font:700 9px/1 Arial,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:#666}.scores b{color:#171717}.status{margin-top:9px;font:700 9px/1 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#69645e}
+    .evidence-date{margin-top:8px;font:400 11px/1.4 var(--sans);color:var(--muted)}
     .loading,.empty{grid-column:1/-1;padding:34px 0;text-align:center;color:#6d675f;font:700 10px/1.5 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}
     .skeleton{min-width:0}.sk-media{aspect-ratio:.88;background:linear-gradient(100deg,#e7e4de 25%,#efede8 38%,#e7e4de 52%);background-size:220% 100%;animation:shimmer 1.15s ease-in-out infinite}.sk-line{height:9px;margin-top:12px;background:#e4e1db}.sk-line.short{width:55%;height:7px}.sk-line.name{width:82%;height:13px;margin-top:8px}.sk-line.score{width:68%;height:7px;margin-top:12px}@keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
     @media(max-width:980px){.wrap{width:min(100% - 42px,900px)}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{padding-top:46px}}
@@ -33,12 +34,12 @@
 <body>
   <header class="site-head"><a class="brand" href="/" aria-label="VYRDICT home">VYRDICT</a><nav class="head-nav" aria-label="Culture collections"><a class="active" href="/collection/viral-right-now/">Viral Right Now</a><a href="/collection/celebrity-effect/">Celebrity Effect</a><a href="/collection/seen-on-screen/">Seen on Screen</a></nav><a class="home-link" href="/">Back home</a></header>
   <main>
-    <section class="hero"><div class="wrap"><div class="kicker">LIVE VYRDICT SIGNALS</div><h1>Viral right now.</h1><div class="intro"><p>The products with the strongest live momentum right now — refreshed from current VYRDICT signals instead of a static collection from weeks ago.</p><div class="stamp" id="stamp">Live signals</div></div></div></section>
+    <section class="hero"><div class="wrap"><div class="kicker">LIVE VYRDICT SIGNALS</div><h1>Viral right now.</h1><div class="intro"><p>The recent viral edit: verified products with strong momentum, clear scores and their original evidence dates.</p><div class="stamp" id="stamp">Live signals</div></div></div></section>
     <section class="products"><div class="wrap"><div class="grid" id="grid"><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div></div></div></section>
   </main>
   <script>
     (()=>{
-      const CACHE_KEY='vyrdict:viral-now:v2';
+      const CACHE_KEY='vyrdict:viral-now:v3-20261013';
       const CACHE_TTL=10*60*1000;
       const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
       const img=u=>{const s=String(u||'').trim();return !s?'':(s.startsWith('/')||/^https:\/\/(?:www\.)?vyrdict\.com\//i.test(s)?s:'/vti-image?url='+encodeURIComponent(s))};
@@ -49,9 +50,9 @@
       function render(j,fromCache=false){
         const ps=(j?.products||[]).filter(p=>p&&p.slug&&p.image_url);
         if(!ps.length)return false;
-        grid.innerHTML=ps.map((p,i)=>`<a class="card" href="/product/${encodeURIComponent(p.slug)}/"><div class="media"><img loading="${i<4?'eager':'lazy'}" decoding="async" fetchpriority="${i<4?'high':'auto'}" src="${esc(img(p.image_url))}" data-original="${esc(p.image_url)}" onerror="this.onerror=null;if(this.dataset.original)this.src=this.dataset.original" alt="${esc((p.brand||'')+' '+(p.name||''))}"><span class="rank">${String(i+1).padStart(2,'0')}</span></div><div class="copy"><div class="meta">${esc(p.category||'Viral')} · ${esc(p.brand||'')}</div><h2 class="name">${esc(p.name||'')}</h2><div class="scores"><span>Viral <b>${Math.round(Number(p.viral_score||0))}</b></span><span>Worth <b>${Math.round(Number(p.worth_score||0))}</b></span></div><div class="status">${esc(cleanStatus(p.viral_status||'Trending'))}</div></div></a>`).join('');
+        grid.innerHTML=ps.map((p,i)=>`<a class="card" href="/product/${encodeURIComponent(p.slug)}/"><div class="media"><img loading="${i<4?'eager':'lazy'}" decoding="async" fetchpriority="${i<4?'high':'auto'}" src="${esc(img(p.image_url))}" data-original="${esc(p.image_url)}" onerror="this.onerror=null;if(this.dataset.original)this.src=this.dataset.original" alt="${esc((p.brand||'')+' '+(p.name||''))}"><span class="rank">${String(i+1).padStart(2,'0')}</span></div><div class="copy"><div class="meta">${esc(p.category||'Viral')} · ${esc(p.brand||'')}</div><h2 class="name">${esc(p.name||'')}</h2><div class="scores"><span>Viral <b>${Math.round(Number(p.viral_score||0))}</b></span><span>Worth <b>${Math.round(Number(p.worth_score||0))}</b></span></div><div class="status">${esc(cleanStatus(p.viral_status||'Trending'))}</div>${p.last_verified_at?`<div class="evidence-date">Evidence checked ${esc(new Date(p.last_verified_at).toLocaleDateString(undefined,{month:'short',day:'numeric'}))}</div>`:''}</div></a>`).join('');
         const d=j.generated_at?new Date(j.generated_at):new Date();
-        stamp.textContent=`Fresh ${j.window_days||10}-day signal window · ${fromCache?'Updated':'Updated'} ${d.toLocaleDateString(undefined,{month:'short',day:'numeric'})}`;
+        stamp.textContent=`Recent ${j.window_days||14}-day verified edit · ${fromCache?'Updated':'Updated'} ${d.toLocaleDateString(undefined,{month:'short',day:'numeric'})}`;
         hasRendered=true;
         return true;
       }
@@ -67,7 +68,7 @@
 
       async function refresh(){
         try{
-          const r=await fetch('/api/viral-now?limit=24',{headers:{accept:'application/json'}});
+          const r=await fetch('/api/viral-now?limit=24&rev=20261013-recent-edit',{headers:{accept:'application/json'}});
           if(!r.ok)throw new Error('feed');
           const j=await r.json();
           if(!(j.products||[]).some(p=>p&&p.slug&&p.image_url))throw new Error('empty');

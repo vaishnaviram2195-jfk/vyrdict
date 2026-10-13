@@ -5,7 +5,7 @@ const ACTIVE_STATUSES=new Set(['peak','viral-now','surging','breaking_out','brea
 const STATUS_BOOST={peak:8,'viral-now':7,surging:7,breaking_out:6,breakout:6,flash_viral:5,rising:5,resurgence:4,resurgent:4,viral:3};
 
 function freshnessTs(p){
-  return Math.max(...[p.last_verified_at,p.published_at,p.created_at].map(v=>v?Date.parse(v):0));
+  return Math.max(0,...[p.last_verified_at,p.published_at,p.created_at].map(v=>v?Date.parse(v):0).filter(Number.isFinite));
 }
 
 function ageDays(p,now){
@@ -28,6 +28,7 @@ async function fetchWindow(days){
     evidence_status:'eq.verified',
     image_url:'not.is.null',
     or:`(published_at.gte.${cutoff},last_verified_at.gte.${cutoff},created_at.gte.${cutoff})`,
+    order:'last_verified_at.desc.nullslast,published_at.desc.nullslast',
     limit:'120'
   });
   const r=await fetch(`${SB}?${qs}`,{headers:{apikey:KEY,Authorization:`Bearer ${KEY}`,accept:'application/json'}});
@@ -40,7 +41,7 @@ module.exports=async function handler(req,res){
     const requested=Number(req.query?.limit||12);
     const limit=Math.max(3,Math.min(Number.isFinite(requested)?requested:12,24));
     const now=Date.now();
-    const rows=await fetchWindow(10);
+    const rows=await fetchWindow(14);
     const qualify=(r,maxAge)=>{
       const status=String(r.viral_status||'').toLowerCase();
       const confidence=String(r.evidence_confidence||'').toLowerCase();
@@ -53,9 +54,9 @@ module.exports=async function handler(req,res){
 
     let windowDays=7;
     let products=rows.filter(r=>qualify(r,7));
-    if(products.length<Math.min(3,limit)){
-      windowDays=10;
-      products=rows.filter(r=>qualify(r,10));
+    if(products.length<Math.min(8,limit)){
+      windowDays=14;
+      products=rows.filter(r=>qualify(r,14));
     }
 
     products.sort((a,b)=>score(b,now)-score(a,now)||freshnessTs(b)-freshnessTs(a));
@@ -66,7 +67,7 @@ module.exports=async function handler(req,res){
       products,
       window_days:windowDays,
       generated_at:new Date().toISOString(),
-      freshness_policy:'verified active viral momentum only; 7-day primary window, 10-day emergency fallback'
+      freshness_policy:'verified active viral momentum only; 7-day priority, 14-day recent edit when the primary feed is sparse; original verification dates retained'
     });
   }catch(e){
     res.setHeader('Cache-Control','no-store');
