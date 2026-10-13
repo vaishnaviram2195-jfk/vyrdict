@@ -1,5 +1,6 @@
 const fs=require('fs');
 const path=require('path');
+const search=require('../lib/search-handler');
 const REV='20261006-product-images-2';
 let cached='';
 
@@ -10,6 +11,7 @@ function html(){
 }
 
 module.exports=async function handler(req,res){
+  if(req.query?.view==='search')return search(req,res);
   const incomingHost=String(req?.headers?.['x-forwarded-host']||req?.headers?.host||'').split(',')[0].trim().toLowerCase();
   if(incomingHost==='www.vyrdict.com'){
     res.setHeader('Location','https://vyrdict.com/');

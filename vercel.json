@@ -134,7 +134,7 @@
     },
     {
       "src": "^/search/?$",
-      "dest": "/api/search"
+      "dest": "/api/home-stable?view=search"
     },
     {
       "src": "/careers/?$",
