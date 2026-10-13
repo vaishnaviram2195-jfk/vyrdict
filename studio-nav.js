@@ -21,8 +21,12 @@
     document.querySelectorAll('a[href]').forEach(a=>{
       try{
         const u=new URL(a.getAttribute('href'),location.href);
-        if(u.origin!==location.origin||!/^\/studio(?:\/index\.html)?\/?$/.test(u.pathname))return;
-        const target='/links/studio/'+u.search+u.hash;
+        if(u.origin!==location.origin)return;
+        const isHeader=Boolean(a.closest('header,body>nav'));
+        const legacy=/^\/studio(?:\/index\.html)?\/?$/.test(u.pathname);
+        const current=/^\/links\/studio(?:\/index\.html)?\/?$/.test(u.pathname);
+        if(!legacy&&!(isHeader&&current))return;
+        const target=(isHeader?'/links/':'/links/studio/')+u.search+u.hash;
         if(a.getAttribute('href')!==target)a.setAttribute('href',target);
       }catch{}
     });
@@ -42,8 +46,8 @@
         hub.setAttribute('aria-label','Back to VYRDICT Hub');
         nav.prepend(hub);
       }
-      if(h.querySelector('.vyrdict-studio-nav-link')||links.some(x=>norm(x.textContent)==='studio'))continue;
-      const a=document.createElement('a');a.href='/links/studio/';a.textContent='Studio';a.className='vyrdict-studio-nav-link';a.setAttribute('aria-label','VYRDICT Studio');
+      if(h.querySelector('.vyrdict-studio-nav-link,.studio-nav-cta')||links.some(x=>/^(vyrdict )?studio$/.test(norm(x.textContent))))continue;
+      const a=document.createElement('a');a.href='/links/';a.textContent='Studio';a.className='vyrdict-studio-nav-link';a.setAttribute('aria-label','VYRDICT Studio');
       nav.appendChild(a);
     }
   };

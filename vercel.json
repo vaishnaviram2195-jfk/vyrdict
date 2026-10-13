@@ -133,8 +133,8 @@
       "dest": "/saved.html"
     },
     {
-      "src": "/search/?$",
-      "dest": "/index.html"
+      "src": "^/search/?$",
+      "dest": "/api/search"
     },
     {
       "src": "/careers/?$",

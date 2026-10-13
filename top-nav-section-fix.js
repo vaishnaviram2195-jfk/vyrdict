@@ -111,7 +111,7 @@
     if(!parent)return false;
 
     const a=document.createElement('a');
-    a.href='/links/studio/';
+    a.href='/links/';
     a.textContent='Studio';
     a.className=shop.className||'';
     a.setAttribute('data-vyrdict-studio-topnav','1');
