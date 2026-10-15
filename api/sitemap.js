@@ -12,7 +12,8 @@ module.exports=async function handler(req,res){
       ['https://vyrdict.com/how-vyrdict-scores.html','monthly'],
       ['https://vyrdict.com/editorial-policy.html','monthly'],
       ['https://vyrdict.com/suggest-product.html','monthly'],
-      ['https://vyrdict.com/careers','weekly']
+      ['https://vyrdict.com/careers','weekly'],
+      ['https://vyrdict.com/news/pepsi-off-season-can-jackets/','weekly']
     ];
     const urls=[];
     for(const [loc,freq] of staticPages)urls.push(`<url><loc>${xml(loc)}</loc><changefreq>${freq}</changefreq></url>`);
