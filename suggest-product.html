@@ -39,6 +39,7 @@
 (()=>{
 const ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-suggest-product';
 const form=document.getElementById('suggest-form'),btn=document.getElementById('submit'),status=document.getElementById('status'),email=document.getElementById('requester_email'),notify=document.getElementById('notify_if_added');
+document.getElementById('product_name').value=(new URLSearchParams(location.search).get('q')||'').trim().slice(0,160);
 email.addEventListener('input',()=>{if(email.value.trim())notify.checked=true});
 notify.addEventListener('change',()=>{if(notify.checked&&!email.value.trim())email.focus()});
 form.addEventListener('submit',async e=>{
