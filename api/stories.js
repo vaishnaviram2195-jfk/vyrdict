@@ -75,6 +75,7 @@ module.exports=async function handler(req,res){
       select:'id,slug,headline,dek,category,image_url,image_alt,source_label,source_url,instagram_url,published_at,is_featured',
       is_active:'eq.true',
       status:'eq.published',
+      is_featured:'eq.true',
       image_url:'not.is.null',
       order:'published_at.desc',
       limit:String(poolLimit)
