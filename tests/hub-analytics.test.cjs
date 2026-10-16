@@ -9,7 +9,7 @@ function run(href,{local=storage(),session=storage(),referrer='',links=[],hasMai
 }
 function link(href){const h={};return {getAttribute:()=>href,setAttribute:(k,v)=>{if(k==='href')href=v},addEventListener:(k,f)=>h[k]=f,handlers:h,url:()=>href}}
 test('hub arrival, each destination click, and corresponding page arrival share correlation IDs',()=>{
- for(const [section,dest] of [['products','https://vyrdict.com/'],['studio','/links/studio/'],['work','/links/work/'],['news','/#news']]){
+ for(const [section,dest] of [['products','https://vyrdict.com/'],['products','https://vyrdict.com/edit/haunted-antiques/'],['studio','/links/studio/'],['work','/links/work/'],['news','/#news']]){
  const l=link(dest),a=run('https://vyrdict.com/links/?utm_source=ig',{referrer:'https://l.instagram.com/',links:[l]});
  assert.deepEqual(a.events.map(e=>e.event_name),['page_view','hub_view']);assert.equal(a.events[1].hub_is_entry,true);
  l.handlers.click({button:0,defaultPrevented:false});const click=a.events.at(-1);assert.equal(click.hub_section,section);

@@ -14,6 +14,7 @@ TikTok: https://www.tiktok.com/@vyrdict
 
 - Product reviews at https://vyrdict.com/product/{slug}/
 - Category rankings at https://vyrdict.com/category/{slug}/
+- Seasonal shopping edits, including https://vyrdict.com/edit/haunted-antiques/
 - Viral and Worth scores on a 0–100 scale
 - Clear editorial verdicts that distinguish popularity from product value
 - Evidence trails and verified retailer links where available

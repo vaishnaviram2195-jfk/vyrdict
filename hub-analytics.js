@@ -39,13 +39,13 @@
   window.VyrdictTrackingContext = context;
   context();
   let view = id('h');
-  const pageKind = isHub ? 'hub' : url.pathname.startsWith('/links/studio') ? 'studio' : url.pathname.startsWith('/links/work') ? 'work' : 'home';
+  const pageKind = isHub ? 'hub' : url.pathname.startsWith('/edit/') ? 'edit' : url.pathname.startsWith('/links/studio') ? 'studio' : url.pathname.startsWith('/links/work') ? 'work' : 'home';
   function send(event, extra = {}) {
     const payload = { event_name: event, event_id: id('e'), path: location.pathname + location.search + location.hash, referrer: document.referrer || null, page_kind: pageKind, source: 'hub_v1', ...context(), ...extra };
     try { fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload), keepalive: true }).catch(() => {}); } catch {}
   }
   const targets = {
-    products: u => u.pathname === '/' && !u.hash,
+    products: u => (u.pathname === '/' && !u.hash) || /^\/edit\/haunted-antiques(?:\/index\.html)?\/?$/.test(u.pathname),
     studio: u => /^\/links\/studio(?:\/index\.html)?\/?$/.test(u.pathname),
     work: u => /^\/links\/work(?:\/index\.html)?\/?$/.test(u.pathname),
     news: u => u.pathname === '/' && u.hash === '#news'
