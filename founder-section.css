@@ -1,0 +1,32 @@
+#meet-the-founder{--vfp-cherry:#4b2738;--vfp-cream:#f4ede5;--vfp-ink:#3e3435;--vfp-secondary:#625552;--vfp-rule:#d4c3bc;--vfp-dot:#ce8190;--vfp-sans:var(--sans);--vfp-serif:var(--serif);scroll-margin-top:110px;width:100%;background:transparent;color:var(--vfp-ink);font-family:var(--vfp-sans)}
+  #meet-the-founder *{box-sizing:border-box}
+  #meet-the-founder .vfp-surround{padding:72px 6%;background:var(--vfp-cherry);container-type:inline-size}
+  #meet-the-founder .vfp-paper{width:min(100%,600px);margin:0 auto;padding:27px 36px 28px;background:var(--vfp-cream);color:var(--vfp-ink)}
+  #meet-the-founder .vfp-kicker{margin:0 0 25px;text-align:center;font:500 10px/1.5 var(--vfp-sans);letter-spacing:2.2px;text-transform:uppercase;color:var(--vfp-cherry)}
+  #meet-the-founder .vfp-photo{width:100%;margin:0;background:linear-gradient(110deg,#a5a5a7 0%,#b9b8ba 48%,#99999d 100%);aspect-ratio:16/10;overflow:hidden}
+  #meet-the-founder .vfp-photo img{display:block;width:64%;height:100%;margin-inline:auto;object-fit:cover;object-position:50% 2%;filter:none;mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent)}
+  #meet-the-founder[data-photo=colour] .vfp-photo img{filter:none}
+  #meet-the-founder .vfp-heading{padding-top:23px;margin-bottom:25px}
+  #meet-the-founder h2{font:italic 400 clamp(23px,6.1cqw,36px)/1.15 var(--vfp-serif);letter-spacing:-.55px;white-space:nowrap;margin:0 0 15px;color:var(--vfp-cherry)}
+  #meet-the-founder .vfp-name{font:500 18px/1.45 var(--vfp-sans);letter-spacing:.03px;color:var(--vfp-ink);margin:0 0 7px}
+  #meet-the-founder .vfp-location{display:block;font:400 15px/1.55 var(--vfp-sans);color:#4b2738;opacity:1;visibility:visible;margin:0}
+  #meet-the-founder .vfp-copy p{font:400 14px/1.75 var(--vfp-sans);color:var(--vfp-secondary);margin:0 0 17px;text-wrap:pretty}
+  #meet-the-founder .vfp-copy p:last-child{margin-bottom:0}
+  #meet-the-founder .vfp-copy .vfp-opening{font:400 23px/1.25 var(--vfp-serif);color:var(--vfp-cherry);margin-bottom:22px;letter-spacing:-.08px}
+  #meet-the-founder .vfp-copy strong{font-weight:600;color:var(--vfp-cherry)}
+  #meet-the-founder .vfp-signoff{display:flex;justify-content:flex-end;padding-top:25px}
+  #meet-the-founder .vfp-wordmark{display:inline-flex;align-items:baseline;font:700 17px/1 var(--vfp-sans);letter-spacing:-.8px;color:var(--vfp-cherry)}
+  #meet-the-founder .vfp-wordmark>span{width:4px;height:4px;background:var(--vfp-dot);margin-left:2px}
+  @container(max-width:440px){
+    #meet-the-founder .vfp-paper{padding:22px 22px 25px}
+    #meet-the-founder .vfp-kicker{font-size:9px;letter-spacing:1.8px;margin-bottom:20px}
+    #meet-the-founder h2{font-size:clamp(23px,6.1cqw,31px);letter-spacing:-.45px;margin-bottom:14px}
+    #meet-the-founder .vfp-heading{padding-top:20px;margin-bottom:23px}
+    #meet-the-founder .vfp-name{font-size:17px}
+    #meet-the-founder .vfp-location{font-size:15px;line-height:1.55}
+    #meet-the-founder .vfp-copy p{font-size:13px;line-height:1.8;margin-bottom:18px}
+    #meet-the-founder .vfp-copy .vfp-opening{font-size:23px;line-height:1.25;margin-bottom:21px}
+  }
+  @media(max-width:420px){
+    #meet-the-founder .vfp-surround{padding:48px 5%}
+  }
