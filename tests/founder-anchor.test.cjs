@@ -14,14 +14,14 @@ function setup(hash='#meet-the-founder'){
   return {events,scrolls,context,flush,shift(top){targetTop=top;resize?.()},expire(){for(const fn of [...timers.values()])fn()}};
 }
 
-test('the founder hash aligns the heading below the actual sticky header',()=>{
+test('the founder hash aligns the photo below the actual sticky header',()=>{
   const r=setup();r.flush();
   assert.equal(r.scrolls.length,1);
   assert.equal(r.scrolls[0].top,2000-96-18);
   assert.equal(r.scrolls[0].behavior,'instant');
 });
 
-test('late layout changes realign the heading until the visitor interacts',()=>{
+test('late layout changes realign the photo until the visitor interacts',()=>{
   const r=setup();r.flush();r.shift(2400);r.flush();
   assert.equal(r.scrolls.at(-1).top,2400-96-18);
   const count=r.scrolls.length;
@@ -34,4 +34,14 @@ test('alignment ends after the short settling window and ignores unrelated hashe
   assert.equal(r.scrolls.length,1);
   const other=setup('#news');other.flush();
   assert.equal(other.scrolls.length,0);
+});
+
+// The hash belongs to the photo, so normal browser anchors and the settling script
+// both reveal the portrait before the heading and biography.
+test('the published founder anchor starts at the portrait and keeps the heading label',()=>{
+  const html=readFileSync(path.join(__dirname,'../stable-home.html'),'utf8');
+  assert.match(html,/<figure class="vfp-photo" id="meet-the-founder"><img[^>]+vaishnavi-sethuraman-founder\.jpg/);
+  assert.equal((html.match(/id="meet-the-founder"/g)||[]).length,1);
+  assert.match(html,/<section id="vyrdict-founder-section"[^>]+aria-labelledby="vyrdict-founder-title"/);
+  assert.match(html,/<h2 id="vyrdict-founder-title">Meet the founder<\/h2>/);
 });
