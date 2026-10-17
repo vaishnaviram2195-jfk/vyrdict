@@ -32,7 +32,7 @@
     load('/newsletter-modal-enhanced.js?v=1-20260930','vyrdict-newsletter-enhanced-loader');
     load('/my-vyrdict-lists.js?v=1-20260930','vyrdict-my-lists-loader');
     if(matchMedia('(max-width:900px)').matches){
-      load('/mobile-categories-hardfix.js?v=1-20260930-guaranteed','vyrdict-mobile-categories-hardfix-loader');
+      load('/mobile-categories-hardfix.js?v=2-20261017-header-tabs','vyrdict-mobile-categories-hardfix-loader');
       if(isHome())load('/mobile-home-stability.js?v=1-20261001','vyrdict-mobile-home-stability-direct-loader');
     }else{
       load('/header-categories-menu.js?v=5-20260930-desktop','vyrdict-header-categories-direct-loader');

@@ -13,6 +13,7 @@
     ['Makeup','makeup'],['Perfume','perfume'],['Pets','pets'],['Shoes','shoes'],['Skincare','skincare'],
     ['Stationery & Crafts','stationery-and-crafts'],['Tech','tech'],['Toys & Collectibles','toys-and-collectibles'],['Travel','travel'],['Wellness','wellness']
   ];
+  let observedHeader,headerObserver;
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
   function style(){
@@ -40,12 +41,15 @@
     document.head.appendChild(s);
   }
 
-  function headerBottom(){
+  function findHeader(){
     const candidates=[...document.querySelectorAll('header,[role="banner"],.site-header,.siteHeader,.topbar,.navbar')]
       .filter(el=>{const r=el.getBoundingClientRect();const cs=getComputedStyle(el);return r.width>160&&r.height>20&&r.top<140&&r.bottom>0&&cs.display!=='none'&&cs.visibility!=='hidden'});
-    if(!candidates.length)return 0;
-    const h=candidates.sort((a,b)=>a.getBoundingClientRect().top-b.getBoundingClientRect().top)[0];
-    return Math.max(0,Math.min(110,Math.round(h.getBoundingClientRect().bottom)));
+    return candidates.sort((a,b)=>a.getBoundingClientRect().top-b.getBoundingClientRect().top)[0]||null;
+  }
+
+  function headerBottom(){
+    // Collection headers include a second row of tabs on phones. Measure every row.
+    return Math.max(0,Math.ceil(findHeader()?.getBoundingClientRect().bottom||0));
   }
 
   function position(){
@@ -73,7 +77,7 @@
   function ensure(){
     style();
     const mobile=matchMedia(MQ).matches;
-    if(!mobile){document.getElementById(BAR_ID)?.remove();document.getElementById(MENU_ID)?.remove();document.getElementById(SPACER_ID)?.remove();return}
+    if(!mobile){document.getElementById(BAR_ID)?.remove();document.getElementById(MENU_ID)?.remove();document.getElementById(SPACER_ID)?.remove();headerObserver?.disconnect();observedHeader=null;return}
 
     document.getElementById('ve-mobile-categories-row')?.remove();
     document.getElementById('ve-category-menu')?.remove();
@@ -81,6 +85,18 @@
     let spacer=document.getElementById(SPACER_ID);
     if(!spacer){
       spacer=document.createElement('div');spacer.id=SPACER_ID;spacer.setAttribute('aria-hidden','true');
+    }
+    const header=findHeader();
+    if(header){
+      // Reserve the bar's space after the entire header, never before its tab row.
+      if(spacer.previousElementSibling!==header)header.insertAdjacentElement('afterend',spacer);
+      if(observedHeader!==header&&typeof ResizeObserver!=='undefined'){
+        headerObserver?.disconnect();
+        headerObserver=new ResizeObserver(position);
+        headerObserver.observe(header);
+        observedHeader=header;
+      }
+    }else if(!spacer.isConnected){
       const app=document.getElementById('app');
       if(app)app.insertAdjacentElement('beforebegin',spacer);else document.body.prepend(spacer);
     }
