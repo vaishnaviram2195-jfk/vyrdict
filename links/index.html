@@ -129,18 +129,12 @@ body:after{
  .link-sub{font-size:12px;line-height:1.5}
 }
 .founder-link{margin:22px 0 0;text-align:center}
-.founder-link a{position:relative;display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 7px 2px;color:#4b2738;font:600 15px/1.5 var(--sans);text-decoration:none;transform-origin:center;animation:vyrdict-founder-pop 3.6s ease-in-out .2s infinite}
-.founder-link a::before,.founder-link a::after{content:"";position:absolute;left:7px;right:7px;bottom:8px;height:1px;pointer-events:none}
-.founder-link a::before{background:rgba(75,39,56,.28)}
-.founder-link a::after{height:3px;background:linear-gradient(90deg,#70000e,#ee7da6,#c99b60);transform:scaleX(0);transform-origin:left;opacity:0;animation:vyrdict-founder-swish 3.6s ease-in-out .2s infinite}
-.founder-link-arrow{display:inline-block;font-size:18px;line-height:1;animation:vyrdict-founder-arrow 3.6s ease-in-out .2s infinite}
-.founder-link a:hover,.founder-link a:focus-visible{color:#70000e;animation:none}
-.founder-link a:hover::after,.founder-link a:focus-visible::after{animation:none;transform:scaleX(1);opacity:1}
-.founder-link a:hover .founder-link-arrow,.founder-link a:focus-visible .founder-link-arrow{animation:none;transform:translateX(3px)}
-@keyframes vyrdict-founder-pop{0%,32%,100%{transform:translateY(0) scale(1)}14%{transform:translateY(-4px) scale(1.07)}}
-@keyframes vyrdict-founder-swish{0%{transform:scaleX(0);opacity:0}4%{transform:scaleX(.15);opacity:1}24%{transform:scaleX(1);opacity:1}36%,100%{transform:scaleX(1);opacity:0}}
-@keyframes vyrdict-founder-arrow{0%,34%,100%{transform:translateX(0)}16%{transform:translateX(7px)}}
-@media(prefers-reduced-motion:reduce){.founder-link a,.founder-link a::after,.founder-link .founder-link-arrow{animation:none!important;transform:none!important}.founder-link a::after{opacity:0}}
+.founder-link a{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 7px 2px;color:#4b2738;font:600 15px/1.5 var(--sans);text-decoration:underline;text-decoration-color:rgba(75,39,56,.28);text-underline-offset:5px;text-decoration-thickness:1px;transform-origin:center;animation:vyrdict-founder-pop 3.4s ease-out .3s infinite;transition:color .18s ease,text-decoration-color .18s ease}
+.founder-link-arrow{display:inline-block;font-size:18px;line-height:1}
+.founder-link a:hover,.founder-link a:focus-visible{color:#70000e;text-decoration-color:#70000e;animation:none}
+.founder-link a:focus-visible{outline:2px solid #70000e;outline-offset:5px;border-radius:3px}
+@keyframes vyrdict-founder-pop{0%,22%,100%{transform:translateY(0) scale(1)}8%{transform:translateY(-4px) scale(1.075)}14%{transform:translateY(1px) scale(.99)}}
+@media(prefers-reduced-motion:reduce){.founder-link a{animation:none!important;transform:none!important}}
 </style><link rel="canonical" href="https://vyrdict.com/links/"><link rel="icon" type="image/svg+xml" href="/vyrdict-logo.svg?v=powder-cherry-20261012-2"><meta property="og:type" content="website"><meta property="og:title" content="VYRDICT — One Link, Every Story"><meta property="og:description" content="Explore viral products, scores, VYRDICT Studio, and our editorial work and brand interactions."><meta property="og:url" content="https://vyrdict.com/links/"><meta property="og:image" content="https://vyrdict.com/vyrdict-social-preview.jpg"></head>
 <body data-shade="cola">
 <div class="shell"><main class="page">
