@@ -41,25 +41,28 @@ module.exports=async function handler(req,res){
     const requested=Number(req.query?.limit||12);
     const limit=Math.max(3,Math.min(Number.isFinite(requested)?requested:12,24));
     const now=Date.now();
-    const rows=await fetchWindow(14);
+    const rows=await fetchWindow(30);
     const qualify=(r,maxAge)=>{
       const status=String(r.viral_status||'').toLowerCase();
       const confidence=String(r.evidence_confidence||'').toLowerCase();
-      return ACTIVE_STATUSES.has(status)
+      return Boolean(r.slug&&String(r.image_url||'').trim())
+        && r.evidence_status==='verified'
+        && ACTIVE_STATUSES.has(status)
         && Number(r.viral_score||0)>=85
         && Number(r.momentum_score||0)>=80
         && (confidence==='high'||confidence==='medium')
         && ageDays(r,now)<=maxAge;
     };
 
-    let windowDays=7;
-    let products=rows.filter(r=>qualify(r,7));
-    if(products.length<Math.min(8,limit)){
-      windowDays=14;
-      products=rows.filter(r=>qualify(r,14));
+    let windowDays=7,products=[];
+    for(const days of [7,14,30]){
+      windowDays=days;
+      products=rows.filter(r=>qualify(r,days));
+      if(products.length>=Math.min(12,limit))break;
     }
 
-    products.sort((a,b)=>score(b,now)-score(a,now)||freshnessTs(b)-freshnessTs(a));
+    const tier=p=>ageDays(p,now)<=7?0:ageDays(p,now)<=14?1:2;
+    products.sort((a,b)=>tier(a)-tier(b)||score(b,now)-score(a,now)||freshnessTs(b)-freshnessTs(a));
     products=products.slice(0,limit).map(p=>({...p,freshness_at:new Date(freshnessTs(p)).toISOString()}));
 
     res.setHeader('Cache-Control','public, max-age=0, s-maxage=120, stale-while-revalidate=300');
@@ -67,7 +70,7 @@ module.exports=async function handler(req,res){
       products,
       window_days:windowDays,
       generated_at:new Date().toISOString(),
-      freshness_policy:'verified active viral momentum only; 7-day priority, 14-day recent edit when the primary feed is sparse; original verification dates retained'
+      freshness_policy:'verified active viral momentum only; 7-day priority, then 14-day and 30-day recent edits when the primary feed is sparse; original verification dates retained'
     });
   }catch(e){
     res.setHeader('Cache-Control','no-store');

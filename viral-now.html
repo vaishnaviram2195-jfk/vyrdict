@@ -12,13 +12,14 @@
     *{box-sizing:border-box}html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans)}a{color:inherit}
     .site-head{position:sticky;top:0;z-index:1000;height:66px;padding:0 max(20px,calc((100vw - 1320px)/2));display:flex;align-items:center;justify-content:space-between;background:rgba(246,244,239,.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
     .brand{display:inline-flex;align-items:flex-end;text-decoration:none;font:900 25px/1 Arial,sans-serif;letter-spacing:-1.5px}.brand:after{content:"";width:6px;height:6px;background:#d94d73;margin:0 0 2px 2px}
-    .head-nav{display:flex;gap:8px;overflow:auto;scrollbar-width:none}.head-nav::-webkit-scrollbar{display:none}.head-nav a{white-space:nowrap;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:9px 11px;font:800 8px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;background:#fbfaf7}.head-nav a.active{background:#171717;color:#fff}.home-link{text-decoration:none;font:700 10px/1 Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;border-bottom:1px solid #222;padding-bottom:5px}
+    .head-nav{display:flex;gap:8px;overflow:auto;scrollbar-width:none}.head-nav::-webkit-scrollbar{display:none}.head-nav a{white-space:nowrap;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:9px 11px;font:800 8px/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;background:#fbfaf7}.head-nav a.active{background:#70000e;color:#f6f3e8}.home-link{text-decoration:none;font:700 10px/1 Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;border-bottom:1px solid #222;padding-bottom:5px}
     .wrap{width:min(1320px,calc(100% - 80px));margin:0 auto}
     .hero{padding:54px 0 30px;border-bottom:1px solid var(--line)}
     .kicker{font:800 10px/1 Arial,sans-serif;letter-spacing:.17em;text-transform:uppercase;color:#5f5b56;margin-bottom:12px}
     h1{font:400 clamp(38px,4.4vw,58px)/.98 var(--serif);letter-spacing:-.045em;margin:0;max-width:780px}
     .intro{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-top:18px}.intro p{font:400 15px/1.6 var(--sans);color:var(--muted);max-width:650px;margin:0}.stamp{font:700 9px/1.4 Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#77716a;text-align:right}
     .products{padding:28px 0 64px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:30px 18px}
+    .section-head{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:24px}.section-head h2{color:#70000e;font:400 clamp(30px,3.2vw,45px)/1 var(--serif);letter-spacing:-.04em;margin:0}.section-head p{max-width:480px;color:var(--muted);font:13px/1.55 var(--sans);margin:0}.latest-news{padding:42px 0 64px;border-top:1px solid var(--line)}.news-media{aspect-ratio:4/3;background:#e9e7e1;overflow:hidden}.news-media img{width:100%;height:100%;object-fit:cover;display:block}.news-title{font:500 17px/1.3 var(--sans);margin:0}.news-dek{font:400 13px/1.55 var(--sans);color:var(--muted);margin:9px 0 0}.news-source{display:block;font:400 12px/1.5 var(--sans);color:var(--muted);margin-top:10px}.news-more{display:inline-block;margin-top:26px;color:#70000e;font:500 13px/1.5 var(--sans);text-underline-offset:4px}
     .card{display:flex;flex-direction:column;text-decoration:none;min-width:0}.media{aspect-ratio:.88;background:#e9e7e1;display:grid;place-items:center;overflow:hidden;position:relative}.media img{width:88%;height:88%;object-fit:contain;display:block;filter:drop-shadow(0 12px 20px rgba(0,0,0,.08));transition:transform .35s ease}.card:hover .media img{transform:scale(1.02)}
     .rank{position:absolute;top:12px;left:12px;background:rgba(246,244,239,.9);padding:7px 8px;font:800 8px/1 Arial,sans-serif;letter-spacing:.12em}
     .copy{padding:14px 1px 0}.meta{font:800 9px/1.25 Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#74706a;margin-bottom:7px}.name{font:500 16px/1.3 Arial,sans-serif;margin:0;min-height:42px}.scores{display:flex;gap:14px;margin-top:11px;font:700 9px/1 Arial,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:#666}.scores b{color:#171717}.status{margin-top:9px;font:700 9px/1 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#69645e}
@@ -28,18 +29,20 @@
     @media(max-width:980px){.wrap{width:min(100% - 42px,900px)}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{padding-top:46px}}
     @media(max-width:620px){.site-head{height:auto;min-height:58px;padding:10px 14px;display:grid;grid-template-columns:1fr;gap:9px}.brand{font-size:21px}.head-nav{width:100%}.head-nav a{font-size:7px;padding:8px 9px}.home-link{display:none}.wrap{width:calc(100% - 24px)}.hero{padding:30px 0 21px}.kicker{font-size:8px;margin-bottom:9px}h1{font-size:34px;line-height:1}.intro{display:block;margin-top:13px}.intro p{font-size:12.5px;line-height:1.48;max-width:34em}.stamp{text-align:left;margin-top:9px;font-size:7px}.products{padding:18px 0 44px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 10px}.media,.sk-media{aspect-ratio:.92}.media img{width:84%;height:84%;filter:drop-shadow(0 8px 13px rgba(0,0,0,.07))}.rank{top:7px;left:7px;padding:5px 6px;font-size:7px}.copy{padding:9px 0 0}.meta{font-size:6.8px;line-height:1.2;letter-spacing:.08em;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.name{font-size:12.5px;line-height:1.25;min-height:32px}.scores{font-size:7.2px;line-height:1.25;gap:6px 8px;flex-wrap:wrap;margin-top:7px;letter-spacing:.035em}.status{font-size:7px;line-height:1.2;margin-top:6px;letter-spacing:.065em}.sk-line{margin-top:8px}.loading,.empty{padding:26px 0;font-size:8px}}
     @media(max-width:360px){.wrap{width:calc(100% - 20px)}.grid{gap:22px 8px}.name{font-size:12px}.scores{font-size:6.8px}}
+    @media(max-width:620px){.section-head{display:block;margin-bottom:20px}.section-head p{margin-top:10px;font-size:13px}.latest-news{padding:30px 0 44px}.news-title{font-size:14px}.news-dek{font-size:12px}.news-source{font-size:11px}}
     @media(prefers-reduced-motion:reduce){.sk-media{animation:none}.media img{transition:none}}
   </style>
 </head>
 <body>
   <header class="site-head"><a class="brand" href="/" aria-label="VYRDICT home">VYRDICT</a><nav class="head-nav" aria-label="Culture collections"><a class="active" href="/collection/viral-right-now/">Viral Right Now</a><a href="/collection/celebrity-effect/">Celebrity Effect</a><a href="/collection/seen-on-screen/">Seen on Screen</a></nav><a class="home-link" href="/">Back home</a></header>
   <main>
-    <section class="hero"><div class="wrap"><div class="kicker">LIVE VYRDICT SIGNALS</div><h1>Viral right now.</h1><div class="intro"><p>The recent viral edit: verified products with strong momentum, clear scores and their original evidence dates.</p><div class="stamp" id="stamp">Live signals</div></div></div></section>
-    <section class="products"><div class="wrap"><div class="grid" id="grid"><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div></div></div></section>
+    <section class="hero"><div class="wrap"><div class="kicker">THE VYRDICT TREND EDIT</div><h1>Viral right now.</h1><div class="intro"><p>Explore recent viral products with clear scores and original review dates, plus the latest launches, collaborations and brand stories.</p><div class="stamp" id="stamp" aria-live="polite">Loading the latest edit</div></div></div></section>
+    <section class="products" aria-labelledby="products-title"><div class="wrap"><div class="section-head"><h2 id="products-title">Trending products.</h2><p>Verified products ranked by recent momentum, with Viral and Worth scores to help you decide.</p></div><div class="grid" id="grid"><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div></div></div></section>
+    <section class="latest-news" id="latest-news" aria-labelledby="news-title" hidden><div class="wrap"><div class="section-head"><h2 id="news-title">Latest drops &amp; brand news.</h2><p>The launches, collaborations and product stories getting people talking.</p></div><div class="grid" id="news-grid"></div><a class="news-more" href="/#news">More from VYRDICT News →</a></div></section>
   </main>
   <script>
     (()=>{
-      const CACHE_KEY='vyrdict:viral-now:v3-20261013';
+      const CACHE_KEY='vyrdict:viral-now:v4-20261017';
       const CACHE_TTL=10*60*1000;
       const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
       const img=u=>{const s=String(u||'').trim();return !s?'':(s.startsWith('/')||/^https:\/\/(?:www\.)?vyrdict\.com\//i.test(s)?s:'/vti-image?url='+encodeURIComponent(s))};
@@ -50,9 +53,9 @@
       function render(j,fromCache=false){
         const ps=(j?.products||[]).filter(p=>p&&p.slug&&p.image_url);
         if(!ps.length)return false;
-        grid.innerHTML=ps.map((p,i)=>`<a class="card" href="/product/${encodeURIComponent(p.slug)}/"><div class="media"><img loading="${i<4?'eager':'lazy'}" decoding="async" fetchpriority="${i<4?'high':'auto'}" src="${esc(img(p.image_url))}" data-original="${esc(p.image_url)}" onerror="this.onerror=null;if(this.dataset.original)this.src=this.dataset.original" alt="${esc((p.brand||'')+' '+(p.name||''))}"><span class="rank">${String(i+1).padStart(2,'0')}</span></div><div class="copy"><div class="meta">${esc(p.category||'Viral')} · ${esc(p.brand||'')}</div><h2 class="name">${esc(p.name||'')}</h2><div class="scores"><span>Viral <b>${Math.round(Number(p.viral_score||0))}</b></span><span>Worth <b>${Math.round(Number(p.worth_score||0))}</b></span></div><div class="status">${esc(cleanStatus(p.viral_status||'Trending'))}</div>${p.last_verified_at?`<div class="evidence-date">Evidence checked ${esc(new Date(p.last_verified_at).toLocaleDateString(undefined,{month:'short',day:'numeric'}))}</div>`:''}</div></a>`).join('');
+        grid.innerHTML=ps.map((p,i)=>`<a class="card" href="/product/${encodeURIComponent(p.slug)}/"><div class="media"><img loading="${i<4?'eager':'lazy'}" decoding="async" fetchpriority="${i<4?'high':'auto'}" src="${esc(img(p.image_url))}" data-original="${esc(p.image_url)}" onerror="this.onerror=null;if(this.dataset.original)this.src=this.dataset.original" alt="${esc((p.brand||'')+' '+(p.name||''))}"><span class="rank">${String(i+1).padStart(2,'0')}</span></div><div class="copy"><div class="meta">${esc(p.category||'Viral')} · ${esc(p.brand||'')}</div><h3 class="name">${esc(p.name||'')}</h3><div class="scores"><span>Viral <b>${Math.round(Number(p.viral_score||0))}</b></span><span>Worth <b>${Math.round(Number(p.worth_score||0))}</b></span></div><div class="status">${esc(cleanStatus(p.viral_status||'Trending'))}</div>${p.last_verified_at?`<div class="evidence-date">Evidence checked ${esc(new Date(p.last_verified_at).toLocaleDateString(undefined,{month:'short',day:'numeric'}))}</div>`:''}</div></a>`).join('');
         const d=j.generated_at?new Date(j.generated_at):new Date();
-        stamp.textContent=`Recent ${j.window_days||14}-day verified edit · ${fromCache?'Updated':'Updated'} ${d.toLocaleDateString(undefined,{month:'short',day:'numeric'})}`;
+        stamp.textContent=`${ps.length} verified products · Recent ${j.window_days||30}-day edit · Refreshed ${d.toLocaleDateString(undefined,{month:'short',day:'numeric'})}`;
         hasRendered=true;
         return true;
       }
@@ -68,7 +71,7 @@
 
       async function refresh(){
         try{
-          const r=await fetch('/api/viral-now?limit=24&rev=20261013-recent-edit',{headers:{accept:'application/json'}});
+          const r=await fetch('/api/viral-now?limit=24&rev=20261017-expanded-edit',{headers:{accept:'application/json'},cache:'no-store'});
           if(!r.ok)throw new Error('feed');
           const j=await r.json();
           if(!(j.products||[]).some(p=>p&&p.slug&&p.image_url))throw new Error('empty');
@@ -82,9 +85,23 @@
         }
       }
 
+      async function refreshNews(){
+        try{
+          const r=await fetch('/api/stories?limit=4',{headers:{accept:'application/json'},cache:'no-store'});
+          if(!r.ok)return;
+          const j=await r.json();
+          const href=s=>{try{const u=new URL(s,location.origin);return u.protocol==='https:'?u.href:''}catch{return ''}};
+          const stories=(Array.isArray(j.stories)?j.stories:[]).filter(s=>s&&s.headline&&s.image_url&&href(s.source_url||s.instagram_url));
+          if(!stories.length)return;
+          document.getElementById('news-grid').innerHTML=stories.map(s=>`<a class="card" href="${esc(href(s.source_url||s.instagram_url))}" target="_blank" rel="noopener noreferrer"><div class="news-media"><img loading="lazy" decoding="async" src="${esc(img(s.image_url))}" data-original="${esc(s.image_url)}" onerror="this.onerror=null;if(this.dataset.original)this.src=this.dataset.original" alt="${esc(s.image_alt||s.headline)}"></div><div class="copy"><div class="meta">${esc(s.category||'Brand news')}</div><h3 class="news-title">${esc(s.headline)}</h3>${s.dek?`<p class="news-dek">${esc(s.dek)}</p>`:''}<span class="news-source">${esc(s.source_label||'Read the story')}${s.published_at?` · ${esc(new Date(s.published_at).toLocaleDateString(undefined,{month:'short',day:'numeric'}))}`:''} ↗</span></div></a>`).join('');
+          document.getElementById('latest-news').hidden=false;
+        }catch{}
+      }
+
       const cached=readCache();
       if(cached)render(cached,true);
       refresh();
+      refreshNews();
     })();
   </script>
   <script src="/mobile-categories-hardfix.js?v=1-20260930-guaranteed" defer></script>
