@@ -33,10 +33,10 @@
 
 #vyrdict-founder-section #meet-the-founder{scroll-margin-top:110px}
 
-/* The desktop content shares the page's editorial margins on a full-width cherry band. */
+/* Balance the portrait and copy within the full-width cherry band. */
 @media(min-width:960px){
   #vyrdict-founder-section .vfp-surround{padding:40px 0}
-  #vyrdict-founder-section .vfp-paper{display:grid;grid-template-columns:260px minmax(0,1fr);grid-template-areas:"kicker kicker" "photo heading" "photo copy" "photo signoff";column-gap:48px;width:min(1320px,calc(100% - 80px));padding:0}
+  #vyrdict-founder-section .vfp-paper{display:grid;grid-template-columns:260px minmax(0,1fr);grid-template-areas:"kicker kicker" "photo heading" "photo copy" "photo signoff";column-gap:48px;width:min(1028px,calc(100% - 80px));padding:0}
   #vyrdict-founder-section .vfp-kicker{grid-area:kicker;margin-bottom:20px;text-align:left}
   #vyrdict-founder-section .vfp-photo{grid-area:photo;align-self:start;aspect-ratio:4/5}
   #vyrdict-founder-section .vfp-photo img{width:100%;object-fit:cover;object-position:50% 0;mask-image:none}
