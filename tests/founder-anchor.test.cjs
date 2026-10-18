@@ -36,11 +36,10 @@ test('alignment ends after the short settling window and ignores unrelated hashe
   assert.equal(other.scrolls.length,0);
 });
 
-// The hash belongs to the photo, so normal browser anchors and the settling script
-// both reveal the portrait before the heading and biography.
-test('the published founder anchor starts at the portrait and keeps the heading label',()=>{
+// The hash starts at the profile so the heading, portrait and name are all revealed.
+test('the published founder anchor includes the heading and portrait together',()=>{
   const html=readFileSync(path.join(__dirname,'../stable-home.html'),'utf8');
-  assert.match(html,/<figure class="vfp-photo" id="meet-the-founder"><img[^>]+vaishnavi-sethuraman-founder\.jpg/);
+  assert.match(html,/<div class="vfp-profile" id="meet-the-founder">\s*<h2 id="vyrdict-founder-title">Meet the founder<\/h2>\s*<figure class="vfp-photo"><img[^>]+vaishnavi-sethuraman-founder\.jpg/);
   assert.equal((html.match(/id="meet-the-founder"/g)||[]).length,1);
   assert.match(html,/<section id="vyrdict-founder-section"[^>]+aria-labelledby="vyrdict-founder-title"/);
   assert.match(html,/<h2 id="vyrdict-founder-title">Meet the founder<\/h2>/);
