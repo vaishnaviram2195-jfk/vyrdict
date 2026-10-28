@@ -8,7 +8,7 @@ window.VyrdictBusinessPanel = function buildBusinessPanel(b){
   const inquiries=Array.isArray(b.work_inquiries)?b.work_inquiries:[];
   const accounts=Array.isArray(b.account_list)?b.account_list:[];
   const subs=Array.isArray(b.newsletter_list)?b.newsletter_list:[];
-  const wk=b.last7d||{},health=b.health||{};
+  const wk=b.last7d||{},health=b.health||{},digest=b.weekly_digest||{};
   const tbl=(head,rows,empty)=>'<div class="bi-scroll"><table class="bi-table"><thead><tr>'+head.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+(rows.length?rows.join(''):'<tr><td colspan="'+head.length+'">'+esc(empty)+'</td></tr>')+'</tbody></table></div>';
   const metric=(name,value,meta)=>'<div class="metric"><div class="label">'+esc(name)+'</div><div class="value">'+num(value)+'</div><div class="delta">'+esc(meta)+'</div></div>';
   const status=health.rollup_job_active&&!health.snapshot_stale?'Daily tracking running':'Check the daily refresh';
@@ -38,6 +38,9 @@ window.VyrdictBusinessPanel = function buildBusinessPanel(b){
     '<div class="grid2"><section class="panel"><h2>Accounts created</h2><p class="sub">Supabase registered email accounts (not total sign-ins or verified customers).</p>'+
      tbl(['Email','Created','Status','Last sign-in'],accountRows,'No account records')+'</section>'+
     '<section class="panel"><h2>Newsletter subscribers</h2><p class="sub">Primary and legacy website forms. Active '+num(b.newsletter_active)+' · unsubscribed '+num(b.newsletter_unsubscribed)+'.</p>'+
+     '<p class="sub" style="margin:10px 0 6px"><strong>Latest weekly email:</strong> '+esc(digest.last_subject||'Not sent yet')+
+     ' · '+num(digest.sent_this_week)+' / '+num(digest.eligible_this_week)+' subscriber sends this week.'+
+     ' Last sent: '+dt(digest.last_sent_at)+'. <span style="color:var(--muted)">Delivery confirmations are verified with the email provider.</span></p>'+
      tbl(['Email','Status','Signup source','Joined'],subscriberRows,'No newsletter signups')+'</section></div>'+
     '<p class="bi-caption">Data health: last incoming analytics event '+dt(health.last_received_event)+' · daily snapshot '+dt(health.last_rollup)+' · '+num(health.rollup_days)+' historical days available. For context: '+num(total)+' page views in the last 7 days; identifiable browsers are estimates, not people. Contact emails shown only in this key-protected private Command Center.</p>'+
     '</section>';
