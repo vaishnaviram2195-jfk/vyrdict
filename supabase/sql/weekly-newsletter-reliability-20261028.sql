@@ -1,381 +1,12 @@
--- VYRDICT weekly newsletter reliability (October 28, 2026)
--- Sources: Supabase curated stories + verified, scored catalogue products.
--- Monday 09:00 Toronto automatic queue, retries at 10:00 and 11:00.
--- Sending: existing email outbox and Resend dispatcher; unique_key avoids duplicates.
--- Silent missing/partial sends raise a pipeline incident through hourly health audit.
--- A news-only or honest verification-status digest is the fallback when no new products qualify.
--- The private Command Center shows current-week send counts.
-
-CREATE OR REPLACE FUNCTION public.vyrdict_weekly_digest_payload_products()
- RETURNS TABLE(subject text, text_body text, html_body text)
- LANGUAGE plpgsql
- SECURITY DEFINER
- SET search_path TO 'public'
-AS $function$
-declare
-  local_now timestamp := timezone('America/Toronto',now());
-  r record;
-  n integer := 0;
-  trending_html text := '';
-  worth_html text := '';
-  caution_html text := '';
-  trending_text text := '';
-  worth_text text := '';
-  caution_text text := '';
-  used_ids bigint[] := '{}';
-  b text; nm text; cat text; vd text; img text; url text;
-  freshness text;
-begin
-  /* TRENDING NOW: prioritize genuinely fresh catalog additions and suppress
-     products already used in a sent weekly digest during the previous 28 days. */
-  for r in
-    with ev as (
-      select product_id,
-             count(*) filter (where coalesce(observed_at,verified_at)>=now()-interval '14 days') ev14, count(*) evidence_total, count(distinct lower(split_part(regexp_replace(source_url,'^https?://(www\\.)?','','i'),'/',1))) filter(where source_url ~ '^https?://') evidence_domains,
-             count(distinct lower(split_part(regexp_replace(source_url,'^https?://(www\\.)?','','i'),'/',1)))
-               filter (where coalesce(observed_at,verified_at)>=now()-interval '14 days' and source_url is not null) domains14
-      from public.product_evidence
-      where coalesce(is_public,true)=true
-      group by product_id
-    ), base as (
-      select prod.*,coalesce(ev.ev14,0) ev14,coalesce(ev.domains14,0) domains14,
-             coalesce(prod.published_at,prod.created_at) fresh_at
-      from public.products prod
-      join ev on ev.product_id=prod.id
-      where prod.is_active=true
-        and prod.evidence_status='verified'
-        and prod.last_verified_at>=now()-interval '60 days'
-        and coalesce(prod.published_at,prod.created_at)>=now()-interval '45 days'
-        and prod.viral_score>=55
-        and coalesce(prod.momentum_score,0)>=0
-        and ev.evidence_total>=1 and ev.evidence_domains>=1
-        and prod.image_url is not null
-        and not exists (
-          select 1 from public.vyrdict_email_outbox o
-          where o.kind='weekly_digest' and o.status='sent'
-            and o.sent_at>=now()-interval '28 days'
-            and (
-              coalesce(o.html_body,'') like '%/product/'||prod.slug||'/%'
-              or coalesce(o.text_body,'') ilike '%'||prod.name||'%'
-            )
-        )
-    ), ranked as (
-      select base.*,row_number() over(
-        partition by category
-        order by fresh_at desc,viral_score desc,id desc
-      ) rn
-      from base
-    )
-    select * from ranked
-    where rn=1
-    order by fresh_at desc,viral_score desc
-    limit 5
-  loop
-    n:=n+1; used_ids:=array_append(used_ids,r.id);
-    b:=replace(replace(replace(coalesce(r.brand,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
-    nm:=replace(replace(replace(coalesce(r.name,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
-    cat:=replace(replace(replace(coalesce(r.category,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
-    img:=replace(replace(coalesce(r.image_url,''),'&','&amp;'),'"','&quot;');
-    url:='https://vyrdict.com/product/'||r.slug||'/';
-    freshness:=case
-      when r.fresh_at>=now()-interval '3 days' then 'NEW THIS WEEK'
-      else 'VERIFIED PICK'
-    end;
-    trending_html:=trending_html||
-      '<tr><td style="padding:18px 0;border-top:'||case when n=1 then '0' else '1px solid #c7d0c0' end||';">'
-      ||'<table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>'
-      ||'<td width="118" valign="top" style="width:118px;padding-right:16px;"><a href="'||url||'"><img src="'||img||'" width="118" height="118" border="0" alt="'||b||' '||nm||'" style="width:118px;height:118px;object-fit:contain;display:block;background:#fffdf9;"></a></td>'
-      ||'<td valign="middle"><p style="margin:0 0 5px;font:900 9px/12px Arial;letter-spacing:1.2px;text-transform:uppercase;color:#65705d;">'||freshness||' · '||cat||'</p>'
-      ||'<p style="margin:0 0 7px;font:19px/23px Georgia,serif;color:#171511;">'||b||' '||nm||'</p>'
-      ||'<p style="margin:0 0 9px;font:11px/15px Arial;color:#625d57;">Viral '||r.viral_score||' · Worth '||r.worth_score||'</p>'
-      ||'<p style="margin:0;font:900 9px/12px Arial;text-transform:uppercase;"><a href="'||url||'" style="color:#171511;text-decoration:none;">SEE THE VERDICT →</a></p></td></tr></table></td></tr>';
-    trending_text:=trending_text||case when trending_text<>'' then E'\n' else '' end||b||' '||nm||' — Viral '||r.viral_score||', Worth '||r.worth_score;
-  end loop;
-
-  /* WORTH IT: still fresh, but optimized for value. */
-  n:=0;
-  for r in
-    with ev as (
-      select product_id,
-             count(*) filter (where coalesce(observed_at,verified_at)>=now()-interval '21 days') ev21,
-             count(distinct lower(split_part(regexp_replace(source_url,'^https?://(www\\.)?','','i'),'/',1)))
-               filter (where coalesce(observed_at,verified_at)>=now()-interval '21 days' and source_url is not null) domains21
-      from public.product_evidence
-      where coalesce(is_public,true)=true
-      group by product_id
-    ), base as (
-      select prod.*,coalesce(prod.published_at,prod.created_at) fresh_at
-      from public.products prod join ev on ev.product_id=prod.id
-      where prod.is_active=true
-        and prod.evidence_status='verified'
-        and prod.last_verified_at>=now()-interval '21 days'
-        and coalesce(prod.published_at,prod.created_at)>=now()-interval '14 days'
-        and prod.worth_score>=85
-        and prod.viral_score>=75
-        and ev.ev21>=1 and ev.domains21>=1
-        and prod.image_url is not null
-        and not (prod.id=any(used_ids))
-        and not exists (
-          select 1 from public.vyrdict_email_outbox o
-          where o.kind='weekly_digest' and o.status='sent'
-            and o.sent_at>=now()-interval '28 days'
-            and (
-              coalesce(o.html_body,'') like '%/product/'||prod.slug||'/%'
-              or coalesce(o.text_body,'') ilike '%'||prod.name||'%'
-            )
-        )
-    ), ranked as (
-      select base.*,row_number() over(partition by category order by worth_score desc,viral_score desc,fresh_at desc,id desc) rn
-      from base
-    )
-    select * from ranked where rn=1
-    order by worth_score desc,viral_score desc,fresh_at desc
-    limit 3
-  loop
-    n:=n+1; used_ids:=array_append(used_ids,r.id);
-    b:=replace(replace(replace(coalesce(r.brand,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
-    nm:=replace(replace(replace(coalesce(r.name,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
-    cat:=replace(replace(replace(coalesce(r.category,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
-    vd:=replace(replace(replace(coalesce(r.verdict,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
-    img:=replace(replace(coalesce(r.image_url,''),'&','&amp;'),'"','&quot;');
-    url:='https://vyrdict.com/product/'||r.slug||'/';
-    worth_html:=worth_html||'<tr><td style="padding:17px 0;border-top:'||case when n=1 then '0' else '1px solid #d5ccdb' end||';"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td width="108" valign="top" style="width:108px;padding-right:16px;"><a href="'||url||'"><img src="'||img||'" width="108" height="108" border="0" alt="'||b||' '||nm||'" style="width:108px;height:108px;object-fit:contain;display:block;background:#fffdf9;"></a></td><td valign="middle"><p style="margin:0 0 5px;font:900 9px/12px Arial;letter-spacing:1.1px;text-transform:uppercase;color:#73647d;">'||cat||' · WORTH '||r.worth_score||'</p><p style="margin:0 0 7px;font:19px/23px Georgia,serif;color:#171511;">'||b||' '||nm||'</p><p style="margin:0;font:900 9px/12px Arial;text-transform:uppercase;"><a href="'||url||'" style="color:#171511;text-decoration:none;">SEE WHY IT’S WORTH IT →</a></p></td></tr></table></td></tr>';
-    worth_text:=worth_text||case when worth_text<>'' then E'\n' else '' end||b||' '||nm||' — Worth '||r.worth_score||' ('||vd||')';
-  end loop;
-
-  /* THINK TWICE: only include if there is a recent, genuinely relevant caution pick. */
-  n:=0;
-  for r in
-    with ev as (
-      select product_id,count(*) filter (where coalesce(observed_at,verified_at)>=now()-interval '21 days') ev21
-      from public.product_evidence where coalesce(is_public,true)=true group by product_id
-    )
-    select prod.*,coalesce(prod.published_at,prod.created_at) fresh_at
-    from public.products prod join ev on ev.product_id=prod.id
-    where prod.is_active=true
-      and prod.evidence_status='verified'
-      and prod.last_verified_at>=now()-interval '21 days'
-      and coalesce(prod.published_at,prod.created_at)>=now()-interval '21 days'
-      and prod.viral_score>=75
-      and (prod.verdict in ('Skip','Overhyped','Mixed') or prod.worth_score<70)
-      and ev.ev21>=1
-      and prod.image_url is not null
-      and not (prod.id=any(used_ids))
-      and not exists (
-        select 1 from public.vyrdict_email_outbox o
-        where o.kind='weekly_digest' and o.status='sent'
-          and o.sent_at>=now()-interval '28 days'
-          and (
-            coalesce(o.html_body,'') like '%/product/'||prod.slug||'/%'
-            or coalesce(o.text_body,'') ilike '%'||prod.name||'%'
-          )
-      )
-    order by fresh_at desc,prod.viral_score desc,prod.worth_score asc
-    limit 2
-  loop
-    n:=n+1;
-    b:=replace(replace(replace(coalesce(r.brand,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
-    nm:=replace(replace(replace(coalesce(r.name,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
-    cat:=replace(replace(replace(coalesce(r.category,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
-    vd:=replace(replace(replace(coalesce(r.verdict,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
-    img:=replace(replace(coalesce(r.image_url,''),'&','&amp;'),'"','&quot;');
-    url:='https://vyrdict.com/product/'||r.slug||'/';
-    caution_html:=caution_html||'<tr><td style="padding:17px 0;border-top:'||case when n=1 then '0' else '1px solid #ddc7cc' end||';"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td width="108" valign="top" style="width:108px;padding-right:16px;"><a href="'||url||'"><img src="'||img||'" width="108" height="108" border="0" alt="'||b||' '||nm||'" style="width:108px;height:108px;object-fit:contain;display:block;background:#fffdf9;"></a></td><td valign="middle"><p style="margin:0 0 5px;font:900 9px/12px Arial;letter-spacing:1.1px;text-transform:uppercase;color:#8a6772;">'||cat||' · VIRAL '||r.viral_score||'</p><p style="margin:0 0 7px;font:19px/23px Georgia,serif;color:#171511;">'||b||' '||nm||'</p><p style="margin:0;font:900 9px/12px Arial;text-transform:uppercase;"><a href="'||url||'" style="color:#171511;text-decoration:none;">READ BEFORE YOU BUY →</a></p></td></tr></table></td></tr>';
-    caution_text:=caution_text||case when caution_text<>'' then E'\n' else '' end||b||' '||nm||' — Viral '||r.viral_score||', Worth '||r.worth_score||' ('||vd||')';
-  end loop;
-
-  if trending_html='' then return; end if;
-
-  subject:='Weekly VYRDICT — '||to_char(date_trunc('week',local_now),'Mon FMDD');
-  text_body:='WEEKLY VYRDICT'||E'\n\n'||'The internet moved fast. We edited it down.'||E'\n\n'||'THE VERIFIED EDIT'||E'\n'||trending_text||E'\n\n'
-    ||case when worth_text<>'' then 'ACTUALLY WORTH THE HYPE'||E'\n'||worth_text||E'\n\n' else '' end
-    ||case when caution_text<>'' then 'VIRAL, BUT THINK TWICE'||E'\n'||caution_text||E'\n\n' else '' end
-    ||'Explore VYRDICT: https://vyrdict.com/'||E'\n\n'||'Unsubscribe: {{UNSUBSCRIBE_URL}}';
-
-  html_body:='<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head><body style="margin:0;background:#f4efe9;"><table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f4efe9"><tr><td align="center" style="padding:22px 12px 28px;"><table width="600" cellpadding="0" cellspacing="0" border="0" bgcolor="#fffdf9" style="width:100%;max-width:600px;background:#fffdf9;border:1px solid #ded5cd;">'
-    ||'<tr><td style="padding:27px 34px 22px;"><table width="100%"><tr><td><p style="margin:0;font:950 27px/30px Arial;letter-spacing:-1.5px;color:#171511;">VYRDICT<span style="color:#d94d73;">.</span></p></td><td align="right"><p style="margin:0;font:900 9px/12px Arial;letter-spacing:1.2px;text-transform:uppercase;color:#756f68;">WEEKLY EDIT<br>'||to_char(local_now,'Mon FMDD, YYYY')||'</p></td></tr></table></td></tr>'
-    ||'<tr><td bgcolor="#eadde1" style="padding:34px;background:#eadde1;"><p style="margin:0 0 10px;font:900 9px/12px Arial;letter-spacing:1.6px;text-transform:uppercase;color:#7a5561;">THE INTERNET, EDITED</p><p style="margin:0 0 13px;font:38px/41px Georgia,serif;letter-spacing:-1px;color:#171511;">What’s actually new<br>this week.</p><p style="margin:0;font:13px/20px Arial;color:#5f5658;">Verified product reviews and the cultural stories worth your attention.</p></td></tr>'
-    ||'<tr><td bgcolor="#dfe6db" style="padding:30px 34px 22px;background:#dfe6db;"><p style="margin:0 0 5px;font:900 9px/12px Arial;letter-spacing:1.6px;text-transform:uppercase;color:#65705d;">01 · THE VERIFIED EDIT</p><p style="margin:0 0 12px;font:29px/33px Georgia,serif;color:#171511;">This week’s verified picks.</p><table width="100%" cellpadding="0" cellspacing="0" border="0">'||trending_html||'</table></td></tr>'
-    ||case when worth_html<>'' then '<tr><td bgcolor="#eee8f3" style="padding:30px 34px 22px;background:#eee8f3;"><p style="margin:0 0 5px;font:900 9px/12px Arial;letter-spacing:1.6px;text-transform:uppercase;color:#73647d;">02 · ACTUALLY WORTH THE HYPE</p><p style="margin:0 0 12px;font:29px/33px Georgia,serif;color:#171511;">Fresh finds worth your money.</p><table width="100%" cellpadding="0" cellspacing="0" border="0">'||worth_html||'</table></td></tr>' else '' end
-    ||case when caution_html<>'' then '<tr><td bgcolor="#f0dfe2" style="padding:30px 34px 22px;background:#f0dfe2;"><p style="margin:0 0 5px;font:900 9px/12px Arial;letter-spacing:1.6px;text-transform:uppercase;color:#8a6772;">03 · VIRAL, BUT THINK TWICE</p><p style="margin:0 0 12px;font:29px/33px Georgia,serif;color:#171511;">New hype, weaker value.</p><table width="100%" cellpadding="0" cellspacing="0" border="0">'||caution_html||'</table></td></tr>' else '' end
-    ||'<tr><td align="center" style="padding:30px 34px;"><p style="margin:0 0 16px;font:23px/27px Georgia,serif;color:#171511;">Everything going viral.<br>One verdict.</p><a href="https://vyrdict.com/" style="display:inline-block;background:#171511;color:#fff;text-decoration:none;padding:13px 22px;border-radius:999px;font:900 10px/13px Arial;letter-spacing:.7px;text-transform:uppercase;">EXPLORE THIS WEEK →</a></td></tr>'
-    ||'<tr><td bgcolor="#f7f2ed" style="padding:20px 34px 24px;background:#f7f2ed;border-top:1px solid #e1d8d0;"><p style="margin:0 0 6px;font:10px/16px Arial;color:#756f68;">You subscribed to Weekly VYRDICT.</p><p style="margin:0;font:10px/16px Arial;color:#756f68;"><a href="{{UNSUBSCRIBE_URL}}" style="color:#756f68;text-decoration:underline;">Unsubscribe</a> anytime.</p></td></tr>'
-    ||'</table></td></tr></table></body></html>';
-
-  return next;
-end;
-$function$;
-
-CREATE OR REPLACE FUNCTION public.vyrdict_weekly_digest_news_section()
- RETURNS TABLE(news_text text, news_html text)
- LANGUAGE plpgsql
- SECURITY DEFINER
- SET search_path TO 'public'
-AS $function$
-declare
-  r record;
-  n integer := 0;
-  h text := '';
-  t text := '';
-  headline_safe text;
-  dek_safe text;
-  category_safe text;
-  source_safe text;
-  link_url text;
-begin
-  for r in
-    select s.*
-    from public.vyrdict_stories s
-    where coalesce(s.is_active,true)=true
-      and s.status='published'
-      and coalesce(s.published_at,s.created_at)>=now()-interval '14 days'
-      and s.headline !~* '(just hit the trend radar|is having a viral moment|just landed on vyrdict|is turning into a sellout story)' 
-      and length(coalesce(s.dek,''))>=60
-      and coalesce(s.source_url,'') ~ '^https://' 
-      and not exists (
-        select 1
-        from public.vyrdict_email_outbox o
-        where o.kind='weekly_digest'
-          and o.status='sent'
-          and o.sent_at>=now()-interval '21 days'
-          and coalesce(o.text_body,'') ilike '%'||s.headline||'%'
-      )
-    order by coalesce(s.is_featured,false) desc,
-             coalesce(s.published_at,s.created_at) desc,
-             s.id desc
-    limit 3
-  loop
-    n := n + 1;
-    headline_safe := replace(replace(replace(coalesce(r.headline,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
-    dek_safe := replace(replace(replace(coalesce(r.dek,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
-    category_safe := replace(replace(replace(coalesce(r.category,'Viral News'),'&','&amp;'),'<','&lt;'),'>','&gt;');
-    source_safe := replace(replace(replace(coalesce(r.source_label,'Source'),'&','&amp;'),'<','&lt;'),'>','&gt;');
-    link_url := coalesce(nullif(r.source_url,''),nullif(r.instagram_url,''),'https://vyrdict.com/#culture');
-
-    h := h ||
-      '<tr><td style="padding:18px 0;border-top:'||case when n=1 then '0' else '1px solid #decfbe' end||';">'
-      ||'<p style="margin:0 0 6px;font:900 9px/12px Arial;letter-spacing:1.2px;text-transform:uppercase;color:#86664f;">0'||n||' · '||category_safe||'</p>'
-      ||'<p style="margin:0 0 8px;font:21px/25px Georgia,serif;color:#171511;">'||headline_safe||'</p>'
-      ||case when dek_safe<>'' then '<p style="margin:0 0 10px;font:12px/18px Arial;color:#625d57;">'||case when length(dek_safe)>240 then left(dek_safe,237)||'…' else dek_safe end||'</p>' else '' end
-      ||'<p style="margin:0;font:900 9px/12px Arial;text-transform:uppercase;"><a href="'||replace(replace(link_url,'&','&amp;'),'"','&quot;')||'" style="color:#171511;text-decoration:none;">READ THE UPDATE →</a><span style="color:#8d8379;font-weight:400;text-transform:none;"> &nbsp;·&nbsp; '||source_safe||'</span></p>'
-      ||'</td></tr>';
-
-    t := t || case when t<>'' then E'\n\n' else '' end
-      || n || '. ' || coalesce(r.headline,'')
-      || case when coalesce(r.dek,'')<>'' then E'\n' || case when length(r.dek)>240 then left(r.dek,237)||'…' else r.dek end else '' end
-      || E'\n' || link_url;
-  end loop;
-
-  if h='' then return; end if;
-
-  news_text := t;
-  news_html := '<tr><td bgcolor="#f3e7d8" style="padding:30px 34px 22px;background:#f3e7d8;">'
-    ||'<p style="margin:0 0 5px;font:900 9px/12px Arial;letter-spacing:1.6px;text-transform:uppercase;color:#86664f;">01 · VIRAL NEWS</p>'
-    ||'<p style="margin:0 0 8px;font:29px/33px Georgia,serif;color:#171511;">The three stories everyone’s talking about.</p>'
-    ||'<p style="margin:0 0 13px;font:12px/18px Arial;color:#625d57;">The freshest launches, collabs, celebrity moments and internet culture worth knowing this week.</p>'
-    ||'<table width="100%" cellpadding="0" cellspacing="0" border="0">'||h||'</table></td></tr>';
-  return next;
-end;
-$function$;
-
-CREATE OR REPLACE FUNCTION public.vyrdict_weekly_digest_payload()
- RETURNS TABLE(subject text, text_body text, html_body text)
- LANGUAGE plpgsql
- SECURITY DEFINER
- SET search_path TO 'public'
-AS $function$
-declare
-  base record;
-  news record;
-  txt text;
-  html text;
-begin
-  select * into base from public.vyrdict_weekly_digest_payload_products() limit 1;
-  if base.subject is null then
-    -- Never silently skip a scheduled weekly digest when no new products pass.
-    -- Prefer independently linked editorial updates; otherwise state the
-    -- absence of new verified picks transparently without invented scores.
-    select * into news from public.vyrdict_weekly_digest_news_section() limit 1;
-    subject := 'Weekly VYRDICT — '||to_char(date_trunc('week',timezone('America/Toronto',now())),'Mon FMDD');
-    txt := 'WEEKLY VYRDICT'||E'\n\n'||'The internet moved fast. We edited it down.'||E'\n\n'
-       ||case when coalesce(news.news_text,'')<>'' then 'VIRAL NEWS'||E'\n'||news.news_text||E'\n\n'
-                else 'This week, no additional new releases cleared our full evidence and scoring checks. We would rather be accurate than invent a score.'||E'\n\n' end
-       ||'Explore evidence-verified VYRDICT products: https://vyrdict.com/collection/viral-right-now/'||E'\n\n'
-       ||'Unsubscribe: {{UNSUBSCRIBE_URL}}';
-    html := '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'
-       ||'<body style="background:#f4efe9;margin:0;"><table width="100%" bgcolor="#f4efe9" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:26px 12px;">'
-       ||'<table width="600" cellpadding="0" cellspacing="0" bgcolor="#fffdf9" style="width:100%;max-width:600px;border:1px solid #ded5cd;">'
-       ||'<tr><td style="padding:28px 34px;"><div style="font:900 27px Arial;color:#171511;letter-spacing:-1px;">VYRDICT<span style="color:#d94d73;">.</span></div>'
-       ||'<p style="font:900 10px Arial;letter-spacing:1.3px;color:#776a61;text-transform:uppercase;">WEEKLY EDIT · '
-       ||to_char(date_trunc('week',timezone('America/Toronto',now())),'Mon FMDD, YYYY')||'</p>'
-       ||'<h1 style="font:34px/39px Georgia,serif;margin:14px 0;color:#171511;">The internet, edited.</h1>'
-       ||'<p style="font:13px/20px Arial;color:#655e58;">Our coverage never depends on inventing Viral or Worth scores.</p></td></tr>'
-       ||coalesce(news.news_html,'')
-       ||case when coalesce(news.news_html,'')='' then '<tr><td style="padding:26px 34px;background:#f3e7d8;font:13px/20px Arial;color:#171511;">No new releases passed our complete verification checks this week. Explore our existing independently scored products instead.</td></tr>' else '' end
-       ||'<tr><td align="center" style="padding:28px 34px;"><a href="https://vyrdict.com/collection/viral-right-now/" style="display:inline-block;padding:13px 20px;background:#171511;color:#fff;text-decoration:none;font:900 10px Arial;">EXPLORE VERIFIED FINDS</a></td></tr>'
-       ||'<tr><td style="padding:22px 34px;background:#f7f2ed;font:11px/18px Arial;color:#756f68;">You subscribed to Weekly VYRDICT. <a style="color:#756f68;" href="{{UNSUBSCRIBE_URL}}">Unsubscribe</a>.</td></tr>'
-       ||'</table></td></tr></table></body></html>';
-    text_body := txt; html_body := html;
-    return next;
-    return;
-  end if;
-
-  subject := base.subject;
-  txt := base.text_body;
-  html := base.html_body;
-
-  select * into news from public.vyrdict_weekly_digest_news_section() limit 1;
-  if coalesce(news.news_text,'')<>'' then
-    txt := replace(txt,'THE VERIFIED EDIT','TOP 3 VIRAL NEWS'||E'\n'||news.news_text||E'\n\nTHE VERIFIED EDIT');
-
-    html := replace(html,'03 · VIRAL, BUT THINK TWICE','04 · VIRAL, BUT THINK TWICE');
-    html := replace(html,'02 · ACTUALLY WORTH THE HYPE','03 · ACTUALLY WORTH THE HYPE');
-    html := replace(html,'01 · THE VERIFIED EDIT','02 · THE VERIFIED EDIT');
-    html := replace(html,'Verified product reviews and the cultural stories worth your attention.','Fresh viral stories and product drops — edited, ranked, checked, and separated from recycled hype.');
-    html := replace(html,'<tr><td bgcolor="#dfe6db"',news.news_html||'<tr><td bgcolor="#dfe6db"');
-  end if;
-
-  text_body := txt;
-  html_body := html;
-  return next;
-end;
-$function$;
-
-CREATE OR REPLACE FUNCTION public.vyrdict_queue_weekly_digest()
- RETURNS integer
- LANGUAGE plpgsql
- SECURITY DEFINER
- SET search_path TO 'public'
-AS $function$
-declare
-  local_now timestamp := timezone('America/Toronto',now());
-  week_key text;
-  sub record;
-  payload record;
-  n integer := 0;
-  unsub_url text;
-begin
-  if extract(isodow from local_now)<>1 or extract(hour from local_now)<9 or extract(hour from local_now)>11 then return 0; end if;
-  week_key:=to_char(date_trunc('week',local_now)::date,'YYYY-MM-DD');
-
-  select * into payload from public.vyrdict_weekly_digest_payload() limit 1;
-  if payload.subject is null then return 0; end if;
-
-  for sub in select id,email,unsubscribe_token from public.vyrdict_newsletter_subscribers where status='active' loop
-    unsub_url := 'https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-newsletter-unsubscribe?token='||sub.unsubscribe_token;
-    insert into public.vyrdict_email_outbox(kind,to_email,subject,text_body,html_body,unique_key,related_subscriber_id)
-    values(
-      'weekly_digest',lower(trim(sub.email)),payload.subject,
-      replace(payload.text_body,'{{UNSUBSCRIBE_URL}}',unsub_url),
-      replace(payload.html_body,'{{UNSUBSCRIBE_URL}}',unsub_url),
-      'weekly-digest:'||week_key||':'||sub.id,
-      sub.id
-    ) on conflict (unique_key) do nothing;
-    if found then n:=n+1; end if;
-  end loop;
-  return n;
-end;
-$function$;
+-- VYRDICT weekly email editorial freshness + delivery monitoring
+-- Production update: 2026-10-28.
+-- Only source-backed editor-approved cultural stories and genuinely newly
+-- published, fully verified products can be labelled fresh.
+-- Monday 09:00 Toronto uses the previous seven days; correction editions
+-- later in a week use that calendar week's source and publication dates.
+-- Do NOT manually invent scores, rewrite old published_at dates, or label
+-- evergreen products as newly scored. If sources are insufficient, use the
+-- honest source-light fallback (never recycle September).
 
 CREATE OR REPLACE FUNCTION private.vyrdict_audit_weekly_newsletter()
  RETURNS jsonb
@@ -603,7 +234,381 @@ SELECT jsonb_build_object(
 );
 $function$;
 
+CREATE OR REPLACE FUNCTION public.vyrdict_queue_weekly_digest()
+ RETURNS integer
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+declare
+  local_now timestamp := timezone('America/Toronto',now());
+  week_key text;
+  sub record;
+  payload record;
+  n integer := 0;
+  unsub_url text;
+begin
+  if extract(isodow from local_now)<>1 or extract(hour from local_now)<9 or extract(hour from local_now)>11 then return 0; end if;
+  week_key:=to_char(date_trunc('week',local_now)::date,'YYYY-MM-DD');
+
+  select * into payload from public.vyrdict_weekly_digest_payload() limit 1;
+  if payload.subject is null then return 0; end if;
+
+  for sub in select id,email,unsubscribe_token from public.vyrdict_newsletter_subscribers where status='active' loop
+    unsub_url := 'https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-newsletter-unsubscribe?token='||sub.unsubscribe_token;
+    insert into public.vyrdict_email_outbox(kind,to_email,subject,text_body,html_body,unique_key,related_subscriber_id)
+    values(
+      'weekly_digest',lower(trim(sub.email)),payload.subject,
+      replace(payload.text_body,'{{UNSUBSCRIBE_URL}}',unsub_url),
+      replace(payload.html_body,'{{UNSUBSCRIBE_URL}}',unsub_url),
+      'weekly-digest:'||week_key||':'||sub.id,
+      sub.id
+    ) on conflict (unique_key) do nothing;
+    if found then n:=n+1; end if;
+  end loop;
+  return n;
+end;
+$function$;
+
+CREATE OR REPLACE FUNCTION public.vyrdict_weekly_digest_news_section()
+ RETURNS TABLE(news_text text, news_html text)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+declare
+  r record;
+  n integer := 0;
+  h text := '';
+  t text := '';
+  headline_safe text;
+  dek_safe text;
+  category_safe text;
+  source_safe text;
+  link_url text;
+begin
+  for r in
+    select s.*
+    from public.vyrdict_stories s
+    where coalesce(s.is_active,true)=true
+      and s.status='published'
+      and coalesce(s.published_at,s.created_at)>=(case when extract(isodow from timezone('America/Toronto',now()))=1 then now()-interval '7 days' else (date_trunc('week', timezone('America/Toronto',now())) at time zone 'America/Toronto') end)
+      and s.is_featured=true
+      and s.slug ~ '^weekly-[0-9]{4}-[0-9]{2}-[0-9]{2}-'
+      and s.headline !~* '(just hit the trend radar|is having a viral moment|just landed on vyrdict|is turning into a sellout story)' 
+      and length(coalesce(s.dek,''))>=60
+      and coalesce(s.source_url,'') ~ '^https://' 
+      and not exists (
+        select 1
+        from public.vyrdict_email_outbox o
+        where o.kind='weekly_digest'
+          and o.status='sent'
+          and o.sent_at>=now()-interval '21 days' and o.sent_at < (case when extract(isodow from timezone('America/Toronto',now()))=1 then now()-interval '7 days' else (date_trunc('week', timezone('America/Toronto',now())) at time zone 'America/Toronto') end)
+          and coalesce(o.text_body,'') ilike '%'||s.headline||'%'
+      )
+    order by coalesce(s.is_featured,false) desc,
+             coalesce(s.published_at,s.created_at) desc,
+             s.id desc
+    limit 3
+  loop
+    n := n + 1;
+    headline_safe := replace(replace(replace(coalesce(r.headline,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
+    dek_safe := replace(replace(replace(coalesce(r.dek,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
+    category_safe := replace(replace(replace(coalesce(r.category,'Viral News'),'&','&amp;'),'<','&lt;'),'>','&gt;');
+    source_safe := replace(replace(replace(coalesce(r.source_label,'Source'),'&','&amp;'),'<','&lt;'),'>','&gt;');
+    link_url := coalesce(nullif(r.source_url,''),nullif(r.instagram_url,''),'https://vyrdict.com/#culture');
+
+    h := h ||
+      '<tr><td style="padding:18px 0;border-top:'||case when n=1 then '0' else '1px solid #decfbe' end||';">'
+      ||'<p style="margin:0 0 6px;font:900 9px/12px Arial;letter-spacing:1.2px;text-transform:uppercase;color:#86664f;">0'||n||' · '||category_safe||'</p>'
+      ||'<p style="margin:0 0 8px;font:21px/25px Georgia,serif;color:#171511;">'||headline_safe||'</p>'
+      ||case when dek_safe<>'' then '<p style="margin:0 0 10px;font:12px/18px Arial;color:#625d57;">'||case when length(dek_safe)>240 then left(dek_safe,237)||'…' else dek_safe end||'</p>' else '' end
+      ||'<p style="margin:0;font:900 9px/12px Arial;text-transform:uppercase;"><a href="'||replace(replace(link_url,'&','&amp;'),'"','&quot;')||'" style="color:#171511;text-decoration:none;">READ THE UPDATE →</a><span style="color:#8d8379;font-weight:400;text-transform:none;"> &nbsp;·&nbsp; '||source_safe||'</span></p>'
+      ||'</td></tr>';
+
+    t := t || case when t<>'' then E'\n\n' else '' end
+      || n || '. ' || coalesce(r.headline,'')
+      || case when coalesce(r.dek,'')<>'' then E'\n' || case when length(r.dek)>240 then left(r.dek,237)||'…' else r.dek end else '' end
+      || E'\n' || link_url;
+  end loop;
+
+  if h='' then return; end if;
+
+  news_text := t;
+  news_html := '<tr><td bgcolor="#f3e7d8" style="padding:30px 34px 22px;background:#f3e7d8;">'
+    ||'<p style="margin:0 0 5px;font:900 9px/12px Arial;letter-spacing:1.6px;text-transform:uppercase;color:#86664f;">01 · VIRAL NEWS</p>'
+    ||'<p style="margin:0 0 8px;font:29px/33px Georgia,serif;color:#171511;">The three stories everyone’s talking about.</p>'
+    ||'<p style="margin:0 0 13px;font:12px/18px Arial;color:#625d57;">The freshest launches, collabs, celebrity moments and internet culture worth knowing this week.</p>'
+    ||'<table width="100%" cellpadding="0" cellspacing="0" border="0">'||h||'</table></td></tr>';
+  return next;
+end;
+$function$;
+
+CREATE OR REPLACE FUNCTION public.vyrdict_weekly_digest_payload()
+ RETURNS TABLE(subject text, text_body text, html_body text)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+declare
+  base record;
+  news record;
+  txt text;
+  html text;
+begin
+  select * into base from public.vyrdict_weekly_digest_payload_products() limit 1;
+  if base.subject is null then
+    -- Never silently skip a scheduled weekly digest when no new products pass.
+    -- Prefer independently linked editorial updates; otherwise state the
+    -- absence of new verified picks transparently without invented scores.
+    select * into news from public.vyrdict_weekly_digest_news_section() limit 1;
+    subject := 'Weekly VYRDICT — '||to_char(date_trunc('week',timezone('America/Toronto',now())),'Mon FMDD');
+    txt := 'WEEKLY VYRDICT'||E'\n\n'||'The internet moved fast. We edited it down.'||E'\n\n'
+       ||case when coalesce(news.news_text,'')<>'' then 'VIRAL NEWS'||E'\n'||news.news_text||E'\n\n'
+                else 'This week, no additional new releases cleared our full evidence and scoring checks. We would rather be accurate than invent a score.'||E'\n\n' end
+       ||'Explore evidence-verified VYRDICT products: https://vyrdict.com/collection/viral-right-now/'||E'\n\n'
+       ||'Unsubscribe: {{UNSUBSCRIBE_URL}}';
+    html := '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'
+       ||'<body style="background:#f4efe9;margin:0;"><table width="100%" bgcolor="#f4efe9" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:26px 12px;">'
+       ||'<table width="600" cellpadding="0" cellspacing="0" bgcolor="#fffdf9" style="width:100%;max-width:600px;border:1px solid #ded5cd;">'
+       ||'<tr><td style="padding:28px 34px;"><div style="font:900 27px Arial;color:#171511;letter-spacing:-1px;">VYRDICT<span style="color:#d94d73;">.</span></div>'
+       ||'<p style="font:900 10px Arial;letter-spacing:1.3px;color:#776a61;text-transform:uppercase;">WEEKLY EDIT · '
+       ||to_char(date_trunc('week',timezone('America/Toronto',now())),'Mon FMDD, YYYY')||'</p>'
+       ||'<h1 style="font:34px/39px Georgia,serif;margin:14px 0;color:#171511;">The internet, edited.</h1>'
+       ||'<p style="font:13px/20px Arial;color:#655e58;">Our coverage never depends on inventing Viral or Worth scores.</p></td></tr>'
+       ||coalesce(news.news_html,'')
+       ||case when coalesce(news.news_html,'')='' then '<tr><td style="padding:26px 34px;background:#f3e7d8;font:13px/20px Arial;color:#171511;">No new releases passed our complete verification checks this week. Explore our existing independently scored products instead.</td></tr>' else '' end
+       ||'<tr><td align="center" style="padding:28px 34px;"><a href="https://vyrdict.com/collection/viral-right-now/" style="display:inline-block;padding:13px 20px;background:#171511;color:#fff;text-decoration:none;font:900 10px Arial;">EXPLORE VERIFIED FINDS</a></td></tr>'
+       ||'<tr><td style="padding:22px 34px;background:#f7f2ed;font:11px/18px Arial;color:#756f68;">You subscribed to Weekly VYRDICT. <a style="color:#756f68;" href="{{UNSUBSCRIBE_URL}}">Unsubscribe</a>.</td></tr>'
+       ||'</table></td></tr></table></body></html>';
+    text_body := txt; html_body := html;
+    return next;
+    return;
+  end if;
+
+  subject := base.subject;
+  txt := base.text_body;
+  html := base.html_body;
+
+  select * into news from public.vyrdict_weekly_digest_news_section() limit 1;
+  if coalesce(news.news_text,'')<>'' then
+    txt := replace(txt,'THIS WEEK’S SCORED PRODUCTS','TOP 3 VIRAL NEWS'||E'\n'||news.news_text||E'\n\nTHIS WEEK’S SCORED PRODUCTS');
+
+    html := replace(html,'03 · VIRAL, BUT THINK TWICE','04 · VIRAL, BUT THINK TWICE');
+    html := replace(html,'02 · ACTUALLY WORTH THE HYPE','03 · ACTUALLY WORTH THE HYPE');
+    html := replace(html,'01 · THIS WEEK’S SCORED PRODUCTS','02 · THIS WEEK’S SCORED PRODUCTS');
+    html := replace(html,'Verified product reviews and the cultural stories worth your attention.','Fresh viral stories and product drops — edited, ranked, checked, and separated from recycled hype.');
+    html := replace(html,'<tr><td bgcolor="#dfe6db"',news.news_html||'<tr><td bgcolor="#dfe6db"');
+  end if;
+
+  text_body := txt;
+  html_body := html;
+  return next;
+end;
+$function$;
+
+CREATE OR REPLACE FUNCTION public.vyrdict_weekly_digest_payload_products()
+ RETURNS TABLE(subject text, text_body text, html_body text)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+declare
+  local_now timestamp := timezone('America/Toronto',now());
+  r record;
+  n integer := 0;
+  trending_html text := '';
+  worth_html text := '';
+  caution_html text := '';
+  trending_text text := '';
+  worth_text text := '';
+  caution_text text := '';
+  used_ids bigint[] := '{}';
+  b text; nm text; cat text; vd text; img text; url text;
+  freshness text;
+begin
+  /* TRENDING NOW: prioritize genuinely fresh catalog additions and suppress
+     products already used in a sent weekly digest during the previous 28 days. */
+  for r in
+    with ev as (
+      select product_id,
+             count(*) filter (where coalesce(observed_at,verified_at)>=now()-interval '14 days') ev14, count(*) evidence_total, count(distinct lower(split_part(regexp_replace(source_url,'^https?://(www\\.)?','','i'),'/',1))) filter(where source_url ~ '^https?://') evidence_domains,
+             count(distinct lower(split_part(regexp_replace(source_url,'^https?://(www\\.)?','','i'),'/',1)))
+               filter (where coalesce(observed_at,verified_at)>=now()-interval '14 days' and source_url is not null) domains14
+      from public.product_evidence
+      where coalesce(is_public,true)=true
+      group by product_id
+    ), base as (
+      select prod.*,coalesce(ev.ev14,0) ev14,coalesce(ev.domains14,0) domains14,
+             coalesce(prod.published_at,prod.created_at) fresh_at
+      from public.products prod
+      join ev on ev.product_id=prod.id
+      where prod.is_active=true
+        and prod.evidence_status='verified'
+        and prod.last_verified_at>=(case when extract(isodow from timezone('America/Toronto',now()))=1 then now()-interval '7 days' else (date_trunc('week', timezone('America/Toronto',now())) at time zone 'America/Toronto') end)
+        and coalesce(prod.published_at,prod.created_at)>=(case when extract(isodow from timezone('America/Toronto',now()))=1 then now()-interval '7 days' else (date_trunc('week', timezone('America/Toronto',now())) at time zone 'America/Toronto') end)
+        and prod.viral_score>=55
+        and coalesce(prod.momentum_score,0)>=0
+        and ev.evidence_total>=1 and ev.evidence_domains>=1
+        and prod.image_url is not null
+        and not exists (
+          select 1 from public.vyrdict_email_outbox o
+          where o.kind='weekly_digest' and o.status='sent'
+            and o.sent_at>=now()-interval '28 days' and o.sent_at < (case when extract(isodow from timezone('America/Toronto',now()))=1 then now()-interval '7 days' else (date_trunc('week', timezone('America/Toronto',now())) at time zone 'America/Toronto') end)
+            and (
+              coalesce(o.html_body,'') like '%/product/'||prod.slug||'/%'
+              or coalesce(o.text_body,'') ilike '%'||prod.name||'%'
+            )
+        )
+    ), ranked as (
+      select base.*,row_number() over(
+        partition by category
+        order by fresh_at desc,viral_score desc,id desc
+      ) rn
+      from base
+    )
+    select * from ranked
+    where rn=1
+    order by fresh_at desc,viral_score desc
+    limit 5
+  loop
+    n:=n+1; used_ids:=array_append(used_ids,r.id);
+    b:=replace(replace(replace(coalesce(r.brand,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
+    nm:=replace(replace(replace(coalesce(r.name,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
+    cat:=replace(replace(replace(coalesce(r.category,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
+    img:=replace(replace(coalesce(r.image_url,''),'&','&amp;'),'"','&quot;');
+    url:='https://vyrdict.com/product/'||r.slug||'/';
+    freshness:=case
+      when r.fresh_at>=now()-interval '3 days' then 'NEW THIS WEEK'
+      else 'VERIFIED PICK'
+    end;
+    trending_html:=trending_html||
+      '<tr><td style="padding:18px 0;border-top:'||case when n=1 then '0' else '1px solid #c7d0c0' end||';">'
+      ||'<table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>'
+      ||'<td width="118" valign="top" style="width:118px;padding-right:16px;"><a href="'||url||'"><img src="'||img||'" width="118" height="118" border="0" alt="'||b||' '||nm||'" style="width:118px;height:118px;object-fit:contain;display:block;background:#fffdf9;"></a></td>'
+      ||'<td valign="middle"><p style="margin:0 0 5px;font:900 9px/12px Arial;letter-spacing:1.2px;text-transform:uppercase;color:#65705d;">'||freshness||' · '||cat||'</p>'
+      ||'<p style="margin:0 0 7px;font:19px/23px Georgia,serif;color:#171511;">'||b||' '||nm||'</p>'
+      ||'<p style="margin:0 0 9px;font:11px/15px Arial;color:#625d57;">Viral '||r.viral_score||' · Worth '||r.worth_score||'</p>'
+      ||'<p style="margin:0;font:900 9px/12px Arial;text-transform:uppercase;"><a href="'||url||'" style="color:#171511;text-decoration:none;">SEE THE VERDICT →</a></p></td></tr></table></td></tr>';
+    trending_text:=trending_text||case when trending_text<>'' then E'\n' else '' end||b||' '||nm||' — Viral '||r.viral_score||', Worth '||r.worth_score;
+  end loop;
+
+  /* WORTH IT: still fresh, but optimized for value. */
+  n:=0;
+  for r in
+    with ev as (
+      select product_id,
+             count(*) filter (where coalesce(observed_at,verified_at)>=now()-interval '21 days') ev21,
+             count(distinct lower(split_part(regexp_replace(source_url,'^https?://(www\\.)?','','i'),'/',1)))
+               filter (where coalesce(observed_at,verified_at)>=now()-interval '21 days' and source_url is not null) domains21
+      from public.product_evidence
+      where coalesce(is_public,true)=true
+      group by product_id
+    ), base as (
+      select prod.*,coalesce(prod.published_at,prod.created_at) fresh_at
+      from public.products prod join ev on ev.product_id=prod.id
+      where prod.is_active=true
+        and prod.evidence_status='verified'
+        and prod.last_verified_at>=(case when extract(isodow from timezone('America/Toronto',now()))=1 then now()-interval '7 days' else (date_trunc('week', timezone('America/Toronto',now())) at time zone 'America/Toronto') end)
+        and coalesce(prod.published_at,prod.created_at)>=(case when extract(isodow from timezone('America/Toronto',now()))=1 then now()-interval '7 days' else (date_trunc('week', timezone('America/Toronto',now())) at time zone 'America/Toronto') end)
+        and prod.worth_score>=85
+        and prod.viral_score>=75
+        and ev.ev21>=1 and ev.domains21>=1
+        and prod.image_url is not null
+        and not (prod.id=any(used_ids))
+        and not exists (
+          select 1 from public.vyrdict_email_outbox o
+          where o.kind='weekly_digest' and o.status='sent'
+            and o.sent_at>=now()-interval '28 days' and o.sent_at < (case when extract(isodow from timezone('America/Toronto',now()))=1 then now()-interval '7 days' else (date_trunc('week', timezone('America/Toronto',now())) at time zone 'America/Toronto') end)
+            and (
+              coalesce(o.html_body,'') like '%/product/'||prod.slug||'/%'
+              or coalesce(o.text_body,'') ilike '%'||prod.name||'%'
+            )
+        )
+    ), ranked as (
+      select base.*,row_number() over(partition by category order by worth_score desc,viral_score desc,fresh_at desc,id desc) rn
+      from base
+    )
+    select * from ranked where rn=1
+    order by worth_score desc,viral_score desc,fresh_at desc
+    limit 3
+  loop
+    n:=n+1; used_ids:=array_append(used_ids,r.id);
+    b:=replace(replace(replace(coalesce(r.brand,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
+    nm:=replace(replace(replace(coalesce(r.name,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
+    cat:=replace(replace(replace(coalesce(r.category,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
+    vd:=replace(replace(replace(coalesce(r.verdict,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
+    img:=replace(replace(coalesce(r.image_url,''),'&','&amp;'),'"','&quot;');
+    url:='https://vyrdict.com/product/'||r.slug||'/';
+    worth_html:=worth_html||'<tr><td style="padding:17px 0;border-top:'||case when n=1 then '0' else '1px solid #d5ccdb' end||';"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td width="108" valign="top" style="width:108px;padding-right:16px;"><a href="'||url||'"><img src="'||img||'" width="108" height="108" border="0" alt="'||b||' '||nm||'" style="width:108px;height:108px;object-fit:contain;display:block;background:#fffdf9;"></a></td><td valign="middle"><p style="margin:0 0 5px;font:900 9px/12px Arial;letter-spacing:1.1px;text-transform:uppercase;color:#73647d;">'||cat||' · WORTH '||r.worth_score||'</p><p style="margin:0 0 7px;font:19px/23px Georgia,serif;color:#171511;">'||b||' '||nm||'</p><p style="margin:0;font:900 9px/12px Arial;text-transform:uppercase;"><a href="'||url||'" style="color:#171511;text-decoration:none;">SEE WHY IT’S WORTH IT →</a></p></td></tr></table></td></tr>';
+    worth_text:=worth_text||case when worth_text<>'' then E'\n' else '' end||b||' '||nm||' — Worth '||r.worth_score||' ('||vd||')';
+  end loop;
+
+  /* THINK TWICE: only include if there is a recent, genuinely relevant caution pick. */
+  n:=0;
+  for r in
+    with ev as (
+      select product_id,count(*) filter (where coalesce(observed_at,verified_at)>=now()-interval '21 days') ev21
+      from public.product_evidence where coalesce(is_public,true)=true group by product_id
+    )
+    select prod.*,coalesce(prod.published_at,prod.created_at) fresh_at
+    from public.products prod join ev on ev.product_id=prod.id
+    where prod.is_active=true
+      and prod.evidence_status='verified'
+      and prod.last_verified_at>=(case when extract(isodow from timezone('America/Toronto',now()))=1 then now()-interval '7 days' else (date_trunc('week', timezone('America/Toronto',now())) at time zone 'America/Toronto') end)
+      and coalesce(prod.published_at,prod.created_at)>=(case when extract(isodow from timezone('America/Toronto',now()))=1 then now()-interval '7 days' else (date_trunc('week', timezone('America/Toronto',now())) at time zone 'America/Toronto') end)
+      and prod.viral_score>=75
+      and (prod.verdict in ('Skip','Overhyped','Mixed') or prod.worth_score<70)
+      and ev.ev21>=1
+      and prod.image_url is not null
+      and not (prod.id=any(used_ids))
+      and not exists (
+        select 1 from public.vyrdict_email_outbox o
+        where o.kind='weekly_digest' and o.status='sent'
+          and o.sent_at>=now()-interval '28 days' and o.sent_at < (case when extract(isodow from timezone('America/Toronto',now()))=1 then now()-interval '7 days' else (date_trunc('week', timezone('America/Toronto',now())) at time zone 'America/Toronto') end)
+          and (
+            coalesce(o.html_body,'') like '%/product/'||prod.slug||'/%'
+            or coalesce(o.text_body,'') ilike '%'||prod.name||'%'
+          )
+      )
+    order by fresh_at desc,prod.viral_score desc,prod.worth_score asc
+    limit 2
+  loop
+    n:=n+1;
+    b:=replace(replace(replace(coalesce(r.brand,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
+    nm:=replace(replace(replace(coalesce(r.name,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
+    cat:=replace(replace(replace(coalesce(r.category,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
+    vd:=replace(replace(replace(coalesce(r.verdict,''),'&','&amp;'),'<','&lt;'),'>','&gt;');
+    img:=replace(replace(coalesce(r.image_url,''),'&','&amp;'),'"','&quot;');
+    url:='https://vyrdict.com/product/'||r.slug||'/';
+    caution_html:=caution_html||'<tr><td style="padding:17px 0;border-top:'||case when n=1 then '0' else '1px solid #ddc7cc' end||';"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td width="108" valign="top" style="width:108px;padding-right:16px;"><a href="'||url||'"><img src="'||img||'" width="108" height="108" border="0" alt="'||b||' '||nm||'" style="width:108px;height:108px;object-fit:contain;display:block;background:#fffdf9;"></a></td><td valign="middle"><p style="margin:0 0 5px;font:900 9px/12px Arial;letter-spacing:1.1px;text-transform:uppercase;color:#8a6772;">'||cat||' · VIRAL '||r.viral_score||'</p><p style="margin:0 0 7px;font:19px/23px Georgia,serif;color:#171511;">'||b||' '||nm||'</p><p style="margin:0;font:900 9px/12px Arial;text-transform:uppercase;"><a href="'||url||'" style="color:#171511;text-decoration:none;">READ BEFORE YOU BUY →</a></p></td></tr></table></td></tr>';
+    caution_text:=caution_text||case when caution_text<>'' then E'\n' else '' end||b||' '||nm||' — Viral '||r.viral_score||', Worth '||r.worth_score||' ('||vd||')';
+  end loop;
+
+  if trending_html='' then return; end if;
+
+  subject:='Weekly VYRDICT — '||to_char(date_trunc('week',local_now),'Mon FMDD');
+  text_body:='WEEKLY VYRDICT'||E'\n\n'||'The internet moved fast. This edition highlights only scored products and launches from this week.'||E'\n\n'||'THIS WEEK’S SCORED PRODUCTS'||E'\n'||trending_text||E'\n\n'
+    ||case when worth_text<>'' then 'ACTUALLY WORTH THE HYPE'||E'\n'||worth_text||E'\n\n' else '' end
+    ||case when caution_text<>'' then 'VIRAL, BUT THINK TWICE'||E'\n'||caution_text||E'\n\n' else '' end
+    ||'Explore VYRDICT: https://vyrdict.com/'||E'\n\n'||'Unsubscribe: {{UNSUBSCRIBE_URL}}';
+
+  html_body:='<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head><body style="margin:0;background:#f4efe9;"><table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f4efe9"><tr><td align="center" style="padding:22px 12px 28px;"><table width="600" cellpadding="0" cellspacing="0" border="0" bgcolor="#fffdf9" style="width:100%;max-width:600px;background:#fffdf9;border:1px solid #ded5cd;">'
+    ||'<tr><td style="padding:27px 34px 22px;"><table width="100%"><tr><td><p style="margin:0;font:950 27px/30px Arial;letter-spacing:-1.5px;color:#171511;">VYRDICT<span style="color:#d94d73;">.</span></p></td><td align="right"><p style="margin:0;font:900 9px/12px Arial;letter-spacing:1.2px;text-transform:uppercase;color:#756f68;">WEEKLY EDIT<br>'||to_char(local_now,'Mon FMDD, YYYY')||'</p></td></tr></table></td></tr>'
+    ||'<tr><td bgcolor="#eadde1" style="padding:34px;background:#eadde1;"><p style="margin:0 0 10px;font:900 9px/12px Arial;letter-spacing:1.6px;text-transform:uppercase;color:#7a5561;">THE INTERNET, EDITED</p><p style="margin:0 0 13px;font:38px/41px Georgia,serif;letter-spacing:-1px;color:#171511;">What’s actually new<br>this week.</p><p style="margin:0;font:13px/20px Arial;color:#5f5658;">Verified product reviews and the cultural stories worth your attention.</p></td></tr>'
+    ||'<tr><td bgcolor="#dfe6db" style="padding:30px 34px 22px;background:#dfe6db;"><p style="margin:0 0 5px;font:900 9px/12px Arial;letter-spacing:1.6px;text-transform:uppercase;color:#65705d;">01 · THIS WEEK’S SCORED PRODUCTS</p><p style="margin:0 0 12px;font:29px/33px Georgia,serif;color:#171511;">Newly scored this week.</p><table width="100%" cellpadding="0" cellspacing="0" border="0">'||trending_html||'</table></td></tr>'
+    ||case when worth_html<>'' then '<tr><td bgcolor="#eee8f3" style="padding:30px 34px 22px;background:#eee8f3;"><p style="margin:0 0 5px;font:900 9px/12px Arial;letter-spacing:1.6px;text-transform:uppercase;color:#73647d;">02 · ACTUALLY WORTH THE HYPE</p><p style="margin:0 0 12px;font:29px/33px Georgia,serif;color:#171511;">Fresh finds worth your money.</p><table width="100%" cellpadding="0" cellspacing="0" border="0">'||worth_html||'</table></td></tr>' else '' end
+    ||case when caution_html<>'' then '<tr><td bgcolor="#f0dfe2" style="padding:30px 34px 22px;background:#f0dfe2;"><p style="margin:0 0 5px;font:900 9px/12px Arial;letter-spacing:1.6px;text-transform:uppercase;color:#8a6772;">03 · VIRAL, BUT THINK TWICE</p><p style="margin:0 0 12px;font:29px/33px Georgia,serif;color:#171511;">New hype, weaker value.</p><table width="100%" cellpadding="0" cellspacing="0" border="0">'||caution_html||'</table></td></tr>' else '' end
+    ||'<tr><td align="center" style="padding:30px 34px;"><p style="margin:0 0 16px;font:23px/27px Georgia,serif;color:#171511;">Everything going viral.<br>One verdict.</p><a href="https://vyrdict.com/" style="display:inline-block;background:#171511;color:#fff;text-decoration:none;padding:13px 22px;border-radius:999px;font:900 10px/13px Arial;letter-spacing:.7px;text-transform:uppercase;">EXPLORE THIS WEEK →</a></td></tr>'
+    ||'<tr><td bgcolor="#f7f2ed" style="padding:20px 34px 24px;background:#f7f2ed;border-top:1px solid #e1d8d0;"><p style="margin:0 0 6px;font:10px/16px Arial;color:#756f68;">You subscribed to Weekly VYRDICT.</p><p style="margin:0;font:10px/16px Arial;color:#756f68;"><a href="{{UNSUBSCRIBE_URL}}" style="color:#756f68;text-decoration:underline;">Unsubscribe</a> anytime.</p></td></tr>'
+    ||'</table></td></tr></table></body></html>';
+
+  return next;
+end;
+$function$;
+
+-- Cron calls remain idempotent and distinct:
 SELECT cron.schedule('vyrdict_weekly_digest_queue','0 * * * *',
-  $$select public.vyrdict_queue_weekly_digest();$$);
+ $$SELECT public.vyrdict_queue_weekly_digest();$$);
 SELECT cron.schedule('vyrdict-weekly-newsletter-health','42 * * * *',
-  $$select private.vyrdict_audit_weekly_newsletter();$$);
+ $$SELECT private.vyrdict_audit_weekly_newsletter();$$);
