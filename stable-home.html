@@ -273,6 +273,7 @@ main{overflow-x:clip}
       <div class="lt-skeleton"><div class="lt-media"></div></div><div class="lt-skeleton"><div class="lt-media"></div></div><div class="lt-skeleton"><div class="lt-media"></div></div><div class="lt-skeleton"><div class="lt-media"></div></div>
     </div>
     <div class="lt-foot"><a href="/collection/viral-right-now/">See all viral products →</a></div>
+    <div id="home-recent-scored" aria-live="polite" style="display:none;margin:14px 0 18px;font:12px/1.7 Arial,sans-serif;color:#333;"></div>
     <a class="haunted-edit-feature" href="/edit/haunted-antiques/">
       <div><div class="k">THE HALLOWEEN EDIT</div><h3>Shop the Haunted Edit</h3><p>Eight eerie finds from our Halloween carousel — from ornate mirrors and vintage-style combs to a seriously unsettling doll. Explore the real products and where to buy them.</p><span class="haunted-edit-action">Explore all eight finds →</span></div>
       <div class="haunted-edit-images" aria-hidden="true"><img src="/edit/haunted-antiques/images/mirror-photo.jpg" alt="" width="180" height="180" loading="lazy" decoding="async"><img src="/edit/haunted-antiques/images/doll-photo.jpg" alt="" width="180" height="180" loading="lazy" decoding="async"></div>
@@ -354,6 +355,20 @@ main{overflow-x:clip}
   }
   fetch('/api/viral-now?limit=8&rev=20261013-four-products',{headers:{accept:'application/json'},cache:'no-store'})
     .then(function(r){return r.ok?r.json():Promise.reject()}).then(function(j){renderTrending(j.products||[])}).catch(function(){});
+  // Keep truly new scored products visible without compromising the
+  // high-momentum Viral Right Now feed or publishing unverified candidates.
+  fetch('/api/recent-scored',{headers:{accept:'application/json'},cache:'no-store'})
+    .then(function(r){return r.ok?r.json():Promise.reject()})
+    .then(function(j){
+      var box=document.getElementById('home-recent-scored');
+      if(!box||!j.ok||!Array.isArray(j.products)||!j.products.length)return;
+      var rows=j.products.filter(function(p){return p&&p.slug&&p.name&&p.viral_score!=null&&p.worth_score!=null}).slice(0,4);
+      if(!rows.length)return;
+      box.innerHTML='<strong style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;">Newly Scored on VYRDICT</strong> &nbsp;'+rows.map(function(p){
+        return '<a style="color:inherit;text-decoration:underline;text-underline-offset:3px;margin-right:12px" href="/product/'+encodeURIComponent(p.slug)+'/">'+e(((p.brand||'')+' '+p.name).trim())+' <span style="white-space:nowrap;color:#66715d">Viral '+score(p.viral_score)+' · Worth '+score(p.worth_score)+'</span></a>';
+      }).join(' ');
+      box.style.display='block';
+    }).catch(function(){});
   var cultureFeed='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-culture-feed';
   fetch(cultureFeed+'?slug=celebrity-effect&rev=20261013-child-collections',{headers:{accept:'application/json'},cache:'no-store'})
     .then(function(r){return r.ok?r.json():Promise.reject()}).then(function(j){var x=(j.products||[])[0]||(j.signals||[])[0];updateCulture('culture-celebrity-now','culture-celebrity-product',x,false)}).catch(function(){});
