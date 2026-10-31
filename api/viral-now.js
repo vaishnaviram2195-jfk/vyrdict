@@ -45,7 +45,7 @@ module.exports=async function handler(req,res){
     // A separate, fully scored recency mode for the homepage.
     // Unlike the momentum edit, only original publication dates count as new.
     if(String(req.query?.mode||'')==='recent'){
-      const cutoff=Date.now()-30*86400000;
+      const cutoff=Date.now()-7*86400000;
       const recent=rows.filter(p=>
         p.slug&&p.name&&p.image_url
         && p.evidence_status==='verified'
@@ -56,7 +56,7 @@ module.exports=async function handler(req,res){
         && Number(p.worth_score)>=0&&Number(p.worth_score)<=100
       ).sort((a,b)=>Date.parse(b.published_at)-Date.parse(a.published_at)).slice(0,Math.min(limit,4));
       res.setHeader('Cache-Control','public, max-age=0, s-maxage=300, stale-while-revalidate=300');
-      return res.status(200).json({ok:true,products:recent,window_days:30,generated_at:new Date().toISOString(),policy:'newly_published_verified_scored_products_only'});
+      return res.status(200).json({ok:true,products:recent,window_days:7,generated_at:new Date().toISOString(),policy:'newly_published_verified_scored_products_only'});
     }
     const qualify=(r,maxAge)=>{
       const status=String(r.viral_status||'').toLowerCase();
