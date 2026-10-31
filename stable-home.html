@@ -357,7 +357,7 @@ main{overflow-x:clip}
     .then(function(r){return r.ok?r.json():Promise.reject()}).then(function(j){renderTrending(j.products||[])}).catch(function(){});
   // Keep truly new scored products visible without compromising the
   // high-momentum Viral Right Now feed or publishing unverified candidates.
-  fetch('/api/recent-scored',{headers:{accept:'application/json'},cache:'no-store'})
+  fetch('/api/viral-now?mode=recent&limit=4',{headers:{accept:'application/json'},cache:'no-store'})
     .then(function(r){return r.ok?r.json():Promise.reject()})
     .then(function(j){
       var box=document.getElementById('home-recent-scored');
