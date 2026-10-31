@@ -42,6 +42,22 @@ module.exports=async function handler(req,res){
     const limit=Math.max(3,Math.min(Number.isFinite(requested)?requested:12,24));
     const now=Date.now();
     const rows=await fetchWindow(30);
+    // A separate, fully scored recency mode for the homepage.
+    // Unlike the momentum edit, only original publication dates count as new.
+    if(String(req.query?.mode||'')==='recent'){
+      const cutoff=Date.now()-30*86400000;
+      const recent=rows.filter(p=>
+        p.slug&&p.name&&p.image_url
+        && p.evidence_status==='verified'
+        && p.published_at&&Date.parse(p.published_at)>=cutoff
+        && p.viral_score!=null&&p.worth_score!=null
+        && Number.isFinite(Number(p.viral_score))&&Number.isFinite(Number(p.worth_score))
+        && Number(p.viral_score)>=0&&Number(p.viral_score)<=100
+        && Number(p.worth_score)>=0&&Number(p.worth_score)<=100
+      ).sort((a,b)=>Date.parse(b.published_at)-Date.parse(a.published_at)).slice(0,Math.min(limit,4));
+      res.setHeader('Cache-Control','public, max-age=0, s-maxage=300, stale-while-revalidate=300');
+      return res.status(200).json({ok:true,products:recent,window_days:30,generated_at:new Date().toISOString(),policy:'newly_published_verified_scored_products_only'});
+    }
     const qualify=(r,maxAge)=>{
       const status=String(r.viral_status||'').toLowerCase();
       const confidence=String(r.evidence_confidence||'').toLowerCase();
