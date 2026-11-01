@@ -4,6 +4,8 @@ window.VyrdictBusinessPanel = function buildBusinessPanel(b){
   const num=v=>Number(v||0).toLocaleString('en-CA');
   const dt=v=>v?new Date(v).toLocaleString('en-CA',{timeZone:'America/Toronto',month:'short',day:'numeric'}):'—';
   const cats=Array.isArray(b.categories)?b.categories:[];
+  const catalog=Array.isArray(b.catalog_freshness)?b.catalog_freshness:[];
+  const freshStats=b.catalog_freshness_summary||{};
   const freq=Array.isArray(b.frequent_visitors)?b.frequent_visitors:[];
   const inquiries=Array.isArray(b.work_inquiries)?b.work_inquiries:[];
   const accounts=Array.isArray(b.account_list)?b.account_list:[];
@@ -12,6 +14,7 @@ window.VyrdictBusinessPanel = function buildBusinessPanel(b){
   const tbl=(head,rows,empty)=>'<div class="bi-scroll"><table class="bi-table"><thead><tr>'+head.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+(rows.length?rows.join(''):'<tr><td colspan="'+head.length+'">'+esc(empty)+'</td></tr>')+'</tbody></table></div>';
   const metric=(name,value,meta)=>'<div class="metric"><div class="label">'+esc(name)+'</div><div class="value">'+num(value)+'</div><div class="delta">'+esc(meta)+'</div></div>';
   const status=health.rollup_job_active&&!health.snapshot_stale?'Daily tracking running':'Check the daily refresh';
+  const freshnessRows=catalog.map(x=>'<tr><td><strong>'+esc(x.category)+'</strong></td><td>'+num(x.new_verified_7d)+'</td><td>'+num(x.new_verified_14d)+'</td><td>'+num(x.genuine_trend_signals_7d)+'</td><td>'+num(x.candidates_discovered_7d)+'</td><td>'+num(x.candidate_backlog)+'</td><td>'+num(x.retailer_records_overdue_30d)+'</td></tr>');
   const catRows=cats.slice(0,15).map(x=>'<tr><td><strong>'+esc(x.category)+'</strong></td><td>'+num(x.category_views)+'</td><td>'+num(x.category_clicks)+'</td><td>'+num(x.product_views)+'</td><td>'+num(x.product_opens)+'</td><td>'+num(x.retailer_clicks)+'</td></tr>');
   const freqRows=freq.slice(0,15).map(x=>'<tr><td>Browser '+esc(x.browser_code)+'</td><td>'+num(x.sessions)+'</td><td>'+num(x.active_days)+'</td><td>'+num(x.page_views)+'</td><td>'+dt(x.last_seen)+'</td></tr>');
   const inquiryRows=inquiries.slice(0,12).map(x=>'<tr><td>'+dt(x.created_at)+'</td><td><strong>'+esc(x.name)+'</strong><div class="sub">'+esc(x.company)+'</div></td><td>'+esc(x.email)+'</td><td>'+esc(x.service||'Not specified')+'</td><td>'+esc(x.brief_preview||'')+'</td></tr>');
@@ -29,6 +32,10 @@ window.VyrdictBusinessPanel = function buildBusinessPanel(b){
     metric('Shopping clicks · 7 days',wk.retailer_clicks,'Retails clicks · not confirmed orders')+'</section>'+
     '<section class="panel" style="margin-bottom:18px"><h2>Daily progress</h2><p class="sub">Last 14 calendar days. Page views are events, not unique visitors; missing historic tagging is not reconstructed.</p>'+
      tbl(['Date','Page views','Browsers','Returning','Product opens','Shopping clicks','Work','Accounts','Newsletter'],(b.daily||[]).slice(-14).reverse().map(x=>'<tr><td>'+esc(x.date)+'</td><td>'+num(x.page_views)+'</td><td>'+num(x.visitors)+'</td><td>'+num(x.returning_browsers)+'</td><td>'+num(x.product_opens)+'</td><td>'+num(x.retailer_clicks)+'</td><td>'+num(x.work_inquiries)+'</td><td>'+num(x.new_accounts)+'</td><td>'+num(x.newsletter_signups)+'</td></tr>'),'No snapshots recorded')+'</section>'+
+    '<section class="panel" style="margin-bottom:18px"><h2>Are our products actually fresh?</h2>'+
+      '<p class="sub">'+num(freshStats.categories_with_new_scores)+' / '+num(freshStats.categories_audited)+' categories added verified scored products in the past 7 days. '+num(freshStats.categories_without_new_scores)+' categories still lack newly scored products. '+num(freshStats.unverified_backlog)+' internal product candidates are awaiting verification; none is presented publicly with pending scores.</p>'+
+      '<p class="sub">A new product means a real recent publication date. A fresh trend means independently observed new mentions, not merely a cron job running. An old scored review remains in its clearly dated archive.</p>'+
+       tbl(['Category','New 7d','New 14d','Live signals','Discovered 7d','Verification backlog','Retailers overdue'],freshnessRows,'No freshness audit yet')+'</section>'+
     '<section class="panel" style="margin-bottom:18px"><h2>Which categories perform best?</h2><p class="sub">Past 14 days · category visits, category-link clicks, visits to product pages, product opens and shopping clicks. View each column separately; a click is not a sale. Historical categories may be undercounted until the new page trackers accumulate visits.</p>'+
      tbl(['Category','Page visits','Category clicks','Product views','Product opens','Shopping clicks'],catRows,'No category events recorded')+'</section>'+
     '<section class="panel" style="margin-bottom:18px"><h2>Frequent visitors</h2><p class="sub">Anonymous browser identifiers only. This does not identify individual people, and browser changes or blocked tracking affect counts. '+num(freq.length)+' frequent browser'+(freq.length===1?'':'s')+' in the latest 30-day report.</p>'+
