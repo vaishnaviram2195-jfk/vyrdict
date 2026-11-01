@@ -6,6 +6,7 @@ window.VyrdictBusinessPanel = function buildBusinessPanel(b){
   const cats=Array.isArray(b.categories)?b.categories:[];
   const catalog=Array.isArray(b.catalog_freshness)?b.catalog_freshness:[];
   const freshStats=b.catalog_freshness_summary||{};
+  const scoreAudit=b.scoring_integrity||{};
   const freq=Array.isArray(b.frequent_visitors)?b.frequent_visitors:[];
   const inquiries=Array.isArray(b.work_inquiries)?b.work_inquiries:[];
   const accounts=Array.isArray(b.account_list)?b.account_list:[];
@@ -32,6 +33,9 @@ window.VyrdictBusinessPanel = function buildBusinessPanel(b){
     metric('Shopping clicks · 7 days',wk.retailer_clicks,'Retails clicks · not confirmed orders')+'</section>'+
     '<section class="panel" style="margin-bottom:18px"><h2>Daily progress</h2><p class="sub">Last 14 calendar days. Page views are events, not unique visitors; missing historic tagging is not reconstructed.</p>'+
      tbl(['Date','Page views','Browsers','Returning','Product opens','Shopping clicks','Work','Accounts','Newsletter'],(b.daily||[]).slice(-14).reverse().map(x=>'<tr><td>'+esc(x.date)+'</td><td>'+num(x.page_views)+'</td><td>'+num(x.visitors)+'</td><td>'+num(x.returning_browsers)+'</td><td>'+num(x.product_opens)+'</td><td>'+num(x.retailer_clicks)+'</td><td>'+num(x.work_inquiries)+'</td><td>'+num(x.new_accounts)+'</td><td>'+num(x.newsletter_signups)+'</td></tr>'),'No snapshots recorded')+'</section>'+
+    '<section class="panel" style="margin-bottom:18px"><h2>Product score integrity</h2>'+
+     '<p class="sub"><strong>'+num(scoreAudit.fully_evidence_linked)+' evidence-backed published scores</strong> · '+num(scoreAudit.on_quality_hold)+' products temporarily on score-quality hold · '+num(scoreAudit.formula_mismatches)+' recorded formula mismatches.</p>'+
+     '<p class="sub">Only scores with all 11 linked dimensions, reliable sources and matching score calculations appear as confirmed. Held products keep their prior research records but their unsupported numerical scores are withheld pending evidence review. Last audit: '+dt(scoreAudit.last_audit_at)+'.</p></section>'+
     '<section class="panel" style="margin-bottom:18px"><h2>Are our products actually fresh?</h2>'+
       '<p class="sub">'+num(freshStats.categories_with_new_scores)+' / '+num(freshStats.categories_audited)+' categories added verified scored products in the past 7 days. '+num(freshStats.categories_without_new_scores)+' categories still lack newly scored products. '+num(freshStats.unverified_backlog)+' internal product candidates are awaiting verification; none is presented publicly with pending scores.</p>'+
       '<p class="sub">A new product means a real recent publication date. A fresh trend means independently observed new mentions, not merely a cron job running. An old scored review remains in its clearly dated archive.</p>'+
