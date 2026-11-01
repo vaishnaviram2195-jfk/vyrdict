@@ -41,10 +41,10 @@ module.exports=async function handler(req,res){
     const requested=Number(req.query?.limit||12);
     const limit=Math.max(3,Math.min(Number.isFinite(requested)?requested:12,24));
     const now=Date.now();
-    const rows=await fetchWindow(30);
     // A separate, fully scored recency mode for the homepage.
     // Unlike the momentum edit, only original publication dates count as new.
     if(String(req.query?.mode||'')==='recent'){
+      const rows=await fetchWindow(30);
       const cutoff=Date.now()-7*86400000;
       const recent=rows.filter(p=>
         p.slug&&p.name&&p.image_url
@@ -58,35 +58,30 @@ module.exports=async function handler(req,res){
       res.setHeader('Cache-Control','public, max-age=0, s-maxage=300, stale-while-revalidate=300');
       return res.status(200).json({ok:true,products:recent,window_days:7,generated_at:new Date().toISOString(),policy:'newly_published_verified_scored_products_only'});
     }
-    const qualify=(r,maxAge)=>{
-      const status=String(r.viral_status||'').toLowerCase();
-      const confidence=String(r.evidence_confidence||'').toLowerCase();
-      return Boolean(r.slug&&String(r.image_url||'').trim())
-        && r.evidence_status==='verified'
-        && ACTIVE_STATUSES.has(status)
-        && Number(r.viral_score||0)>=85
-        && Number(r.momentum_score||0)>=80
-        && (confidence==='high'||confidence==='medium')
-        && ageDays(r,now)<=maxAge;
-    };
-
-    let windowDays=7,products=[];
-    for(const days of [7,14,30]){
-      windowDays=days;
-      products=rows.filter(r=>qualify(r,days));
-      if(products.length>=Math.min(12,limit))break;
-    }
-
-    const tier=p=>ageDays(p,now)<=7?0:ageDays(p,now)<=14?1:2;
-    products.sort((a,b)=>tier(a)-tier(b)||score(b,now)-score(a,now)||freshnessTs(b)-freshnessTs(a));
-    products=products.slice(0,limit).map(p=>({...p,freshness_at:new Date(freshnessTs(p)).toISOString()}));
-
-    res.setHeader('Cache-Control','public, max-age=0, s-maxage=120, stale-while-revalidate=300');
-    res.status(200).json({
+    // The live viral feed must have actual recent source-backed trend evidence.
+    // Rank snapshots are generated only from non-zero publisher/source pulses
+    // observed in the last seven days. Do not silently expand to 30-day old scores.
+    const rankUrl='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-rankings';
+    const rankResponse=await fetch(rankUrl,{headers:{accept:'application/json'},signal:AbortSignal.timeout(10000)});
+    if(!rankResponse.ok)throw new Error('current_rankings_'+rankResponse.status);
+    const rankData=await rankResponse.json();
+    const calculated=Date.parse(rankData.calculated_at||'');
+    const freshCalculation=Number.isFinite(calculated)&&now-calculated<12*3600000&&calculated<=now+60000;
+    const allowed=freshCalculation&&Array.isArray(rankData.categories)
+      ?rankData.categories.flatMap(c=>(c.items||[]).map(i=>({...i.product,trend_score:Number(i.trend_score||0),current_signal:true,rank_week:rankData.week_start,is_new_review:Boolean(i.is_new)})))
+      :[];
+    const products=allowed.filter(p=>
+      p&&p.slug&&p.image_url&&p.evidence_status==='verified'
+      && p.viral_score!=null&&p.worth_score!=null
+      && Number.isFinite(Number(p.viral_score))&&Number.isFinite(Number(p.worth_score))
+    ).sort((a,b)=>b.trend_score-a.trend_score).slice(0,limit);
+    res.setHeader('Cache-Control','public, max-age=0, s-maxage=120, stale-while-revalidate=120');
+    return res.status(200).json({
       products,
-      window_days:windowDays,
+      window_days:7,
       generated_at:new Date().toISOString(),
-      freshness_policy:'verified active viral momentum only; 7-day priority, then 14-day and 30-day recent edits when the primary feed is sparse; original verification dates retained'
+      rank_calculated_at:rankData.calculated_at||null,
+      freshness_policy:'Current week: actual recent independently linked trend mentions; older reviews retain original publication and verification dates; no stale fallback'
     });
   }catch(e){
     res.setHeader('Cache-Control','no-store');
