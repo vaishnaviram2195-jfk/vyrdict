@@ -81,7 +81,7 @@ module.exports=async function handler(req,res){
     const displayImage=renderImage(image)||image;
     const reviewBody=[verdict,hype&&reality?`Hype: ${hype} Reality: ${reality}`:''].filter(Boolean).join(' ');
     const robots=indexable?'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1':'noindex,follow';
-    const pricedRetailers=retailers.filter(r=>http(r.retailer_url)&&Number(r.price)>0&&/^[A-Z]{3}$/.test(String(r.currency||'').toUpperCase()));
+    const pricedRetailers=retailers.filter(r=>http(r.retailer_url)&&Number(r.price)>0&&/^[A-Z]{3}$/.test(String(r.currency||'').toUpperCase())&&r.observed_at&&Date.now()-new Date(r.observed_at).getTime()<=30*86400000&&new Date(r.observed_at).getTime()<=Date.now());
 
     const orgId='https://vyrdict.com/#organization',siteId='https://vyrdict.com/#website',crumbId=canonical+'#breadcrumb',pageId=canonical+'#webpage',entityId=canonical+(isBook?'#book':'#product');
     const organization={'@type':'Organization','@id':orgId,name:'VYRDICT',alternateName:'Vyrdict',url:'https://vyrdict.com/',logo:{'@type':'ImageObject',url:'https://vyrdict.com/vyrdict-logo.svg'},description:"VYRDICT is a viral product intelligence and discovery platform that tracks what is trending, separates hype from value, and helps shoppers decide what is actually worth buying.",slogan:"The verdict on what's trending.",sameAs:['https://www.instagram.com/vyrdict.co/','https://www.tiktok.com/@vyrdict']};
@@ -107,7 +107,7 @@ module.exports=async function handler(req,res){
     if(isBook){if(brand)entity.author={'@type':'Person',name:brand}}else{
       entity.category=p.category||'';if(brand)entity.brand={'@type':'Brand',name:brand};
       if(pricedRetailers.length){
-        const offers=pricedRetailers.slice(0,3).map(r=>({'@type':'Offer',url:r.retailer_url,price:Number(r.price),priceCurrency:String(r.currency).toUpperCase(),availability:'https://schema.org/InStock',itemCondition:'https://schema.org/NewCondition'}));
+        const offers=pricedRetailers.slice(0,3).map(r=>({'@type':'Offer',url:r.retailer_url,price:Number(r.price),priceCurrency:String(r.currency).toUpperCase(),itemCondition:'https://schema.org/NewCondition'}));
         entity.offers=offers.length===1?offers[0]:offers;
       }
     }
