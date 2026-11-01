@@ -19,6 +19,10 @@ function pickBalanced(rows:any[],limit=8){
     return Date.parse(y.created_at||0)-Date.parse(x.created_at||0);
   });
   const keys=[...groups.keys()].sort((a,b)=>Date.parse(groups.get(b)![0]?.created_at||0)-Date.parse(groups.get(a)![0]?.created_at||0));
+  // Rotate the starting category across scheduled executions. Otherwise
+  // the same high-volume categories win every small research batch.
+  const offset=Math.floor(Date.now()/600000)%Math.max(1,keys.length);
+  keys.push(...keys.splice(0,offset));
   const out:any[]=[];
   for(let round=0;out.length<limit;round++){
     let added=0;
@@ -31,7 +35,18 @@ function de(s:any){return String(s||'').replace(/&quot;/g,'"').replace(/&amp;/g,
 function clean(s:any){return de(String(s||'').replace(/<!\[CDATA\[|\]\]>/g,'')).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()}
 function num(v:any){const s=String(v??'').replace(/[^0-9.\-]/g,'').trim();if(!s||s==='.'||s==='-'||s==='-.')return null;const n=Number(s);return Number.isFinite(n)?n:null}
 function tokens(s:any){return norm(s).split(' ').filter((x:string)=>x.length>=3&&!GENERIC.has(x))}
-function matches(target:string,name:string){const a=norm(target),b=norm(name);if(!a||!b)return false;if(a.includes(b)||b.includes(a))return true;const at=tokens(a),bt=tokens(b);if(!at.length||!bt.length)return false;const hit=at.filter((t:string)=>bt.includes(t)).length;return hit>=Math.min(2,at.length)||at.some((t:string)=>t.length>=4&&bt.includes(t))}
+function matches(target:string,name:string){
+  const a=norm(target),b=norm(name);
+  if(!a||!b)return false;
+  if(a===b)return true;
+  // Allow explicit full product-title containment, but not one shared word
+  // (for example unrelated Gap 'print' items).
+  if((a.includes(b)||b.includes(a))&&Math.min(a.length,b.length)>=7)return true;
+  const at=[...new Set(tokens(a))],bt=[...new Set(tokens(b))];
+  if(at.length<2||bt.length<2)return false;
+  const hits=at.filter(t=>bt.includes(t));
+  return hits.length>=Math.max(2,Math.min(3,Math.ceil(at.length*0.55)));
+}
 function matchesCandidate(c:any,p:any){if(!matches(c.product_name,p.name))return false;const a=norm(c.brand),b=norm(p.brand);return !a||!b||a===b||a.includes(b)||b.includes(a)}
 async function sha(s:string){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 function dbSignal(signal?:AbortSignal){return signal?AbortSignal.any([signal,AbortSignal.timeout(8000)]):AbortSignal.timeout(8000)}
@@ -87,5 +102,5 @@ async function researchBatch(cs:any[],work=one){
     while(cursor<cs.length){const i=cursor++;try{results[i]=await work(cs[i])}catch(e){results[i]={candidate_id:cs[i].id,error:String(e).slice(0,500)}}}
   }));return results;
 }
-async function run(){const cutoff=new Date(Date.now()-8*3600000).toISOString(),raw=await get(`vyrdict_research_candidates?select=id,product_name,exact_product_name,brand,submitted_url,official_product_url,category,status,priority,verified_image_url,price_cad,research_notes,us_retailer_url,ca_retailer_url,last_auto_researched_at,auto_research_state,created_at&source_platform=eq.Trend%20Intelligence&status=in.(queued,researching)&or=(last_auto_researched_at.is.null,last_auto_researched_at.lt.${encodeURIComponent(cutoff)})&order=created_at.desc&limit=500`),cs=pickBalanced(raw,4),res=await researchBatch(cs);return{ok:res.some(r=>!r.error)||!res.length,candidates_considered:cs.length,candidates_completed:res.filter(r=>!r.error).length,queue_policy:'category-round-robin-direct-url-priority-v9',results:res}}
+async function run(){const cutoff=new Date(Date.now()-8*3600000).toISOString(),raw=await get(`vyrdict_research_candidates?select=id,product_name,exact_product_name,brand,submitted_url,official_product_url,category,status,priority,verified_image_url,price_cad,research_notes,us_retailer_url,ca_retailer_url,last_auto_researched_at,auto_research_state,created_at&source_platform=eq.Trend%20Intelligence&status=in.(queued,researching)&or=(last_auto_researched_at.is.null,last_auto_researched_at.lt.${encodeURIComponent(cutoff)})&order=created_at.desc&limit=900`),cs=pickBalanced(raw,6),res=await researchBatch(cs);return{ok:res.some(r=>!r.error)||!res.length,candidates_considered:cs.length,candidates_completed:res.filter(r=>!r.error).length,queue_policy:'rotating-category-research-six-strict-identity',results:res}}
 Deno.serve(async(req:Request)=>{if(req.method!=='POST')return new Response('{"error":"method_not_allowed"}',{status:405});const x=req.headers.get('x-vyrdict-cron')||'';if(!x||await sha(x)!==CRON_HASH)return new Response('{"error":"unauthorized"}',{status:401});try{return new Response(JSON.stringify(await run()),{headers:{'content-type':'application/json','cache-control':'no-store'}})}catch(e){return new Response(JSON.stringify({error:String(e)}),{status:500,headers:{'content-type':'application/json'}})}});
