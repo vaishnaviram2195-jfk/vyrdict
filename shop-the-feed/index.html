@@ -46,6 +46,28 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
 (function(){
  'use strict';
  var feed=[],active='All',keyword='';
+
+ var SB='https://shmbvkjzeqqxybweyowj.supabase.co/rest/v1/';
+ var PUBLIC_KEY='sb_publishable_XEsFSPQsuq8AXxBVSnIKgQ_kbGegBtG';
+ async function queryTable(table,query){
+   var r=await fetch(SB+table+'?'+query.toString(),{headers:{apikey:PUBLIC_KEY,Authorization:'Bearer '+PUBLIC_KEY,Accept:'application/json'}});
+   if(!r.ok)throw Error('feed-data-'+r.status);
+   var rows=await r.json();return Array.isArray(rows)?rows:[];
+ }
+ async function loadFeed(slug){
+   var p=new URLSearchParams({select:'id,slug,title,dek,category,cover_url,instagram_url,editorial_url,published_at',status:'eq.published',order:'published_at.desc',limit:slug?'1':'60'});
+   p.append('published_at','lte.'+new Date().toISOString());
+   if(slug)p.set('slug','eq.'+slug);
+   var edits=await queryTable('vyrdict_social_edits',p);
+   if(!edits.length)return {edits:[]};
+   var ids=edits.map(function(e){return Number(e.id)}).filter(Number.isFinite);
+   var links=await queryTable('vyrdict_social_edit_products',new URLSearchParams({select:'edit_id,product_id,sort_order,editor_note',edit_id:'in.('+ids.join(',')+')',order:'sort_order.asc',limit:'600'}));
+   var pids=[...new Set(links.map(function(x){return Number(x.product_id)}).filter(Number.isFinite))];
+   var products=pids.length?await queryTable('products',new URLSearchParams({select:'id,slug,brand,name,category,worth_score,viral_score,image_url,verdict',id:'in.('+pids.join(',')+')',is_active:'eq.true',evidence_status:'eq.verified',limit:'600'})):[];
+   var map=new Map(products.map(function(p){return [Number(p.id),p]}));
+   return {edits:edits.map(function(e){return Object.assign({},e,{products:links.filter(function(l){return Number(l.edit_id)===Number(e.id)&&map.has(Number(l.product_id))}).map(function(l){return Object.assign({},map.get(Number(l.product_id)),{editor_note:l.editor_note||''})})})})};
+ }
+
  var el=function(id){return document.getElementById(id)};
  var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
  var validImg=function(s){try{var u=new URL(String(s||''),location.origin);return u.protocol==='https:'||u.protocol==='http:'?u.href:''}catch{return ''}};
@@ -80,11 +102,9 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
  }
  function selectedSlug(){var m=(location.pathname||'').match(/^\/shop-the-feed\/([a-z0-9-]+)\/?$/);return m?m[1]:null}
  async function boot(){
-  var slug=selectedSlug(),src='/api/shop-feed'+(slug?'?slug='+encodeURIComponent(slug):'');
+  var slug=selectedSlug();
   try{
-   var response=await fetch(src,{headers:{Accept:'application/json'}});
-   if(!response.ok)throw Error('feed unavailable');
-   var data=await response.json();feed=Array.isArray(data.edits)?data.edits:[];
+   var data=await loadFeed(slug);feed=Array.isArray(data.edits)?data.edits:[];
    if(slug&&feed.length){renderDetail(feed[0]);}
    else if(slug){el('feed-hero').hidden=true;el('feed-list').hidden=true;el('detail').hidden=false;el('detail').innerHTML='<a href="/shop-the-feed/" class="back">&larr; All edits</a><div class="state" style="margin-top:35px"><h2>This edit isn’t published yet.</h2><p>Explore other VYRDICT edits and scored products.</p><a href="/shop-the-feed/" class="button">Back to the feed &rarr;</a></div>';document.title='Edit unavailable — VYRDICT'}
    else renderList();
