@@ -91,6 +91,35 @@ jobs:
           assert urls >= 250, f'Sitemap unexpectedly small: {urls}'
           PY
 
+      - name: Verify all category listings and Shop the Feed
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Check product links, not just 200 responses: empty categories are a failure.
+          printf '%s\n' beauty beauty-tech books fashion fitness food-and-drinks gifts hair home kids-and-baby kitchen makeup perfume pets shoes skincare stationery-and-crafts tech toys-and-collectibles travel wellness |
+            xargs -P 6 -n 1 sh -c '
+              slug="$1"
+              file="/tmp/vyrdict-category-$slug.html"
+              curl -fsS --retry 2 --retry-delay 1 --max-time 20 \
+                "https://vyrdict.com/category/$slug/" -o "$file"
+              if ! grep -Fq "href=\"/product/" "$file"; then
+                echo "Category $slug returned no product links" >&2
+                exit 1
+              fi
+              echo "PASS $slug"
+            ' _
+          curl -fsS --retry 2 --retry-delay 1 --max-time 20 \
+            'https://vyrdict.com/shop-the-feed/' -o /tmp/vyrdict-shop-feed.html
+          grep -Fq 'Shop the Feed' /tmp/vyrdict-shop-feed.html
+          grep -Fq 'chic-gift-edit' /tmp/vyrdict-shop-feed.html
+          curl -fsS --retry 2 --retry-delay 1 --max-time 20 \
+            'https://vyrdict.com/category/' -o /tmp/vyrdict-category-directory.html
+          grep -Fq 'Browse by category.' /tmp/vyrdict-category-directory.html
+          curl -fsS --retry 2 --retry-delay 1 --max-time 20 \
+            'https://vyrdict.com/product/asics-novablast-6/' -o /tmp/vyrdict-new-product.html
+          grep -Fq 'Worth Score' /tmp/vyrdict-new-product.html
+          echo 'All category routes, product links and shopping landing pages passed.'
+
       - name: Confirm independent live vendor check
         shell: bash
         run: |
