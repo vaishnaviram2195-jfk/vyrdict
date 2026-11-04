@@ -110,12 +110,12 @@
       "dest": "/creators/index.html"
     },
     {
-      "src": "^/shop-the-feed/?$",
-      "dest": "/shop-the-feed/index.html"
-    },
-    {
-      "src": "^/shop-the-feed/(?<slug>[a-z0-9-]+)/?$",
-      "dest": "/shop-the-feed/index.html"
+      "src": "^/shop-the-feed(?:/[a-z0-9-]+)?/?$",
+      "status": 308,
+      "headers": {
+        "Location": "/category/",
+        "Cache-Control": "no-store, max-age=0"
+      }
     },
     {
       "src": "/category/?$",
