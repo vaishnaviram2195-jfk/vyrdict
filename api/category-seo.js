@@ -8,9 +8,22 @@ module.exports=async function handler(req,res){
     const raw=Array.isArray(req.query?.slug)?req.query.slug[0]:req.query?.slug;
     const slug=decodeURIComponent(String(raw||'').trim());
     if(!slug||!/^[a-z0-9][a-z0-9-]*$/i.test(slug))return notFound(res);
-    const r=await fetch(`${DATA}?slug=${encodeURIComponent(slug)}`,{headers:{accept:'application/json'}});
-    if(r.status===404)return notFound(res);
-    if(!r.ok)throw new Error(`category data ${r.status}`);
+    // Retain real catalog data: retry only transient upstream failures, never invent products.
+    let r;
+    for(let attempt=0;attempt<3;attempt++){
+      try{
+        r=await fetch(`${DATA}?slug=${encodeURIComponent(slug)}`,{
+          headers:{accept:'application/json'},signal:AbortSignal.timeout(9000)
+        });
+        if(r.status===404)return notFound(res);
+        if(r.ok)break;
+        if(![429,500,502,503,504].includes(r.status)||attempt===2)throw new Error(`category data ${r.status}`);
+      }catch(err){
+        if(attempt===2||String(err?.message||err).startsWith('category data '))throw err;
+      }
+      await new Promise(resolve=>setTimeout(resolve,200*(attempt+1)));
+    }
+    if(!r||!r.ok)throw new Error('category data unavailable');
     const d=await r.json(),category=d.category||'Products',products=Array.isArray(d.products)?d.products:[],pending=Array.isArray(d.under_review)?d.under_review:[],signals=Array.isArray(d.fresh_signals)?d.fresh_signals:[],books=String(category).toLowerCase()==='books';
     const canonical=`https://vyrdict.com/category/${encodeURIComponent(slug)}/`;
     const title=books?`Viral Books: What’s Actually Worth Reading? | VYRDICT`:`Viral ${category}: What’s Actually Worth It? | VYRDICT`;
