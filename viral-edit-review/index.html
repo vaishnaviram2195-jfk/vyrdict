@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex,nofollow"/><title>VYRDICT | The Viral Edit — Photo Review</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#ebebeb;color:#181818;font-family:Georgia,serif}
+header{padding:22px 28px;border-bottom:1px solid #999;display:flex;justify-content:space-between;align-items:center;gap:15px}
+.brand{font:44px Georgia,serif;letter-spacing:-2px}.brand i{font-style:normal}.label{font:13px 'Courier New',monospace;letter-spacing:1px}
+h1{text-align:center;font-weight:400;font-size:clamp(34px,5vw,76px);letter-spacing:-1px;line-height:1.02;margin:46px 10px 15px}
+.subtitle{text-align:center;font:13px 'Courier New',monospace;color:#777;margin:0 10px 24px}
+.actions{display:flex;justify-content:center;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:20px}
+button{background:#151515;color:#fff;border:0;border-radius:0;padding:17px 28px;font:600 14px Arial,sans-serif;cursor:pointer}
+button:disabled{opacity:.5}#status{margin:14px;text-align:center;font:13px 'Courier New',monospace;color:#515151;min-height:24px}
+.grid{max-width:1500px;padding:0 20px 55px;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:23px}
+.card{margin:0}.card img{display:block;width:100%;aspect-ratio:4/5;object-fit:contain;background:#f0f0f1;box-shadow:0 7px 18px #0001;border:1px solid #c8c8c8}
+.card figcaption{text-align:center;font:13px 'Courier New',monospace;margin:10px 0;color:#333}
+footer{font:13px 'Courier New',monospace;text-align:center;padding:22px 10px;border-top:1px solid #bbb}
+@media(max-width:550px){header{padding:16px}.brand{font-size:35px}.label{font-size:10px}}
+</style></head>
+<body>
+<header><span class="brand">VYRDICT.</span><span class="label">THE VIRAL EDIT / 2026</span></header>
+<h1>TikTok made me buy it.<br/><em>But is it actually worth it?</em></h1>
+<p class="subtitle">10 SLIDES &nbsp;/&nbsp; GENUINE PRODUCT PHOTOGRAPHY &nbsp;/&nbsp; 1080 × 1350</p>
+<div class="actions"><button id="download" onclick="downloadAll()">Download all 10 Instagram PNGs</button></div><div id="status"></div>
+<main class="grid" id="grid"></main><footer>VYRDICT. &nbsp;/&nbsp; @vyrdict_co &nbsp;/&nbsp; IMAGE CREDITS: OFFICIAL AND RETAILER PRODUCT PHOTOGRAPHY</footer>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script>
+const API="https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-viral-photo-edit-2026";
+const labels=["Cover — TikTok made me buy it.","Swarovski ear cuffs","Arrae Clear Protein+","Nespresso × Swarovski","e.l.f. Glow Reviver Melting Lip Balm","Medicube PDRN multi balm","Comfrt Dreamer Blanket","Sephora advent calendar","BISSELL PowerClean FurFinder","Closing — More viral finds"];
+document.getElementById("grid").innerHTML=labels.map((label,i)=>'<figure class="card"><a href="'+API+'?slide='+(i+1)+'" target="_blank" rel="noopener"><img src="'+API+'?slide='+(i+1)+'" alt="'+label+'" loading="lazy"/></a><figcaption>'+String(i+1).padStart(2,"0")+' / '+label+'</figcaption></figure>').join("");
+async function png(n){
+ const res=await fetch(API+'?slide='+n);
+ if(!res.ok)throw Error('Slide '+n+' failed: '+res.status);
+ const svg=await res.text();
+ if(!svg.startsWith("<svg"))throw Error('Invalid SVG for slide '+n);
+ const blob=new Blob([svg],{type:"image/svg+xml;charset=utf-8"});
+ const url=URL.createObjectURL(blob);
+ try{
+  const img=new Image();img.src=url;await img.decode();
+  const canvas=document.createElement("canvas");canvas.width=1080;canvas.height=1350;
+  const ctx=canvas.getContext("2d");ctx.fillStyle="#f0f0f1";ctx.fillRect(0,0,1080,1350);ctx.drawImage(img,0,0,1080,1350);
+  return await new Promise((ok,fail)=>canvas.toBlob(b=>b?ok(b):fail(Error('PNG export failed')),"image/png"));
+ }finally{URL.revokeObjectURL(url)}
+}
+async function downloadAll(){
+ const status=document.getElementById("status"),button=document.getElementById("download");
+ button.disabled=true;
+ try{
+  if(!window.JSZip)throw Error("ZIP library unavailable.");
+  const zip=new JSZip();
+  for(let n=1;n<=10;n++){status.textContent="Exporting slide "+n+" of 10…";zip.file(String(n).padStart(2,'0')+"_"+labels[n-1].replace(/[^a-zA-Z0-9]+/g,'_')+".png",await png(n));}
+  status.textContent="Preparing download…";
+  const blob=await zip.generateAsync({type:"blob"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");a.href=url;a.download="VYRDICT_The_Viral_Edit_10_Real_Photo_Slides.zip";document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),60000);status.textContent="Download started.";
+ }catch(error){status.textContent="Export issue: "+error.message;}finally{button.disabled=false}
+}
+</script></body></html>
