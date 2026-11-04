@@ -27,11 +27,11 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
 </style>
 </head>
 <body>
-<header><div class="shell top"><a href="/" class="logo" aria-label="VYRDICT home">VYRDICT<i aria-hidden="true"></i></a><nav class="nav" aria-label="Main navigation"><a href="/">Explore</a><a href="/category/">Shop</a><a href="/creators/">Creators</a></nav></div></header>
+<header><div class="shell top"><a href="/" class="logo" aria-label="VYRDICT home">VYRDICT<i aria-hidden="true"></i></a><nav class="nav" aria-label="Main navigation"><a href="/">Explore</a><a href="/shop-the-feed/" aria-current="page">Shop the Feed</a><a href="/creators/">Creators</a></nav></div></header>
 <main id="main">
 <section class="hero" id="feed-hero"><div class="shell hero-inner">
  <div><div class="eyebrow">VYRDICT / THE SOCIAL EDIT</div><h1>Seen it.<br><em>Shop it.</em></h1></div>
- <div class="hero-copy"><p>That product from our carousel? It's here. Every edit, every Worth Score, and the products worth a closer look—all in one place.</p><div class="micro">One feed. New finds daily. No endless link hunting.</div></div>
+ <div class="hero-copy"><p>That product from our carousel? It's here. Every edit, every Worth Score, and the products worth a closer look—all in one place.</p><div class="micro">Shop the products behind VYRDICT’s Instagram and editorial carousels.</div><p style="margin-top:18px"><a href="https://www.instagram.com/vyrdict_co/" target="_blank" rel="noopener noreferrer" style="display:inline-block;font-weight:800;font-size:12px;text-decoration:underline;text-underline-offset:4px">View our Instagram carousels ↗</a></p></div>
 </div></section>
 <section id="feed-list" class="shell content" aria-label="Browse Instagram edits">
  <div class="bar"><h2>The latest edits.</h2><small id="count" aria-live="polite"></small></div>
@@ -40,12 +40,18 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
  <div id="state" class="state" hidden></div>
 </section>
 <section class="shell detail" id="detail" hidden aria-live="polite"></section>
-<section class="shell end"><div><h2>We score. You decide.</h2><p>Discover what has real value and what deserves a skip. Every product opens its VYRDICT verdict before you shop.</p></div><a href="/category/">Browse all products &rarr;</a></section>
-</main><footer class="shell"><span>© 2026 VYRDICT. Product scoring for the viral economy.</span><span><a href="/">VYRDICT home</a> · <a href="/category/">Shop</a> · <a href="/creators/">Creators</a> · <a href="https://www.instagram.com/vyrdict_co/" target="_blank" rel="noopener noreferrer">Instagram</a></span></footer>
+<section class="shell end"><div><h2>We score. You decide.</h2><p>Discover what has real value and what deserves a skip. Every product opens its VYRDICT verdict before you shop.</p></div><a href="https://www.instagram.com/vyrdict_co/" target="_blank" rel="noopener noreferrer">Visit @vyrdict_co on Instagram &rarr;</a></section>
+</main><footer class="shell"><span>© 2026 VYRDICT. Product scoring for the viral economy.</span><span><a href="/">VYRDICT home</a> · <a href="/category/">Categories</a> · <a href="/creators/">Creators</a> · <a href="https://www.instagram.com/vyrdict_co/" target="_blank" rel="noopener noreferrer">Instagram</a></span></footer>
 <script>
 (function(){
  'use strict';
  var feed=[],active='All',keyword='';
+ // Existing VYRDICT shoppable editorial pages are fallback guides.
+ // No exact Instagram post URL is invented for either collection.
+ var editorialFallback=[
+  {slug:'chic-gift-edit',title:'The Chic Gift Edit',dek:'Our editorial gift picks with product details and shopping links.',category:'Gifts',cover_url:'/edit/chic-gifts/images/cover.jpg',editorial_url:'/edit/chic-gifts/',curated_fallback:true,published_at:null},
+  {slug:'haunted-edit',title:'The Haunted Edit',dek:'Eight Halloween finds from VYRDICT’s editorial carousel, with product details and shopping links.',category:'Home',cover_url:'/edit/haunted-antiques/images/candle-photo.jpg',editorial_url:'/edit/haunted-antiques/',curated_fallback:true,published_at:null}
+ ];
 
  var SB='https://shmbvkjzeqqxybweyowj.supabase.co/rest/v1/';
  var PUBLIC_KEY='sb_publishable_XEsFSPQsuq8AXxBVSnIKgQ_kbGegBtG';
@@ -76,7 +82,7 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
  var cover=function(e,fallback){var url=validImg(e.cover_url);return url?'<img src="'+esc(url)+'" alt="'+esc(e.title)+'" loading="lazy" decoding="async" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><div class="cover-fallback" hidden><span>VYRDICT / THE EDIT</span><strong>'+esc(e.title)+'</strong><span>Explore the verdict &rarr;</span></div>':'<div class="cover-fallback"><span>VYRDICT / THE EDIT</span><strong>'+esc(e.title)+'</strong><span>Explore the verdict &rarr;</span></div>'};
  var categories=['All','Beauty','Fashion','Fitness','Wellness','Food & Drinks','Home','Tech','Gifts','Culture'];
  function filters(){el('filters').innerHTML=categories.map(function(c){return '<button type="button" class="chip" data-filter="'+esc(c)+'" aria-pressed="'+(active===c?'true':'false')+'">'+esc(c)+'</button>'}).join('');}
- function tile(e,i){return '<a class="tile" href="/shop-the-feed/'+encodeURIComponent(e.slug)+'/"><div class="cover">'+cover(e)+'<span class="num">EDIT '+String(i+1).padStart(2,'0')+'</span></div><div class="tile-meta"><span>'+esc(e.category||'The Edit')+'</span><span>'+fmt(e.published_at)+'</span></div><h3>'+esc(e.title)+'</h3><p>'+esc(e.dek||'See the products and their VYRDICT verdicts.')+'</p><span class="view">See the edit &rarr;</span></a>'}
+ function tile(e,i){return '<a class="tile" href="'+(e.curated_fallback?esc(validImg(e.editorial_url)):'/shop-the-feed/'+encodeURIComponent(e.slug)+'/')+'"><div class="cover">'+cover(e)+'<span class="num">EDIT '+String(i+1).padStart(2,'0')+'</span></div><div class="tile-meta"><span>'+esc(e.category||'The Edit')+'</span><span>'+(e.curated_fallback?'SHOPPING GUIDE':fmt(e.published_at))+'</span></div><h3>'+esc(e.title)+'</h3><p>'+esc(e.dek||'See the products and their VYRDICT verdicts.')+'</p><span class="view">See the edit &rarr;</span></a>'}
  function state(title,msg){el('state').hidden=false;el('state').innerHTML='<span class="eyebrow">VYRDICT / SHOP THE FEED</span><h2>'+esc(title)+'</h2><p>'+esc(msg)+'</p><a class="button" href="/category/">Explore scored products &rarr;</a>'}
  function renderList(){
   el('feed-hero').hidden=false;el('feed-list').hidden=false;el('detail').hidden=true;document.title='Shop the Feed — VYRDICT';
@@ -104,11 +110,11 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
  async function boot(){
   var slug=selectedSlug();
   try{
-   var data=await loadFeed(slug);feed=Array.isArray(data.edits)?data.edits:[];
+   var data=await loadFeed(slug);feed=Array.isArray(data.edits)?data.edits:[];if(!slug&&!feed.length)feed=editorialFallback.slice();
    if(slug&&feed.length){renderDetail(feed[0]);}
    else if(slug){el('feed-hero').hidden=true;el('feed-list').hidden=true;el('detail').hidden=false;el('detail').innerHTML='<a href="/shop-the-feed/" class="back">&larr; All edits</a><div class="state" style="margin-top:35px"><h2>This edit isn’t published yet.</h2><p>Explore other VYRDICT edits and scored products.</p><a href="/shop-the-feed/" class="button">Back to the feed &rarr;</a></div>';document.title='Edit unavailable — VYRDICT'}
    else renderList();
-  }catch(e){el('grid').innerHTML='';state('The feed is refreshing.','Please try again shortly. You can still browse VYRDICT’s scored products.');el('count').textContent='';el('filters').innerHTML=''}
+  }catch(e){if(!slug){feed=editorialFallback.slice();renderList()}else{el('grid').innerHTML='';state('This edit is temporarily unavailable.','Return to the latest VYRDICT shopping edits.');el('count').textContent='';el('filters').innerHTML=''}}
  }
  el('filters').addEventListener('click',function(e){var b=e.target.closest('button[data-filter]');if(!b)return;active=b.dataset.filter;renderList()});
  el('search').addEventListener('input',function(e){keyword=e.target.value;renderList()});
