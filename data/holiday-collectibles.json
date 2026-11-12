@@ -1,0 +1,97 @@
+{
+  "updated": "2026-11-12",
+  "categories": [
+    "Gifts",
+    "Home"
+  ],
+  "products": [
+    {
+      "id": "nespresso-swarovski",
+      "brand": "Nespresso × Swarovski",
+      "name": "Vertuo Capsule Crystal Ornament",
+      "image": "https://www.nespresso.com/shared_res/agility/global/campaigns/festive-2026/lifestyle-product-grid/nespresso-swarovski_ornament-vl.png",
+      "hook": "98 facets. Zero caffeine.",
+      "details": "Shimmer-finish crystal, a chrome-tone top and green satin ribbon turn the everyday coffee pod into a keepsake.",
+      "take": "For the coffee obsessive. If the pod shape means nothing to you, the collaboration is doing the selling.",
+      "availability": "US and Canadian product listings. Check current stock and delivery at checkout; decorative crystal needs careful handling.",
+      "links": [
+        [
+          "Swarovski · Canada",
+          "https://www.swarovski.com/en_GB-CA/p-M5767262/Nespresso-x-Swarovski-Festive-Crystal-Ornament-Vertuo-Capsule?variantID=5767262"
+        ],
+        [
+          "Nespresso · US",
+          "https://www.nespresso.com/us/en/order/accessories/vertuo/swarovski-crystal-ornament-vertuo-capsule"
+        ]
+      ]
+    },
+    {
+      "id": "tim-hortons",
+      "brand": "Tim Hortons",
+      "name": "Gingerbread Figural Mug",
+      "image": "https://timshop.timhortons.ca/cdn/shop/files/LargeMug_Christmas_Front1.jpg?v=1792521083&width=1000",
+      "hook": "Your mug has its own coffee.",
+      "details": "A 20oz ceramic gingerbread character with a candy-cane handle and its own miniature red Tims cup.",
+      "take": "The most useful pick in this edit. Buy for the character; skip if novelty mugs already crowd your cupboard.",
+      "availability": "TimShop Canada lists this as Coming Soon at our November 12 check. The link opens its product page, not an available checkout promise.",
+      "links": [
+        [
+          "Check release · TimShop Canada",
+          "https://timshop.timhortons.ca/products/20oz-gingerbread-figural-mug"
+        ]
+      ]
+    },
+    {
+      "id": "starbucks",
+      "brand": "Starbucks",
+      "name": "Glass Christmas Tree Cold Cup",
+      "image": "https://about.starbucks.com/uploads/sites/9/2026/11/20261008Holiday_shoot_Tryer023_UPDATED.png",
+      "hook": "A tree for the iced-coffee loyalist.",
+      "details": "Tree-shaped glass with a star-topped lid, from the Peppermint Mocha-inspired holiday collection. Image shows the cup alongside other collection pieces.",
+      "take": "A seasonal desk treat rather than an everyday travel cup. Worth it if you love the shape after the holiday hype fades.",
+      "availability": "Available at select Canadian coffeehouses; local stock varies. The collection page and store locator help you find it—there is no verified online checkout for this cup here.",
+      "links": [
+        [
+          "View the Canadian collection",
+          "https://stories.starbucks.ca/stories/2026/starbucks-2026-holiday-merchandise-is-now-available/"
+        ],
+        [
+          "Find a Starbucks store",
+          "https://www.starbucks.ca/store-locator"
+        ]
+      ]
+    },
+    {
+      "id": "coca-cola",
+      "brand": "Coca-Cola",
+      "name": "Bottle with Light String Ornament",
+      "image": "https://www.coca-colastore.com/media/catalog/product/2/3/23902front.png",
+      "hook": "Nostalgia, bottled.",
+      "details": "A 4.5-inch plastic Coke bottle wrapped in a decorative light string, with a hanging loop. This is not a glass keepsake; no working-light feature is claimed.",
+      "take": "Fun for the Coke loyalist or a maximalist tree. Skip if you want delicate glass décor.",
+      "availability": "US Coca-Cola Store product listing. Canadian delivery is not confirmed; check destination eligibility before ordering.",
+      "links": [
+        [
+          "Shop Coca-Cola Store · US",
+          "https://www.coca-colastore.com/coke-bottle-w-light-string-ornament"
+        ]
+      ]
+    },
+    {
+      "id": "mcdonalds",
+      "brand": "McDonald’s",
+      "name": "Fry Box Embroidered Ornament",
+      "image": "https://smilemakersonline.com/content/images/thumbs/0011062.jpeg",
+      "hook": "Fries before fir trees.",
+      "details": "Four inches tall, with embroidered fabric, plush filling and a ribbon loop. It can hang on a bag after the holidays, too.",
+      "take": "The best inside-joke gift here. Buy for the friend who gets it, rather than trying to impress everyone.",
+      "availability": "Sold through Smilemakers, a McDonald’s approved merchandise vendor—not the drive-thru. Confirm ordering and delivery eligibility, especially for Canada.",
+      "links": [
+        [
+          "View ornament · Smilemakers",
+          "https://smilemakersonline.com/fry-box-embroidered-ornament/"
+        ]
+      ]
+    }
+  ]
+}

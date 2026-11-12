@@ -49,6 +49,7 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
  // Existing VYRDICT shoppable editorial pages are fallback guides.
  // No exact Instagram post URL is invented for either collection.
  var editorialFallback=[
+  {"slug": "holiday-collectibles", "title": "Holiday Collectibles", "dek": "Nespresso × Swarovski, Tim Hortons, Starbucks, Coca-Cola and McDonald’s: five festive finds, our takes and where to buy.", "category": "Gifts", "categories": ["Gifts", "Home"], "cover_url": "https://www.nespresso.com/shared_res/agility/global/campaigns/festive-2026/lifestyle-product-grid/nespresso-swarovski_ornament-vl.png", "editorial_url": "/edit/holiday-collectibles/", "curated_fallback": true, "published_at": "2026-11-12T08:00:00Z"},
   {slug:'november-perfume-edit',title:'The Perfume Edit',dek:'Our top five perfume picks you might not know. Editorial ratings and places to shop.',category:'Beauty',cover_url:"https://kyliecosmetics.com/cdn/shop/files/v1_Mood-Stones_Velvet-Brew_50ml_PP_Closed_9016bcc4-666b-444c-b935-b5724cdecd5a.png",editorial_url:'/edit/november-perfume/',curated_fallback:true,published_at:'2026-11-06T18:00:00Z'},
   {slug:'chic-gift-edit',title:'The Chic Gift Edit',dek:'Our editorial gift picks with product details and shopping links.',category:'Gifts',cover_url:'/edit/chic-gifts/images/cover.jpg',editorial_url:'/edit/chic-gifts/',curated_fallback:true,published_at:null},
   {slug:'haunted-edit',title:'The Haunted Edit',dek:'Eight Halloween finds from VYRDICT’s editorial carousel, with product details and shopping links.',category:'Home',cover_url:'/edit/haunted-antiques/images/candle-photo.jpg',editorial_url:'/edit/haunted-antiques/',curated_fallback:true,published_at:null}
@@ -88,7 +89,7 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
  function renderList(){
   el('feed-hero').hidden=false;el('feed-list').hidden=false;el('detail').hidden=true;document.title='Shop the Feed — VYRDICT';
   filters();var term=keyword.toLowerCase().trim();
-  var items=feed.filter(function(e){return (active==='All'||String(e.category||'').toLowerCase()===active.toLowerCase())&&(!term||(e.title+' '+e.dek+' '+e.category).toLowerCase().includes(term))});
+  var items=feed.filter(function(e){return (active==='All'||(e.categories||[e.category||'']).some(function(c){return String(c).toLowerCase()===active.toLowerCase()}))&&(!term||(e.title+' '+e.dek+' '+e.category).toLowerCase().includes(term))});
   el('count').textContent=items.length+' '+(items.length===1?'edit':'edits');el('grid').innerHTML=items.map(tile).join('');
   el('state').hidden=true;
   if(!feed.length)state('The first edit is on its way.','We’re preparing the first shoppable collection. Until then, explore VYRDICT’s existing Worth Scores and verified retailer options.');
