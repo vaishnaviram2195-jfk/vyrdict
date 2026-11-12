@@ -1,0 +1,88 @@
+{
+  "updated": "2026-11-12",
+  "categories": [
+    "Fashion"
+  ],
+  "products": [
+    {
+      "id": "outhouse",
+      "brand": "Outhouse",
+      "name": "The Koko Runway Klutch · Cosmos Black",
+      "image": "https://cdn.shopify.com/s/files/1/0508/9417/6444/files/Outhouse-2368_1.jpg?v=1777204757",
+      "hook": "The hardware is the conversation starter.",
+      "details": "Sculptural Koko insect metalwork, gold- and silver-plated finishes and folded vegan leather make this an architectural evening bag.",
+      "take": "For the detail-obsessed dresser.",
+      "availability": "Check dimensions and destination availability at checkout.",
+      "links": [
+        [
+          "Shop Outhouse",
+          "https://outhouse-jewellery.com/products/the-koko-runway-klutch-in-cosmos-black"
+        ]
+      ]
+    },
+    {
+      "id": "laila",
+      "brand": "The Tan Clan",
+      "name": "Laila Mother-of-Pearl Clutch",
+      "image": "https://cdn.shopify.com/s/files/1/0879/7670/6353/files/the-tan-clan-default-title-laila-intricate-brass-work-with-mother-of-pearl-clutch-39184591716657.jpg?v=1783858958",
+      "hook": "A little treasure box.",
+      "details": "Natural mother-of-pearl is framed by intricate brass work and a raised floral centre. Handcrafted in India, with natural variations in the shell.",
+      "take": "For someone who notices every detail.",
+      "availability": "Natural shell varies from piece to piece.",
+      "links": [
+        [
+          "Shop The Tan Clan",
+          "https://www.thetanclan.in/products/laila-intricate-brass-work-with-mother-of-pearl-clutch"
+        ]
+      ]
+    },
+    {
+      "id": "amama",
+      "brand": "AMAMA",
+      "name": "Basra Cowrie Woven Handheld",
+      "image": "https://cdn.shopify.com/s/files/1/1334/1567/files/AMA-RAG-BAS-63_01.jpg?v=1788764142",
+      "hook": "Shells, thread, patience.",
+      "details": "Cowrie shells, zari thread, brass, faux pearls and antique-gold accents create a richly textured handheld bag.",
+      "take": "An alternative to the familiar beaded clutch.",
+      "availability": "Listed weight: 684 g before your essentials. Size: approximately 22.86 × 22.86 cm.",
+      "links": [
+        [
+          "Shop AMAMA",
+          "https://www.amama.in/products/basra-cowrie-woven-handheld"
+        ]
+      ]
+    },
+    {
+      "id": "lovetobag",
+      "brand": "Lovetobag",
+      "name": "Amara Heart Box Clutch · Sublime Pastel Multi",
+      "image": "https://cdn.shopify.com/s/files/1/0687/7193/8531/files/Amara_Heart_Box_Clutch_With_Handle_Sublime_Pastel_Multi.png?v=1783675097",
+      "hook": "Jewellery you can carry.",
+      "details": "Inspired by Jadau and Polki jewellery, with quartz, kundan and Japanese beads over velvet, plus handmade tassel details.",
+      "take": "For the romantic with an eye for beadwork.",
+      "availability": "At 14 × 12 × 5 cm, check your phone dimensions. Available on order.",
+      "links": [
+        [
+          "Shop Lovetobag",
+          "https://lovetobag.com/products/amara-heart-box-clutch-with-handle-sublime-pastel-multi"
+        ]
+      ]
+    },
+    {
+      "id": "papa",
+      "brand": "Papa Don’t Preach",
+      "name": "Legend of Love Sling",
+      "image": "https://cdn.shopify.com/s/files/1/0895/7760/files/4_1d871c33-936c-48bb-91c0-1ad241109041.jpg?v=1750320469",
+      "hook": "A storybook, stitched.",
+      "details": "An embroidered book-shaped bag with miniature brass hearts along the binding and gold-plated details.",
+      "take": "A keepsake for the maximalist.",
+      "availability": "Made to order: the brand lists 2–3 weeks for processing, before delivery.",
+      "links": [
+        [
+          "Shop Papa Don’t Preach",
+          "https://www.papadontpreach.com/products/1551"
+        ]
+      ]
+    }
+  ]
+}
