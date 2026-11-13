@@ -9,11 +9,11 @@ function run(href,{local=storage(),session=storage(),referrer='',links=[],hasMai
 }
 function link(href){const h={};return {getAttribute:()=>href,setAttribute:(k,v)=>{if(k==='href')href=v},addEventListener:(k,f)=>h[k]=f,handlers:h,url:()=>href}}
 test('hub arrival, each destination click, and corresponding page arrival share correlation IDs',()=>{
- for(const [section,dest] of [['products','https://vyrdict.com/'],['products','https://vyrdict.com/edit/haunted-antiques/'],['studio','/links/studio/'],['work','/links/work/'],['news','/#news']]){
+ for(const [section,dest] of [['shop','https://vyrdict.com/shop-the-feed/'],['products','https://vyrdict.com/'],['products','https://vyrdict.com/edit/haunted-antiques/'],['studio','/links/studio/'],['work','/links/work/'],['news','/#news']]){
  const l=link(dest),a=run('https://vyrdict.com/links/?utm_source=ig',{referrer:'https://l.instagram.com/',links:[l]});
  assert.deepEqual(a.events.map(e=>e.event_name),['page_view','hub_view']);assert.equal(a.events[1].hub_is_entry,true);
  l.handlers.click({button:0,defaultPrevented:false});const click=a.events.at(-1);assert.equal(click.hub_section,section);
- const b=run(l.url(),{local:a.local,session:a.session,referrer:'https://vyrdict.com/links/',hasMainTracker:section==='products'||section==='news'});
+ const b=run(l.url(),{local:a.local,session:a.session,referrer:'https://vyrdict.com/links/',hasMainTracker:['products','news','shop'].includes(section)});
  const arrival=b.events.find(e=>e.event_name==='hub_destination_view');assert.ok(arrival);assert.equal(arrival.hub_click_id,click.hub_click_id);assert.equal(arrival.hub_visit_id,a.events[1].hub_visit_id);assert.equal(arrival.visitor_id,click.visitor_id);assert.equal(arrival.session_id,click.session_id);assert.equal(arrival.landing_referrer,'https://l.instagram.com/');assert.equal(b.location.search,'');if(section==='news')assert.equal(b.location.hash,'#news');
  }
 });
@@ -22,3 +22,10 @@ test('marked tests and privacy opt-outs do not emit events',()=>{for(const path 
 test('direct destination loads do not invent hub conversions; forged destinations do not confirm',()=>{assert.equal(run('https://vyrdict.com/links/studio/').events.some(e=>e.event_name==='hub_destination_view'),false);const r=run('https://vyrdict.com/links/work/?vyrdict_hub_section=studio&vyrdict_hub_click=c_123456789&vyrdict_hub_visit=h_123456789');assert.equal(r.events.some(e=>e.event_name==='hub_destination_view'),false)});
 test('external links record click only, and canceled clicks do not count',()=>{const l=link('mailto:hello@vyrdict.com'),r=run('https://vyrdict.com/links/',{links:[l]});l.handlers.click({button:0,defaultPrevented:true});assert.equal(r.events.length,2);l.handlers.click({button:0,defaultPrevented:false});assert.equal(r.events.at(-1).hub_section,'email');assert.equal(l.url(),'mailto:hello@vyrdict.com')});
 test('old browser identity and idle sessions rotate',()=>{const a=run('https://vyrdict.com/links/');const saved=JSON.parse(a.local.getItem('vyrdict:hub:visitor:v1'));saved.started=Date.now()-31*86400000;a.local.setItem('vyrdict:hub:visitor:v1',JSON.stringify(saved));const sess=JSON.parse(a.session.getItem('vyrdict:hub:session:v1'));sess.last=Date.now()-31*60000;a.session.setItem('vyrdict:hub:session:v1',JSON.stringify(sess));const b=run('https://vyrdict.com/links/',{local:a.local,session:a.session});assert.notEqual(a.events[1].visitor_id,b.events[1].visitor_id);assert.notEqual(a.events[1].session_id,b.events[1].session_id)});
+
+test('Shop the Feed initializes the shared visitor/session context before general analytics',()=>{
+ const markup=fs.readFileSync('shop-the-feed/index.html','utf8');
+ const shared=markup.indexOf('<script src="/hub-analytics.js?v=');
+ const page=markup.indexOf('<script src="/analytics.js?v=');
+ assert.ok(shared>0 && page>shared,'shared tracking must initialize first');
+});

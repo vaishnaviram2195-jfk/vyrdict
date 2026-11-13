@@ -45,6 +45,7 @@
     try { fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload), keepalive: true }).catch(() => {}); } catch {}
   }
   const targets = {
+    shop: u => /^\/shop-the-feed(?:\/index\.html)?\/?$/.test(u.pathname),
     products: u => (u.pathname === '/' && !u.hash) || /^\/edit\/haunted-antiques(?:\/index\.html)?\/?$/.test(u.pathname),
     studio: u => /^\/links\/studio(?:\/index\.html)?\/?$/.test(u.pathname),
     work: u => /^\/links\/work(?:\/index\.html)?\/?$/.test(u.pathname),
