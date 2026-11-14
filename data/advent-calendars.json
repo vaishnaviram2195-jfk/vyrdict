@@ -1,0 +1,98 @@
+{
+  "updated": "2026-11-13",
+  "categories": [
+    "Gifts",
+    "Beauty",
+    "Food & Drinks",
+    "Culture"
+  ],
+  "products": [
+    {
+      "id": "sukoshi",
+      "brand": "SUKOSHI",
+      "name": "2026 Advent Calendar",
+      "image": "/edit/advent-calendars/images/sukoshi.jpg",
+      "hook": "Thirty-plus full-size products across 24 days.",
+      "details": "Dr. Ceuracle Kombucha Essence (150ml), ROUND LAB Birch Juice Cream (80ml) and AROMATICA Rosemary Scalp Scrub (165g) are substantial routine staples.",
+      "take": "Buy for skincare restocking. Pass for a makeup-first countdown: several cleansers and lip products make the assortment less varied than the 30+ headline suggests.",
+      "links": [
+        [
+          "View SUKOSHI calendar",
+          "https://sukoshi.com/products/sukoshi-advent-calendar-2026-pre-order"
+        ]
+      ]
+    },
+    {
+      "id": "lush",
+      "brand": "Lush",
+      "name": "Advent Calendar",
+      "image": "/edit/advent-calendars/images/lush.jpg",
+      "hook": "A fragrance-led countdown, with a hamper worth keeping.",
+      "details": "25 gifts, including 10 gift exclusives. Perfume, body spray and a candle sit alongside bath and body products in a reusable green wicker hamper. North American contents.",
+      "take": "Buy for the bath-and-fragrance fan. Ten gifts are bath bombs or bubble bars, so this is a poor fit for a shower-only routine.",
+      "links": [
+        [
+          "Shop Canada",
+          "https://www.lush.com/ca/en_ca/p/lush-advent-calendar-na"
+        ],
+        [
+          "Shop US",
+          "https://www.lush.com/us/en_us/p/lush-advent-calendar-na"
+        ]
+      ]
+    },
+    {
+      "id": "davidstea",
+      "brand": "DAVIDsTEA",
+      "name": "24 Days of Tea",
+      "image": "/edit/advent-calendars/images/davidstea.jpg",
+      "hook": "A different little tea ritual behind every door.",
+      "details": "24 loose-leaf blends, with two 250ml servings per day. The gingerbread-house calendar mixes caffeinated and caffeine-free options. An infuser is needed.",
+      "take": "Buy for someone who enjoys playful, dessert-inspired blends. Pass for a purist wanting only unflavoured tea, or an entirely caffeine-free countdown.",
+      "links": [
+        [
+          "View calendar / restock",
+          "https://davidstea.com/products/24-days-of-tea-advent-calendar-1"
+        ]
+      ]
+    },
+    {
+      "id": "williams-sonoma",
+      "brand": "Williams Sonoma",
+      "name": "Popcorn Advent Calendar",
+      "image": "/edit/advent-calendars/images/williams-sonoma.jpg",
+      "hook": "The countdown that turns into movie night.",
+      "details": "24 doors of non-GMO popping corn, sweet-and-savoury seasonings and recipes, made by Indiana\u2019s family-owned Wabash Valley Farms.",
+      "take": "Buy for the make-it-together household. The fun is popping and tasting; pass if you want an instant snack. These are raw kernels, and some doors hold seasoning. A popper is not included.",
+      "links": [
+        [
+          "Shop Canada",
+          "https://www.williams-sonoma.ca/products/popcorn-advent-calendar/"
+        ],
+        [
+          "Shop US",
+          "https://www.williams-sonoma.com/products/popcorn-advent-calendar/"
+        ]
+      ]
+    },
+    {
+      "id": "lego",
+      "brand": "LEGO",
+      "name": "Disney Princess Advent Calendar 2026",
+      "image": "/edit/advent-calendars/images/lego.jpg",
+      "hook": "Little builds, then a whole new way to play.",
+      "details": "24 doors, 290 pieces and four microdolls: Ariel, Cinderella, Moana and Mulan. Four animal friends join them, and the box folds into a board game for up to eight players. Ages 5+. Set 43298.",
+      "take": "Buy for younger Disney fans and daily play. Pass if you want full-size character figures or a substantial display build: these are microdolls and miniature models.",
+      "links": [
+        [
+          "Shop Canada",
+          "https://www.lego.com/en-ca/product/advent-calendar-2026-43298"
+        ],
+        [
+          "Shop US",
+          "https://www.lego.com/en-us/product/advent-calendar-2026-43298"
+        ]
+      ]
+    }
+  ]
+}
