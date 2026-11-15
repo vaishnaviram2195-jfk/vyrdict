@@ -37,7 +37,7 @@
   const href=safe(p.product_url),photo=safe(p.image_url);
   if(!href||!photo||!p.name)return '';
   const brand=esc(p.brand||''),name=esc(p.name||'');
-  return '<a class="vfn-card" href="'+esc(href)+'" target="_blank" rel="noopener noreferrer nofollow"><div class="vfn-visual"><span class="vfn-tag">'+(i===0?'New this week':'New find')+'</span><img '+(i<2?'fetchpriority="high"':'loading="lazy"')+' decoding="async" src="'+esc(photo)+'" alt="'+brand+' '+name+'" onerror="this.onerror=null;this.style.opacity=0"></div><div class="vfn-brand">'+brand+' · '+esc(p.category||'Discovery')+'</div><h2 class="vfn-name">'+name+'</h2><div class="vfn-status">Product identified · VYRDICT score pending ↗</div></a>';
+  return '<a class="vfn-card shop" data-vyrdict-retailer-source="fresh_discovery" href="'+esc(href)+'" target="_blank" rel="noopener noreferrer nofollow"><div class="vfn-visual"><span class="vfn-tag">'+(i===0?'New this week':'New find')+'</span><img '+(i<2?'fetchpriority="high"':'loading="lazy"')+' decoding="async" src="'+esc(photo)+'" alt="'+brand+' '+name+'" onerror="this.onerror=null;this.style.opacity=0"></div><div class="vfn-brand">'+brand+' · '+esc(p.category||'Discovery')+'</div><h2 class="vfn-name">'+name+'</h2><div class="vfn-status">Product identified · VYRDICT score pending ↗</div></a>';
  }
  async function load(section){
   const tray=section.querySelector('.vfn-grid'),time=section.querySelector('[data-vfn-time]');
