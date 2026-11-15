@@ -102,26 +102,7 @@
     });
   }
 
-  function ensureStudioNav(){
-    if(document.querySelector('[data-vyrdict-studio-topnav="1"]'))return true;
-    const all=[...document.querySelectorAll('a,button')].filter(el=>visible(el));
-    const shop=all.find(el=>norm(el.textContent)==='shop');
-    if(!shop)return false;
-    const parent=shop.parentElement;
-    if(!parent)return false;
-
-    const a=document.createElement('a');
-    a.href='/links/';
-    a.textContent='Studio';
-    a.className=shop.className||'';
-    a.setAttribute('data-vyrdict-studio-topnav','1');
-    a.setAttribute('aria-label','VYRDICT Studio');
-    a.style.textDecoration='none';
-    a.style.cursor='pointer';
-
-    shop.insertAdjacentElement('afterend',a);
-    return true;
-  }
+  function ensureStudioNav(){ return true; }
 
   function visible(el){
     if(!el)return false;
