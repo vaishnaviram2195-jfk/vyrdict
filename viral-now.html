@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Viral Right Now — VYRDICT</title>
-  <meta name="description" content="The products with the strongest live momentum on VYRDICT right now, ranked from fresh signals.">
+  <title>Recently Verified Products — VYRDICT</title>
+  <meta name="description" content="The latest fully evidence-verified products on VYRDICT, with complete Viral and Worth Scores and actual verification dates.">
   <link rel="canonical" href="https://vyrdict.com/collection/viral-right-now/">
   <link rel="icon" href="/vyrdict-logo.svg" type="image/svg+xml">
   <style>
@@ -36,42 +36,25 @@
 <body>
   <header class="site-head"><a class="brand" href="/" aria-label="VYRDICT home">VYRDICT</a><nav class="head-nav" aria-label="Culture collections"><a class="active" href="/collection/viral-right-now/">Viral Right Now</a><a href="/collection/celebrity-effect/">Celebrity Effect</a><a href="/collection/seen-on-screen/">Seen on Screen</a></nav><a class="home-link" href="/"><span aria-hidden="true">←</span> Back home</a></header>
   <main>
-    <section class="hero"><div class="wrap"><div class="kicker">THE VYRDICT TREND EDIT</div><h1>New &amp; now.</h1><div class="intro"><p>See newly sourced product discoveries, with full VYRDICT verdicts only after our evidence review is complete. No recycled old picks.</p><div class="stamp" id="stamp" aria-live="polite">Loading the latest edit</div></div></div></section>
-    <section class="products" aria-labelledby="products-title"><div class="wrap"><div class="section-head"><h2 id="products-title">Fresh product discoveries.</h2><p>Newly identified products appear while full reviews are being researched. Only genuinely recent, verified products receive displayed Worth and Viral Scores.</p></div><div class="grid" id="grid"><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div></div></div></section>
+    <section class="hero"><div class="wrap"><div class="kicker">THE VYRDICT VERIFIED EDIT</div><h1>Recently verified.</h1><div class="intro"><p>Newer products with fully completed evidence reviews, linked scoring inputs, and published Viral and Worth Scores. No incomplete product ratings are displayed.</p><div class="stamp" id="stamp" aria-live="polite">Loading the latest edit</div></div></div></section>
+    <section class="products" aria-labelledby="products-title"><div class="wrap"><div class="section-head"><h2 id="products-title">Full evidence. Real scores.</h2><p>Every product below has a completed high-confidence VYRDICT review and was first published within 30 days. Viral Scores measure our reviewed evidence, not a claim of surging popularity today.</p></div><div class="grid" id="grid"><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div><div class="skeleton"><div class="sk-media"></div><div class="sk-line short"></div><div class="sk-line name"></div><div class="sk-line score"></div></div></div></div></section>
     <section class="latest-news" id="latest-news" aria-labelledby="news-title" hidden><div class="wrap"><div class="section-head"><h2 id="news-title">Latest drops &amp; brand news.</h2><p>The launches, collaborations and product stories getting people talking.</p></div><div class="grid" id="news-grid"></div><a class="news-more" href="/#news">More from VYRDICT News →</a></div></section>
   </main>
   <script>
     (()=>{
-      const CACHE_KEY='vyrdict:viral-now:v7-20261115-new-first';
+      const CACHE_KEY='vyrdict:viral-now:v8-20261115-reviewed-only';
       const CACHE_TTL=10*60*1000;
       const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
       const img=u=>{const s=String(u||'').trim();return !s?'':(s.startsWith('/')||/^https:\/\/(?:www\.)?vyrdict\.com\//i.test(s)?s:'/vti-image?url='+encodeURIComponent(s))};
       const cleanStatus=s=>String(s||'').replace(/_/g,' ').replace(/\b\w/g,m=>m.toUpperCase());
       const grid=document.getElementById('grid'),stamp=document.getElementById('stamp');
       let hasRendered=false;
-      let discoveries=[];
-      function safeExternal(value){try{const u=new URL(String(value||''));return u.protocol==='https:'?u.href:''}catch{return''}}
-      function renderDiscoveries(){
-        const rows=discoveries.filter(p=>p&&p.name&&p.brand&&safeExternal(p.image_url)&&safeExternal(p.product_url)&&Date.parse(p.published_at||'')>=Date.now()-21*86400000).slice(0,24);
-        if(!rows.length)return false;
-        grid.innerHTML=rows.map((p,i)=>'<a class="card shop" data-vyrdict-retailer-source="fresh_discovery" href="'+esc(safeExternal(p.product_url))+'" target="_blank" rel="noopener noreferrer nofollow"><div class="media"><img '+(i<4?'fetchpriority="high"':'loading="lazy"')+' decoding="async" src="'+esc(img(p.image_url))+'" data-original="'+esc(p.image_url)+'" onerror="this.onerror=null;if(this.dataset.original)this.src=this.dataset.original" alt="'+esc(p.brand+' '+p.name)+'"><span class="rank">NEW</span></div><div class="copy"><div class="meta">'+esc(p.category||'Discovery')+' · '+esc(p.brand)+'</div><h3 class="name">'+esc(p.name)+'</h3><div class="status">PRODUCT IDENTIFIED · VERDICT IN PROGRESS</div><div class="evidence-date">Product listing and sources checked; Viral and Worth Scores pending.</div></div></a>').join('');
-        stamp.textContent=rows.length+' newly identified products · VYRDICT scoring in progress';hasRendered=true;return true;
-      }
-      async function refreshFinds(){
-        try{
-          const r=await fetch('https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-fresh-arrivals?rev=20261115-new-first',{headers:{accept:'application/json'},cache:'no-store'});
-          if(!r.ok)throw new Error('fresh discovery feed');
-          const j=await r.json();discoveries=Array.isArray(j.arrivals)?j.arrivals:[];
-          const current=grid.querySelector('.card');if(!current||current.querySelector('.status')?.textContent?.includes('VERDICT IN PROGRESS'))renderDiscoveries();
-        }catch(e){console.warn('[VYRDICT] Fresh launch check',e)}
-      }
-
       function render(j,fromCache=false){
-        const ps=(j?.products||[]).filter(p=>p&&p.slug&&p.image_url&&p.current_signal===true&&Date.parse(p.published_at||'')>=Date.now()-30*86400000);
-        if(!ps.length){if(renderDiscoveries())return true;grid.innerHTML='<div class="empty">No product currently meets our live seven-day evidence threshold. We’re checking fresh signals rather than displaying older reviews as new trends.</div>';stamp.textContent='Monitoring current signals · Last checked '+new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});hasRendered=true;return true;}
-        grid.innerHTML=ps.map((p,i)=>`<a class="card" href="/product/${encodeURIComponent(p.slug)}/"><div class="media"><img loading="${i<4?'eager':'lazy'}" decoding="async" fetchpriority="${i<4?'high':'auto'}" src="${esc(img(p.image_url))}" data-original="${esc(p.image_url)}" onerror="this.onerror=null;if(this.dataset.original)this.src=this.dataset.original" alt="${esc((p.brand||'')+' '+(p.name||''))}"><span class="rank">${String(i+1).padStart(2,'0')}</span></div><div class="copy"><div class="meta">${esc(p.category||'Viral')} · ${esc(p.brand||'')}</div><h3 class="name">${esc(p.name||'')}</h3><div class="scores"><span>Viral <b>${Math.round(Number(p.viral_score||0))}</b></span><span>Worth <b>${Math.round(Number(p.worth_score||0))}</b></span></div><div class="status">SOURCE-BACKED THIS WEEK</div>${p.newest_mention_at?`<div class="evidence-date">Current mention ${esc(new Date(p.newest_mention_at).toLocaleDateString(undefined,{month:'short',day:'numeric'}))}</div>`:''}${p.last_verified_at?`<div class="evidence-date">Original review checked ${esc(new Date(p.last_verified_at).toLocaleDateString(undefined,{month:'short',day:'numeric'}))}</div>`:''}</div></a>`).join('');
+        const ps=(j?.products||[]).filter(p=>p&&p.slug&&p.image_url&&p.evidence_status==='verified'&&p.evidence_confidence==='high'&&p.viral_score!=null&&p.worth_score!=null&&Date.parse(p.published_at||'')>=Date.now()-30*86400000&&Date.parse(p.last_verified_at||'')>=Date.now()-30*86400000);
+        if(!ps.length){grid.innerHTML='<div class="empty">No new products have completed VYRDICT’s evidence-linked review and scoring checks within the last 30 days. We are verifying the next products rather than filling this page with unfinished or outdated ratings.</div>';stamp.textContent='Verification review · Last checked '+new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});hasRendered=true;return true;}
+        grid.innerHTML=ps.map((p,i)=>`<a class="card" href="/product/${encodeURIComponent(p.slug)}/"><div class="media"><img loading="${i<4?'eager':'lazy'}" decoding="async" fetchpriority="${i<4?'high':'auto'}" src="${esc(img(p.image_url))}" data-original="${esc(p.image_url)}" onerror="this.onerror=null;if(this.dataset.original)this.src=this.dataset.original" alt="${esc((p.brand||'')+' '+(p.name||''))}"><span class="rank">${String(i+1).padStart(2,'0')}</span></div><div class="copy"><div class="meta">${esc(p.category||'Viral')} · ${esc(p.brand||'')}</div><h3 class="name">${esc(p.name||'')}</h3><div class="scores"><span>Viral <b>${Math.round(Number(p.viral_score||0))}</b></span><span>Worth <b>${Math.round(Number(p.worth_score||0))}</b></span></div><div class="status">VERIFIED · HIGH-CONFIDENCE EVIDENCE</div>${p.last_verified_at?`<div class="evidence-date">Evidence checked ${esc(new Date(p.last_verified_at).toLocaleDateString(undefined,{month:'short',day:'numeric'}))}</div>`:''}</div></a>`).join('');
         const d=j.generated_at?new Date(j.generated_at):new Date();
-        stamp.textContent=`${ps.length} source-backed trends · Last ${j.window_days||7} days · Refreshed ${d.toLocaleDateString(undefined,{month:'short',day:'numeric'})}`;
+        stamp.textContent=`${ps.length} fully verified reviews · Published in the last ${j.window_days||30} days · Checked ${d.toLocaleDateString(undefined,{month:'short',day:'numeric'})}`;
         hasRendered=true;
         return true;
       }
@@ -87,7 +70,7 @@
 
       async function refresh(){
         try{
-          const r=await fetch('/api/viral-now?limit=24&rev=20261115-source-backed',{headers:{accept:'application/json'},cache:'no-store'});
+          const r=await fetch('/api/viral-now?mode=recent&limit=24&rev=20261115-reviewed-only',{headers:{accept:'application/json'},cache:'no-store'});
           if(!r.ok)throw new Error('feed');
           const j=await r.json();
           if(!Array.isArray(j.products))throw new Error('invalid response');
@@ -116,7 +99,6 @@
 
       const cached=readCache();
       if(cached)render(cached,true);
-      refreshFinds();
       refresh();
       refreshNews();
     })();

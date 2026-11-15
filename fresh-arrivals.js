@@ -1,16 +1,17 @@
 (()=>{
-if(window.__vyrdictFreshArrivalsV1)return;
-window.__vyrdictFreshArrivalsV1=true;
-const endpoint='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-fresh-arrivals';
+if(window.__vyrdictVerifiedArrivalsV2)return;
+window.__vyrdictVerifiedArrivalsV2=true;window.__vyrdictFreshArrivalsV1=true;
+const endpoint='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-fresh-arrivals?rev=verified-v3';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 const safe=s=>{try{const u=new URL(s);return u.protocol==='https:'?u.href:''}catch{return''}};
+const internal=s=>{try{const u=new URL(s);return u.hostname==='vyrdict.com'&&u.protocol==='https:'?u.pathname:''}catch{return''}};
 function mount(){
  const before=document.querySelector('.products');
  if(!before||document.getElementById('vyrdict-fresh-finds'))return;
  const section=document.createElement('section');
  section.id='vyrdict-fresh-finds';section.className='wrap';
- section.setAttribute('aria-label','New finds on VYRDICT');
- section.innerHTML='<div class="vfa-heading"><div><div class="kicker">NEW TO VYRDICT · 2026 EDIT</div><h2>Just discovered.</h2></div><p>New products entering our radar. Independently checked identities; full Viral and Worth scores are still being researched.</p></div><div class="vfa-grid"><div class="vfa-loading">Curating the latest finds…</div></div>';
+ section.setAttribute('aria-label','New verified reviews on VYRDICT');
+ section.innerHTML='<div class="vfa-heading"><div><div class="kicker">NEW TO VYRDICT · VERIFIED EDIT</div><h2>Recently verified.</h2></div><p>Newly published VYRDICT reviews with linked evidence, full Viral and Worth Scores, and recent verification dates.</p></div><div class="vfa-grid"><div class="vfa-loading">Curating the latest finds…</div></div>';
  const css=document.createElement('style');
  css.textContent=`
  #vyrdict-fresh-finds{padding:34px 0 50px;border-bottom:1px solid rgba(0,0,0,.12)}
@@ -32,10 +33,10 @@ function mount(){
   .then(r=>{if(!r.ok)throw new Error('unavailable');return r.json()})
   .then(data=>{
     const rows=(Array.isArray(data?.arrivals)?data.arrivals:[])
-      .filter(p=>safe(p.image_url)&&safe(p.product_url)&&p.brand&&p.name).slice(0,12);
+      .filter(p=>p&&p.score_status==='verified'&&safe(p.image_url)&&internal(p.product_url)&&p.brand&&p.name&&p.viral_score!=null&&p.worth_score!=null&&Date.parse(p.last_verified_at||'')>=Date.now()-30*86400000).slice(0,12);
     if(!rows.length){section.remove();return}
     const grid=section.querySelector('.vfa-grid');
-    grid.innerHTML=rows.map(p=>`<a class="vfa-card" href="${esc(safe(p.product_url))}" target="_blank" rel="nofollow noopener noreferrer sponsored"><div class="vfa-image"><span class="vfa-label">NEW FIND</span><img loading="lazy" decoding="async" src="${esc(safe(p.image_url))}" alt="${esc(p.brand+' '+p.name)}" onerror="this.style.opacity='.2'"></div><div class="vfa-copy"><div class="vfa-meta">${esc(p.category)} · ${esc(p.brand)}</div><h3 class="vfa-name">${esc(p.name)}</h3><div class="vfa-status">Verdict pending · View product ↗</div></div></a>`).join('');
+    grid.innerHTML=rows.map(p=>'<a class="vfa-card" href="'+esc(internal(p.product_url))+'"><div class="vfa-image"><span class="vfa-label">VERIFIED</span><img loading="lazy" decoding="async" src="'+esc(safe(p.image_url))+'" alt="'+esc(p.brand+' '+p.name)+'" onerror="this.style.opacity=\'.2\'"></div><div class="vfa-copy"><div class="vfa-meta">'+esc(p.category)+' · '+esc(p.brand)+'</div><h3 class="vfa-name">'+esc(p.name)+'</h3><div class="vfa-status">Viral '+Math.round(Number(p.viral_score))+'/100 · Worth '+Math.round(Number(p.worth_score))+'/100</div><div class="vfa-meta">Evidence verified '+esc(new Date(p.last_verified_at).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}))+'</div></div></a>').join('');
   }).catch(()=>section.remove());
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
