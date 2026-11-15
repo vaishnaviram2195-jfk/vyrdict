@@ -85,8 +85,10 @@
       motion.dataset.veViralWindow=String(j.window_days||10);
     }catch{
       frame.dataset.veFreshStable='fallback';
-      const first=frame.querySelector('.ve-motion-img');
-      if(first)first.style.setProperty('opacity','1','important');
+      frame.replaceChildren();
+      frame.style.background='linear-gradient(140deg,#60645f,#454a46)';
+      const description=motion.querySelector('.ve-motion-side p');
+      if(description)description.textContent='We are checking the latest independent product signals. Only source-backed recent breakouts appear in our live trend feed.';
     }
   }
 
