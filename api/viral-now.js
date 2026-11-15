@@ -61,27 +61,23 @@ module.exports=async function handler(req,res){
     // The live viral feed must have actual recent source-backed trend evidence.
     // Rank snapshots are generated only from non-zero publisher/source pulses
     // observed in the last seven days. Do not silently expand to 30-day old scores.
-    const rankUrl='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-rankings';
+    const rankUrl='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-weekly-rankings?category=All';
     const rankResponse=await fetch(rankUrl,{headers:{accept:'application/json'},signal:AbortSignal.timeout(10000)});
-    if(!rankResponse.ok)throw new Error('current_rankings_'+rankResponse.status);
+    if(!rankResponse.ok)throw new Error('current_trending_'+rankResponse.status);
     const rankData=await rankResponse.json();
-    const calculated=Date.parse(rankData.calculated_at||'');
-    const freshCalculation=Number.isFinite(calculated)&&now-calculated<12*3600000&&calculated<=now+60000;
-    const allowed=freshCalculation&&Array.isArray(rankData.categories)
-      ?rankData.categories.flatMap(c=>(c.items||[]).map(i=>({...i.product,trend_score:Number(i.trend_score||0),current_signal:true,rank_week:rankData.week_start,is_new_review:Boolean(i.is_new)})))
-      :[];
+    const allowed=Array.isArray(rankData.products)?rankData.products:[];
     const products=allowed.filter(p=>
-      p&&p.slug&&p.image_url&&p.evidence_status==='verified'
-      && p.viral_score!=null&&p.worth_score!=null
+      p&&p.slug&&p.image_url&&p.current_signal===true&&p.evidence_status==='verified'
       && Number.isFinite(Number(p.viral_score))&&Number.isFinite(Number(p.worth_score))
-    ).sort((a,b)=>b.trend_score-a.trend_score).slice(0,limit);
+      && Date.parse(p.newest_mention_at||'')>=now-7*86400000
+    ).sort((a,b)=>Number(b.trend_score||0)-Number(a.trend_score||0)).slice(0,limit);
     res.setHeader('Cache-Control','public, max-age=0, s-maxage=120, stale-while-revalidate=120');
     return res.status(200).json({
       products,
       window_days:7,
       generated_at:new Date().toISOString(),
-      rank_calculated_at:rankData.calculated_at||null,
-      freshness_policy:'Current week: actual recent independently linked trend mentions; older reviews retain original publication and verification dates; no stale fallback'
+      rank_calculated_at:rankData.last_rank_calculated_at||null,
+      freshness_policy:'Recent dated source-backed trend signals only; historical product-review dates are preserved; no stale fallback'
     });
   }catch(e){
     res.setHeader('Cache-Control','no-store');
