@@ -1,7 +1,7 @@
 const fs=require('fs');
 const path=require('path');
 const search=require('../lib/search-handler');
-const REV='20261006-product-images-2';
+const REV='20261115-high-confidence-verified-home-v3';
 let cached='';
 
 function html(){
