@@ -154,7 +154,7 @@ main{overflow-x:clip}
 .lt-head{display:flex;justify-content:space-between;align-items:end;gap:34px;margin-bottom:28px}
 .lt-head h2{font:400 clamp(34px,3.7vw,48px)/1 var(--serif);letter-spacing:-.035em;margin:7px 0 0;color:#70000e}
 .lt-head p{max-width:470px;margin:0;color:var(--muted);font:13px/1.62 var(--sans)}
-.lt-track{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;align-items:start;padding:0}
+.lt-track{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:start;padding:0}
 .lt-track::-webkit-scrollbar{display:none}.lt-card{scroll-snap-align:start;text-decoration:none;min-width:0}
 .lt-media{position:relative;aspect-ratio:1.1;background:#e9e6df;display:grid;place-items:center;overflow:hidden}
 .lt-media img{width:86%;height:86%;object-fit:contain;display:block;filter:drop-shadow(0 14px 22px rgba(0,0,0,.08));transition:transform .3s ease}
@@ -268,18 +268,18 @@ main{overflow-x:clip}
 <body>
 <header><div class="wrap headbar"><a class="logo" href="/">VYRDICT.</a><nav class="nav" aria-label="Primary"><a class="hub-nav-link" href="/links/" aria-label="Back to VYRDICT Hub">← Back to Hub</a><a href="/collection/viral-right-now/">Explore</a><button type="button" aria-haspopup="menu" aria-expanded="false">Categories</button><a href="/#culture">Culture</a><button type="button" data-vyrdict-newsletter-entry>Newsletter</button><a href="/shop-the-feed/">Shop the Feed</a></nav><div class="icons"><a class="icon" href="/search/" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.4 4.4"></path></svg></a><a class="icon" href="/saved" aria-label="Saved"><svg viewBox="0 0 24 24"><path d="M20.4 5.8c-1.9-2-5-2-6.9 0L12 7.4l-1.5-1.6c-1.9-2-5-2-6.9 0-2.1 2.2-2.1 5.7 0 7.9L12 22l8.4-8.3c2.1-2.2 2.1-5.7 0-7.9Z"></path></svg></a><a class="icon" href="/account.html" aria-label="Account"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.3"></circle><path d="M5.7 20c.7-4 3-6 6.3-6s5.6 2 6.3 6"></path></svg></a></div></div></header>
 <main>
-<section class="motion"><div class="mimg" style="background-image:url('https://assets.adidas.com/images/w_1000,f_auto,q_auto/9cbed7f0099347c09662e57b4fec9e91_9366/ADIDAS_Pokemon_SUPERSTAR_II_SHOES_Yellow_KI2858_01_00_standard.jpg')"></div><div class="mimg" style="background-image:url('https://hips.hearstapps.com/hmg-prod/images/3c6642ba-01fb-4ad7-8792-78ded340bbad.jpeg')"></div><div class="mimg" style="background-image:url('https://about.starbucks.com/uploads/2026/08/PeanutsMerchFall2026-01913-scaled.jpg')"></div><div class="wrap mcopy"><div><div class="k">THE VIRAL EDIT</div><h2>What’s Having a Moment</h2></div><div><p>The launches, collaborations and products moving through culture right now — a live VYRDICT pulse of what the internet is suddenly paying attention to.</p><div class="m-actions"><a class="m-primary" href="#trending-now">See today’s viral products →</a><a class="textlink" href="/collection/viral-right-now/">Explore the viral edit</a></div></div></div></section>
+<section class="motion"><div class="mimg" style="background-image:none;visibility:hidden"></div><div class="mimg" style="background-image:none;visibility:hidden"></div><div class="mimg" style="background-image:none;visibility:hidden"></div><div class="wrap mcopy"><div><div class="k">THE VERIFIED EDIT</div><h2>Newly Verified VYRDICTs</h2></div><div><p>Products we have actually checked, with evidence-linked Viral and Worth Scores. New reviews appear here only after full verification.</p><div class="m-actions"><a class="m-primary" href="#trending-now">See verified product scores →</a><a class="textlink" href="/collection/viral-right-now/">Explore the verified edit</a></div></div></div></section>
 <section class="live-trending" id="trending-now">
   <div class="wrap">
     <div class="lt-head">
-      <div><div class="k">LIVE PRODUCT PULSE</div><h2>Trending right now.</h2></div>
-      <p>Verified products with strong momentum. Check their Viral and Worth scores before you buy.</p>
+      <div><div class="k">NEWLY SCORED / VERIFIED</div><h2>Latest verified.</h2></div>
+      <p>Only newer, fully scored products backed by high-confidence evidence. Older reviews remain available in the catalog, not recycled as fresh.</p>
     </div>
     <div class="lt-track" id="home-trending-track" aria-live="polite">
       <div class="lt-skeleton"><div class="lt-media"></div></div><div class="lt-skeleton"><div class="lt-media"></div></div><div class="lt-skeleton"><div class="lt-media"></div></div><div class="lt-skeleton"><div class="lt-media"></div></div>
     </div>
-    <div class="lt-foot"><a href="/collection/viral-right-now/">See all viral products →</a></div>
-    <div id="home-recent-scored" aria-live="polite" style="display:none;margin:14px 0 18px;font:12px/1.7 Arial,sans-serif;color:#333;"></div>
+    <div class="lt-foot"><a href="/collection/viral-right-now/">Explore fully verified reviews →</a></div>
+    
     
   </div>
 </section>
@@ -339,10 +339,29 @@ main{overflow-x:clip}
   function checkedDate(p){var d=new Date(p.last_verified_at||p.published_at||'');return Number.isNaN(d.getTime())?'':'<span class="lt-date">Evidence checked '+e(d.toLocaleDateString(undefined,{month:'short',day:'numeric'}))+'</span>'}
   function renderTrending(rows){
     var track=document.getElementById('home-trending-track');if(!track)return;
-    var ps=(Array.isArray(rows)?rows:[]).filter(function(p){return p&&p.slug&&p.image_url&&p.viral_score!=null&&p.worth_score!=null&&Number.isFinite(Number(p.viral_score))&&Number.isFinite(Number(p.worth_score))&&Number(p.viral_score)>=0&&Number(p.viral_score)<=100&&Number(p.worth_score)>=0&&Number(p.worth_score)<=100}).slice(0,4);
-    if(!ps.length){track.innerHTML='<div class="lt-card"><div class="lt-copy">Fresh verified products are refreshing now.</div></div>';return}
+    var cutoff=Date.now()-30*86400000;
+    var ps=(Array.isArray(rows)?rows:[]).filter(function(p){
+      return p&&p.slug&&p.name&&p.image_url
+      &&p.evidence_status==='verified'&&p.evidence_confidence==='high'
+      &&p.published_at&&Date.parse(p.published_at)>=cutoff
+      &&p.last_verified_at&&Date.parse(p.last_verified_at)>=cutoff
+      &&p.viral_score!=null&&p.worth_score!=null
+      &&Number.isFinite(Number(p.viral_score))&&Number.isFinite(Number(p.worth_score))
+      &&Number(p.viral_score)>=0&&Number(p.viral_score)<=100
+      &&Number(p.worth_score)>=0&&Number(p.worth_score)<=100;
+    }).slice(0,6);
+    var images=document.querySelectorAll('.motion .mimg');
+    images.forEach(function(node,i){
+      var p=ps[i];
+      node.style.backgroundImage=p?'url("'+img(p.image_url).replace(/"/g,'%22')+'")':'none';
+      node.style.visibility=p?'visible':'hidden';
+    });
+    if(!ps.length){
+      track.innerHTML='<div class="lt-card"><div class="lt-copy">No new product has completed the full evidence and scoring checks in the past 30 days. We’re reviewing the next arrivals rather than repeating old ratings.</div></div>';
+      return;
+    }
     track.innerHTML=ps.map(function(p){
-      return '<a class="lt-card" href="/product/'+encodeURIComponent(p.slug)+'/"><div class="lt-media"><img loading="lazy" decoding="async" '+imgAttrs(p.image_url)+' alt="'+e(((p.brand||'')+' '+(p.name||'')).trim())+'"><span class="lt-badge">Verified VYRDICT</span></div><div class="lt-copy"><div class="lt-meta">'+e(p.category||'Viral')+' · '+e(p.brand||'')+'</div><h3 class="lt-name">'+e(p.name||'')+'</h3><div class="lt-scores"><span>Viral <b>'+score(p.viral_score)+'</b></span><span>Worth <b>'+score(p.worth_score)+'</b></span></div>'+checkedDate(p)+'<span class="lt-verdict">See verdict →</span></div></a>'
+      return '<a class="lt-card" href="/product/'+encodeURIComponent(p.slug)+'/"><div class="lt-media"><img loading="lazy" decoding="async" '+imgAttrs(p.image_url)+' alt="'+e(((p.brand||'')+' '+(p.name||'')).trim())+'"><span class="lt-badge">High-confidence verified</span></div><div class="lt-copy"><div class="lt-meta">'+e(p.category||'Product')+' · '+e(p.brand||'')+'</div><h3 class="lt-name">'+e(p.name||'')+'</h3><div class="lt-scores"><span>Viral <b>'+score(p.viral_score)+'</b></span><span>Worth <b>'+score(p.worth_score)+'</b></span></div>'+checkedDate(p)+'<span class="lt-verdict">Read evidence & verdict →</span></div></a>'
     }).join('');
   }
   function updateCulture(id,linkId,item,screen){
@@ -356,22 +375,8 @@ main{overflow-x:clip}
     box.innerHTML='<img '+imgAttrs(image)+' alt=""><div><b>'+e(name)+'</b><span>'+e(meta)+'</span></div>';
     if(linkId&&item.slug){var a=document.getElementById(linkId);if(a)a.href='/product/'+encodeURIComponent(item.slug)+'/'}
   }
-  fetch('/api/viral-now?limit=8&rev=20261013-four-products',{headers:{accept:'application/json'},cache:'no-store'})
-    .then(function(r){return r.ok?r.json():Promise.reject()}).then(function(j){renderTrending(j.products||[])}).catch(function(){});
-  // Keep truly new scored products visible without compromising the
-  // high-momentum Viral Right Now feed or publishing unverified candidates.
-  fetch('/api/viral-now?mode=recent&limit=4',{headers:{accept:'application/json'},cache:'no-store'})
-    .then(function(r){return r.ok?r.json():Promise.reject()})
-    .then(function(j){
-      var box=document.getElementById('home-recent-scored');
-      if(!box||!j.ok||!Array.isArray(j.products)||!j.products.length)return;
-      var rows=j.products.filter(function(p){return p&&p.slug&&p.name&&p.viral_score!=null&&p.worth_score!=null}).slice(0,4);
-      if(!rows.length)return;
-      box.innerHTML='<strong style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;">Newly Scored on VYRDICT</strong> &nbsp;'+rows.map(function(p){
-        return '<a style="color:inherit;text-decoration:underline;text-underline-offset:3px;margin-right:12px" href="/product/'+encodeURIComponent(p.slug)+'/">'+e(((p.brand||'')+' '+p.name).trim())+' <span style="white-space:nowrap;color:#66715d">Viral '+score(p.viral_score)+' · Worth '+score(p.worth_score)+'</span></a>';
-      }).join(' ');
-      box.style.display='block';
-    }).catch(function(){});
+  fetch('/api/viral-now?mode=recent&limit=8&rev=20261115-verified-home',{headers:{accept:'application/json'},cache:'no-store'})
+    .then(function(r){return r.ok?r.json():Promise.reject()}).then(function(j){renderTrending(j.products||[])}).catch(function(){renderTrending([])});
   var cultureFeed='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-culture-feed';
   fetch(cultureFeed+'?slug=celebrity-effect&rev=20261013-child-collections',{headers:{accept:'application/json'},cache:'no-store'})
     .then(function(r){return r.ok?r.json():Promise.reject()}).then(function(j){var x=(j.products||[])[0]||(j.signals||[])[0];updateCulture('culture-celebrity-now','culture-celebrity-product',x,false)}).catch(function(){});
