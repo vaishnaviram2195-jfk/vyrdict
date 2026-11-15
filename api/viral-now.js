@@ -41,22 +41,22 @@ module.exports=async function handler(req,res){
     const requested=Number(req.query?.limit||12);
     const limit=Math.max(3,Math.min(Number.isFinite(requested)?requested:12,24));
     const now=Date.now();
-    // A separate, fully scored recency mode for the homepage.
-    // Unlike the momentum edit, only original publication dates count as new.
+    // The homepage's newest reviewed products: all checks completed, with genuine publication dates.
     if(String(req.query?.mode||'')==='recent'){
       const rows=await fetchWindow(30);
-      const cutoff=Date.now()-7*86400000;
+      const cutoff=Date.now()-30*86400000;
       const recent=rows.filter(p=>
-        p.slug&&p.name&&p.image_url
-        && p.evidence_status==='verified'
+        p&&p.slug&&p.name&&p.image_url
+        && p.evidence_status==='verified'&&p.evidence_confidence==='high'
         && p.published_at&&Date.parse(p.published_at)>=cutoff
+        && p.last_verified_at&&Date.parse(p.last_verified_at)>=cutoff
         && p.viral_score!=null&&p.worth_score!=null
         && Number.isFinite(Number(p.viral_score))&&Number.isFinite(Number(p.worth_score))
         && Number(p.viral_score)>=0&&Number(p.viral_score)<=100
         && Number(p.worth_score)>=0&&Number(p.worth_score)<=100
-      ).sort((a,b)=>Date.parse(b.published_at)-Date.parse(a.published_at)).slice(0,Math.min(limit,4));
-      res.setHeader('Cache-Control','public, max-age=0, s-maxage=300, stale-while-revalidate=300');
-      return res.status(200).json({ok:true,products:recent,window_days:7,generated_at:new Date().toISOString(),policy:'newly_published_verified_scored_products_only'});
+      ).sort((a,b)=>Date.parse(b.published_at)-Date.parse(a.published_at)).slice(0,limit);
+      res.setHeader('Cache-Control','public, max-age=0, s-maxage=120, stale-while-revalidate=60');
+      return res.status(200).json({ok:true,products:recent,window_days:30,generated_at:new Date().toISOString(),policy:'published_and_reviewed_within_30_days_verified_high_confidence_scored_only'});
     }
     // The live viral feed must have actual recent source-backed trend evidence.
     // Rank snapshots are generated only from non-zero publisher/source pulses
