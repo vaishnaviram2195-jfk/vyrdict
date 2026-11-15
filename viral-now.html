@@ -54,7 +54,7 @@
       function renderDiscoveries(){
         const rows=discoveries.filter(p=>p&&p.name&&p.brand&&safeExternal(p.image_url)&&safeExternal(p.product_url)&&Date.parse(p.published_at||'')>=Date.now()-21*86400000).slice(0,24);
         if(!rows.length)return false;
-        grid.innerHTML=rows.map((p,i)=>'<a class="card" href="'+esc(safeExternal(p.product_url))+'" target="_blank" rel="noopener noreferrer nofollow"><div class="media"><img '+(i<4?'fetchpriority="high"':'loading="lazy"')+' decoding="async" src="'+esc(img(p.image_url))+'" data-original="'+esc(p.image_url)+'" onerror="this.onerror=null;if(this.dataset.original)this.src=this.dataset.original" alt="'+esc(p.brand+' '+p.name)+'"><span class="rank">NEW</span></div><div class="copy"><div class="meta">'+esc(p.category||'Discovery')+' · '+esc(p.brand)+'</div><h3 class="name">'+esc(p.name)+'</h3><div class="status">PRODUCT IDENTIFIED · VERDICT IN PROGRESS</div><div class="evidence-date">Product listing and sources checked; Viral and Worth Scores pending.</div></div></a>').join('');
+        grid.innerHTML=rows.map((p,i)=>'<a class="card shop" data-vyrdict-retailer-source="fresh_discovery" href='+esc(safeExternal(p.product_url))+'" target="_blank" rel="noopener noreferrer nofollow"><div class="media"><img '+(i<4?'fetchpriority="high"':'loading="lazy"')+' decoding="async" src="'+esc(img(p.image_url))+'" data-original="'+esc(p.image_url)+'" onerror="this.onerror=null;if(this.dataset.original)this.src=this.dataset.original" alt="'+esc(p.brand+' '+p.name)+'"><span class="rank">NEW</span></div><div class="copy"><div class="meta">'+esc(p.category||'Discovery')+' · '+esc(p.brand)+'</div><h3 class="name">'+esc(p.name)+'</h3><div class="status">PRODUCT IDENTIFIED · VERDICT IN PROGRESS</div><div class="evidence-date">Product listing and sources checked; Viral and Worth Scores pending.</div></div></a>').join('');
         stamp.textContent=rows.length+' newly identified products · VYRDICT scoring in progress';hasRendered=true;return true;
       }
       async function refreshFinds(){
@@ -121,7 +121,8 @@
       refreshNews();
     })();
   </script>
-  <script src="/fresh-arrivals.js?v=20261027-publication" defer></script>
+  <script src="/hub-analytics.js?v=20261115-new-viral" defer></script>
+  <script src="/analytics.js?v=20261115-new-viral" defer></script>
   <script src="/mobile-categories-hardfix.js?v=2-20261017-header-tabs" defer></script>
 </body>
 </html>
