@@ -70,6 +70,7 @@ module.exports=async function handler(req,res){
       p&&p.slug&&p.image_url&&p.current_signal===true&&p.evidence_status==='verified'
       && Number.isFinite(Number(p.viral_score))&&Number.isFinite(Number(p.worth_score))
       && Date.parse(p.newest_mention_at||'')>=now-7*86400000
+      && Date.parse(p.published_at||'')>=now-30*86400000
     ).sort((a,b)=>Number(b.trend_score||0)-Number(a.trend_score||0)).slice(0,limit);
     res.setHeader('Cache-Control','public, max-age=0, s-maxage=120, stale-while-revalidate=120');
     return res.status(200).json({
@@ -77,7 +78,7 @@ module.exports=async function handler(req,res){
       window_days:7,
       generated_at:new Date().toISOString(),
       rank_calculated_at:rankData.last_rank_calculated_at||null,
-      freshness_policy:'Recent dated source-backed trend signals only; historical product-review dates are preserved; no stale fallback'
+      freshness_policy:'Recently published (30 days) fully scored products with dated source signals in the last 7 days. Older reviews are kept in the archive rather than resurfaced here.'
     });
   }catch(e){
     res.setHeader('Cache-Control','no-store');
