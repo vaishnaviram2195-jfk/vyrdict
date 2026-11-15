@@ -3,11 +3,11 @@ const U=Deno.env.get('SUPABASE_URL')!;
 const K=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const H={apikey:K,Authorization:'Bearer '+K};
 const CORS={'access-control-allow-origin':'*','access-control-allow-methods':'GET,OPTIONS','access-control-allow-headers':'content-type'};
-const ALLOWED=new Set(['celebrity-effect','seen-on-screen']);
+const ALLOWED=new Set(['celebrity-effect','seen-on-screen','viral-around-the-world']);
 async function get(path:string){const r=await fetch(U+'/rest/v1/'+path,{headers:H});if(!r.ok)throw new Error(String(r.status)+': '+await r.text());return r.json()}
 const secure=(v:any)=>{const s=String(v||'').trim();return /^http:\/\//i.test(s)?s.replace(/^http:/i,'https:'):s};
 const days=(v:any)=>{const t=Date.parse(String(v||''));return Number.isFinite(t)?Math.max(0,(Date.now()-t)/86400000):999};
-function slimProduct(p:any){return{id:p.id,slug:p.slug,brand:p.brand,name:p.name,category:p.category,image_url:secure(p.image_url),viral_score:p.viral_score,worth_score:p.worth_score,viral_status:p.viral_status,published_at:p.published_at,last_verified_at:p.last_verified_at}}
+function slimProduct(p:any){return{id:p.id,slug:p.slug,brand:p.brand,name:p.name,category:p.category,country_code:p.country_code,image_url:secure(p.image_url),viral_score:p.viral_score,worth_score:p.worth_score,viral_status:p.viral_status,published_at:p.published_at,last_verified_at:p.last_verified_at}}
 Deno.serve(async(req:Request)=>{
   if(req.method==='OPTIONS')return new Response(null,{headers:CORS});
   if(req.method!=='GET')return new Response('Method not allowed',{status:405,headers:CORS});
@@ -23,7 +23,7 @@ Deno.serve(async(req:Request)=>{
       const links=await get('product_collections?select=product_id,effect_score&collection_id=in.('+collectionIds.join(',')+')&order=effect_score.desc&limit=500');
       const ids=[...new Set((links||[]).map((x:any)=>Number(x.product_id)).filter((x:number)=>x>0))];
       if(ids.length){
-        const ps=await get('products?select=id,slug,brand,name,category,image_url,viral_score,worth_score,viral_status,published_at,last_verified_at&id=in.('+ids.join(',')+')&is_active=eq.true&evidence_status=eq.verified&order=published_at.desc.nullslast,viral_score.desc&limit=60');
+        const ps=await get('products?select=id,slug,brand,name,category,country_code,image_url,viral_score,worth_score,viral_status,published_at,last_verified_at&id=in.('+ids.join(',')+')&is_active=eq.true&evidence_status=eq.verified&order=published_at.desc.nullslast,viral_score.desc&limit=60');
         const order=new Map(ids.map((id:number,i:number)=>[id,i]));
         products=(ps||[]).filter((p:any)=>p?.slug&&p?.image_url).sort((a:any,b:any)=>{
           const ad=Date.parse(a.published_at||'')||0,bd=Date.parse(b.published_at||'')||0;
@@ -37,7 +37,7 @@ Deno.serve(async(req:Request)=>{
       signals=(stories||[]).filter((s:any)=>String(s.category||'').toLowerCase().includes('celebrity effect')&&days(s.published_at)<=45&&s.image_url&&s.source_url).slice(0,16).map((s:any)=>({
         type:'story',headline:s.headline,dek:s.dek,category:s.category,image_url:secure(s.image_url),source_label:s.source_label,source_url:s.source_url,published_at:s.published_at
       }));
-    }else{
+    }else if(slug==='seen-on-screen'){
       const leads=await get('vyrdict_trend_leads?select=id,title,summary,canonical_url,last_seen_at,metadata,candidate_id&order=last_seen_at.desc.nullslast&limit=500');
       const fresh=(leads||[]).filter((l:any)=>l?.metadata?.special_collection==='seen-on-screen'&&days(l.last_seen_at)<=10).slice(0,120);
       const cids=[...new Set(fresh.map((l:any)=>Number(l.candidate_id)).filter((x:number)=>x>0))];
