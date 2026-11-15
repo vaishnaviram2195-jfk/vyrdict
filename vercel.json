@@ -118,6 +118,10 @@
       "dest": "/seen-on-screen.html"
     },
     {
+      "src": "/collection/viral-around-the-world/?$",
+      "dest": "/viral-around-the-world.html"
+    },
+    {
       "src": "/collection/gifts/?$",
       "status": 308,
       "headers": {
