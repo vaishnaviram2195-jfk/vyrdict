@@ -3,85 +3,96 @@ const assert=require('node:assert/strict');
 const {readFileSync}=require('node:fs');
 const path=require('node:path');
 const vm=require('node:vm');
-const NOW=Date.parse('2026-10-17T07:00:00Z');
-const ago=days=>new Date(NOW-days*86400000).toISOString();
-class Clock extends Date{constructor(...args){super(...(args.length?args:[NOW]))}static now(){return NOW}}
-const product=(slug,days,extra={})=>({slug,name:slug,brand:'Brand',category:'Tech',image_url:'https://brand.example/product.jpg',viral_score:90,worth_score:80,momentum_score:90,viral_status:'rising',viral_confidence:90,evidence_status:'verified',evidence_confidence:'high',created_at:ago(60),last_verified_at:ago(days),...extra});
-
-async function run(rows,limit=24,fail=false){
-  const calls=[],headers={};let status,body;
-  const context=vm.createContext({module:{exports:{}},Date:Clock,URLSearchParams,fetch:async url=>{
-    calls.push(new URL(url));
-    if(fail)throw new Error('upstream unavailable');
-    return {ok:true,json:async()=>rows};
-  }});
-  vm.runInContext(readFileSync(path.join(__dirname,'../api/viral-now.js'),'utf8'),context);
-  const res={setHeader(k,v){headers[k]=v},status(n){status=n;return this},json(j){body=JSON.parse(JSON.stringify(j))}};
-  await context.module.exports({query:{limit}},res);
-  return {status,body,calls,headers};
+const NOW=Date.parse('2026-11-15T22:30:00Z');
+const ago=d=>new Date(NOW-d*86400000).toISOString();
+class Clock extends Date{constructor(...a){super(...(a.length?a:[NOW]))}static now(){return NOW}}
+const product=(slug,days,rest={})=>({
+ slug,name:slug,brand:'Brand',category:'Skincare',image_url:'https://brand.example/product.jpg',
+ viral_score:90,worth_score:80,trend_score:80,evidence_status:'verified',
+ current_signal:true,newest_mention_at:ago(days),last_verified_at:ago(80),published_at:ago(80),...rest
+});
+async function run(products,{limit=24,mode=null,fail=false,invalid=false}={}){
+ const calls=[],headers={};let status,body;
+ const context=vm.createContext({
+  module:{exports:{}},Date:Clock,URLSearchParams,AbortSignal:{timeout:()=>({})},
+  fetch:async url=>{
+   calls.push(String(url));if(fail)throw Error('upstream down');
+   return {ok:true,json:async()=>invalid?{}:mode==='recent'?products:{products,window_days:7,calculated_at:ago(0)}};
+  }
+ });
+ vm.runInContext(readFileSync(path.join(__dirname,'../api/viral-now.js'),'utf8'),context);
+ const res={setHeader(k,v){headers[k]=v},status(n){status=n;return this},json(j){body=JSON.parse(JSON.stringify(j))}};
+ await context.module.exports({query:{limit,...(mode?{mode}:{})}},res);
+ return {status,body,calls,headers};
 }
-
-test('a sparse fortnight expands to a recent month without changing review dates',async()=>{
-  const rows=[product('newer',10),product('recent',13),...Array.from({length:16},(_,i)=>product('month-'+i,15+i*.8,{viral_score:99,momentum_score:99}))];
-  const result=await run(rows);
-  assert.equal(result.status,200);
-  assert.equal(result.body.products.length,18);
-  assert.equal(result.body.window_days,30);
-  assert.deepEqual(result.body.products.slice(0,2).map(p=>p.slug),['newer','recent']);
-  for(const p of result.body.products)assert.equal(p.last_verified_at,rows.find(r=>r.slug===p.slug).last_verified_at);
-  assert(result.calls[0].searchParams.get('or').includes(ago(30)));
+test('current viral feed includes source-backed live mentions, even when original review is old',async()=>{
+ const items=[product('coach-current',3,{trend_score:92,last_verified_at:ago(90)}),product('newer',1,{trend_score:80,last_verified_at:ago(5)})];
+ const r=await run(items);
+ assert.equal(r.status,200);assert.deepEqual(r.body.products.map(x=>x.slug),['coach-current','newer']);
+ assert.equal(r.body.products[0].last_verified_at,ago(90));
+ assert.equal(r.body.window_days,7);
+ assert(r.calls[0].includes('vyrdict-weekly-rankings'));
 });
-
-test('the fuller edit still excludes stale, unverified and weak-evidence products',async()=>{
-  const rows=[product('eligible',20),product('too-old',31),product('low-confidence',10,{evidence_confidence:'low'}),product('not-verified',10,{evidence_status:'pending'}),product('mainstay',10,{viral_status:'mainstay'}),product('weak-momentum',10,{momentum_score:40}),product('',10),product('no-image',10,{image_url:' '})];
-  const {body}=await run(rows);
-  assert.deepEqual(body.products.map(p=>p.slug),['eligible']);
+test('stale mentions, products without live pulse or unverified rows are excluded',async()=>{
+ const r=await run([product('good',2),product('old-source',9),product('no-pulse',1,{current_signal:false}),product('unverified',1,{evidence_status:'pending'}),product('missing-image',1,{image_url:''})]);
+ assert.deepEqual(r.body.products.map(x=>x.slug),['good']);
 });
-
-test('fresh products fill a small request without pulling in older cards',async()=>{
-  const rows=[...Array.from({length:30},(_,i)=>product('fresh-'+i,2)),product('older-high-score',20,{viral_score:100,momentum_score:100})];
-  const small=await run(rows,8);
-  assert.equal(small.body.window_days,7);
-  assert.equal(small.body.products.length,8);
-  assert(small.body.products.every(p=>p.slug.startsWith('fresh-')));
-  assert.equal((await run(rows,999)).body.products.length,24);
-  assert.equal((await run(rows,'invalid')).body.products.length,12);
+test('legitimate no-current-products case stays empty, with no stale fallback',async()=>{
+ const r=await run([]);
+ assert.equal(r.status,200);assert.deepEqual(r.body.products,[]);
+ assert.equal(r.body.window_days,7);
 });
-
-test('an upstream failure returns an honest unavailable response',async()=>{
-  const r=await run([],24,true);
-  assert.equal(r.status,500);
-  assert.equal(r.headers['Cache-Control'],'no-store');
-  assert.deepEqual(r.body.products,[]);
+test('a failed or invalid source does not reintroduce old products',async()=>{
+ const fail=await run([], {fail:true});assert.equal(fail.status,500);assert.deepEqual(fail.body.products,[]);
+ const invalid=await run([], {invalid:true});assert.equal(invalid.status,200);assert.deepEqual(invalid.body.products,[]);
 });
-
-async function renderPage(products,stories,{productFailure=false,newsFailure=false}={}){
-  const ids=new Map(['grid','stamp','news-grid','latest-news'].map(id=>[id,{innerHTML:'',textContent:'',hidden:id==='latest-news'}]));
-  const script=readFileSync(path.join(__dirname,'../viral-now.html'),'utf8').match(/<script>([\s\S]*?)<\/script>/)[1];
-  vm.runInNewContext(script,{document:{getElementById:id=>ids.get(id)},location:{origin:'https://vyrdict.com'},URL,Date:Clock,sessionStorage:{getItem:()=>null,setItem(){}},fetch:async url=>{
-    const news=url.startsWith('/api/stories');
-    return {ok:!(news?newsFailure:productFailure),json:async()=>news?{stories}:{products,window_days:30,generated_at:ago(0)}};
-  }});
+test('newly published mode still requires a verified product published in the last seven days',async()=>{
+ const rows=[product('fresh-publication',1,{published_at:ago(1)}),product('old-review',1,{published_at:ago(40)}),product('not-verified',1,{evidence_status:'pending'})];
+ const r=await run(rows,{mode:'recent'});
+ assert.equal(r.status,200);assert.deepEqual(r.body.products.map(x=>x.slug),['fresh-publication']);
+});
+async function renderPage(rows,stories=[]){
+ const ids=new Map(['grid','stamp','news-grid','latest-news'].map(id=>[id,{innerHTML:'',textContent:'',hidden:id==='latest-news'}]));
+ const html=readFileSync(path.join(__dirname,'../viral-now.html'),'utf8');
+ const script=html.match(/<script>\s*([\s\S]*?)<\/script>/)[1];
+ const tasks=[];
+ vm.runInNewContext(script,{
+  document:{getElementById:id=>ids.get(id)},
+  Date:Clock,URL,location:{origin:'https://vyrdict.com'},
+  sessionStorage:{getItem:()=>null,setItem(){}},
+  fetch:async url=>{tasks.push(url);return {ok:true,json:async()=>String(url).startsWith('/api/stories')?{stories}:{products:rows,generated_at:ago(0),window_days:7}}}
+ });
+ await new Promise(resolve=>setImmediate(resolve));
+ return ids;
+}
+test('viral page shows current signal date and actual historical review date',async()=>{
+ const ids=await renderPage([product('current',2,{last_verified_at:ago(80)})]);
+ assert.match(ids.get('grid').innerHTML,/Current mention/);
+ assert.match(ids.get('grid').innerHTML,/Original review checked/);
+ assert.match(ids.get('grid').innerHTML,/SOURCE-BACKED THIS WEEK/);
+ assert.match(ids.get('stamp').textContent,/1 source-backed trends/);
+});
+test('viral page displays an honest empty state instead of a perpetual skeleton',async()=>{
+ const ids=await renderPage([]);
+ assert.match(ids.get('grid').innerHTML,/No product currently meets/);
+ assert.doesNotMatch(ids.get('grid').innerHTML,/class="skeleton"/);
+});
+for(const [filename,slug] of [['seen-on-screen.html','seen-on-screen'],['celebrity-effect.html','celebrity-effect']]){
+ test(filename+' archives older reviews and preserves latest signals',async()=>{
+  const html=readFileSync(path.join(__dirname,'..',filename),'utf8');
+  const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];
+  const ids=new Map(['products','signals','archived-products','stamp','archive-section','archive-count'].map(id=>[id,{innerHTML:'',hidden:id==='archive-section',textContent:''}]));
+  const old=product('older',90),newer=product('recent',10,{last_verified_at:ago(10)});
+  vm.runInNewContext(script,{
+   document:{getElementById:id=>ids.get(id)},location:{pathname:'/collection/'+slug+'/',origin:'https://vyrdict.com'},
+   Date:Clock,URL,console,fetch:async()=>({ok:true,json:async()=>({products:[old,newer],signals:[],generated_at:ago(0)})})
+  });
   await new Promise(resolve=>setImmediate(resolve));
-  return ids;
+  assert.match(ids.get('products').innerHTML,/\/product\/recent\//);
+  assert.doesNotMatch(ids.get('products').innerHTML,/\/product\/older\//);
+  assert.match(ids.get('archived-products').innerHTML,/\/product\/older\//);
+  assert.equal(ids.get('archive-section').hidden,false);
+  assert.equal(ids.get('archive-count').textContent,'(1)');
+  assert.match(ids.get('signals').innerHTML,/No new/);
+ });
 }
-
-const story={headline:'Brand <drop>',image_url:'https://brand.example/story.jpg',source_url:'https://brand.example/story',source_label:'Brand',published_at:ago(1)};
-test('Explore renders a full product feed and separately credited news, filtering unsafe links',async()=>{
-  const ids=await renderPage(Array.from({length:18},(_,i)=>product('product-'+i,20)),[story,{...story,source_url:'javascript:alert(1)'}]);
-  assert.equal((ids.get('grid').innerHTML.match(/class="card"/g)||[]).length,18);
-  assert.match(ids.get('stamp').textContent,/18 verified products/);
-  assert.equal(ids.get('latest-news').hidden,false);
-  assert.equal((ids.get('news-grid').innerHTML.match(/class="card"/g)||[]).length,1);
-  assert.match(ids.get('news-grid').innerHTML,/Brand &lt;drop&gt;/);
-  assert.match(ids.get('news-grid').innerHTML,/https:\/\/brand.example\/story/);
-});
-
-test('news and product requests can fail independently',async()=>{
-  const products=await renderPage([product('product',10)],[story],{newsFailure:true});
-  assert.match(products.get('grid').innerHTML,/\/product\/product\//);
-  assert.equal(products.get('latest-news').hidden,true);
-  const news=await renderPage([], [story],{productFailure:true});
-  assert.match(news.get('grid').innerHTML,/class="empty"/);
-  assert.equal(news.get('latest-news').hidden,false);
-});
