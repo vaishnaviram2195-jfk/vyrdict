@@ -1,66 +1,65 @@
 (()=>{
-  if(window.__vyrdictImageFallback)return;
-  window.__vyrdictImageFallback=1;
+  if(window.__vyrdictImageFallbackV2)return;
+  window.__vyrdictImageFallbackV2=true;
+  window.__vyrdictImageFallback=true;
 
-  const STYLE_ID='vyrdict-image-fallback-style';
+  const STYLE_ID='vyrdict-image-fallback-style-v2';
   function addStyle(){
     if(document.getElementById(STYLE_ID))return;
     const s=document.createElement('style');
     s.id=STYLE_ID;
-    s.textContent=`
-      img[data-vyrdict-image-fallback="1"]{
-        object-fit:contain!important;
-        background:#f4ede5!important;
-      }
-    `;
+    s.textContent='img[data-vyrdict-img-retried="1"]{object-fit:contain!important}[data-vyrdict-image-missing="1"]{background-color:#f2efea}img[data-vyrdict-img-failed="1"]{display:none!important}';
     document.head.appendChild(s);
   }
+  const acceptable=s=>{try{
+    const url=new URL(String(s||''),location.origin);
+    return (url.protocol==='https:'||url.protocol==='http:') ? url.href : '';
+  }catch{return ''}};
+  const branded=s=>/vyrdict-social-preview|vyrdict(?:-|_)fallback|verdict(?:-|_)card/i.test(String(s||''));
 
-  function placeholder(){
-    const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
-      <rect width="800" height="800" fill="#f4ede5"/>
-      <rect x="90" y="90" width="620" height="620" rx="36" fill="#fffaf5" stroke="#d8cec4" stroke-width="3"/>
-      <text x="400" y="365" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="76" font-weight="900" fill="#171511">VYRDICT</text>
-      <rect x="602" y="335" width="20" height="20" rx="2" fill="#e96b75"/>
-      <text x="400" y="430" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="25" fill="#746d66">The verdict on what’s trending.</text>
-    </svg>`;
-    return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
-  }
-
-  const FALLBACK=placeholder();
   function apply(img){
     if(!(img instanceof HTMLImageElement))return;
-    if(img.dataset.vyrdictFallbackBound==='1')return;
-    img.dataset.vyrdictFallbackBound='1';
-    img.addEventListener('error',()=>{
-      if(img.dataset.vyrdictNoPlaceholder==='1'||img.closest?.('#ve-news-desk,#vyrdict-editorial-now')){
-        img.dataset.vyrdictImageFailed='1';
-        img.dispatchEvent(new CustomEvent('vyrdict:story-image-error',{bubbles:true}));
+    if(img.dataset.vyrdictFallbackBound==='2')return;
+    img.dataset.vyrdictFallbackBound='2';
+    function imageFailed(){
+      // Never replace a merchandise photo with a VYRDICT logo or generic verdict card.
+      if(img.dataset.vyrdictImgFailed==='1')return;
+      const preferred=acceptable(img.dataset.original);
+      const alternate=acceptable(img.dataset.vyrdictAlternate);
+      const candidates=[preferred,alternate].filter(Boolean);
+      const attempted=img.dataset.vyrdictImgAttempted||'';
+      const current=img.currentSrc||img.src||'';
+      const next=candidates.find(x=>x!==current&&!attempted.split('|').includes(x)&&!branded(x));
+      if(next){
+        img.dataset.vyrdictImgAttempted=[attempted,next].filter(Boolean).join('|');
+        img.dataset.vyrdictImgRetried='1';
+        img.removeAttribute('srcset');img.removeAttribute('sizes');
+        img.src=next;
         return;
       }
-      if(img.dataset.vyrdictImageFallback==='1')return;
-      img.dataset.vyrdictImageFallback='1';
-      img.removeAttribute('srcset');
-      img.removeAttribute('sizes');
-      img.src=FALLBACK;
-      img.alt=img.alt||'VYRDICT product image';
-    });
-    if(img.complete&&img.naturalWidth===0){
-      img.dispatchEvent(new Event('error'));
+      img.dataset.vyrdictImgFailed='1';
+      img.dataset.vyrdictImageFailed='1';
+      img.hidden=true;
+      const area=img.closest('.media,.pic,.vfn-visual,.product-visual,.cover,.lt-media');
+      if(area)area.setAttribute('data-vyrdict-image-missing','1');
+      if(img.closest('#ve-news-desk,#vyrdict-editorial-now')){
+        img.dispatchEvent(new CustomEvent('vyrdict:story-image-error',{bubbles:true}));
+      }
     }
+    img.addEventListener('error',imageFailed);
+    if(branded(img.getAttribute('src')||''))imageFailed();
+    else if(img.complete&&img.naturalWidth===0)imageFailed();
   }
-
   function scan(root=document){root.querySelectorAll?.('img').forEach(apply)}
-  addStyle();
-  scan();
-  const mo=new MutationObserver(ms=>{
-    for(const m of ms){
-      for(const n of m.addedNodes){
-        if(n instanceof HTMLImageElement)apply(n);
-        else if(n instanceof Element)scan(n);
+  addStyle();scan();
+  const observer=new MutationObserver(mutations=>{
+    for(const mutation of mutations){
+      for(const node of mutation.addedNodes){
+        if(node instanceof HTMLImageElement)apply(node);
+        else if(node instanceof Element)scan(node);
       }
     }
   });
-  mo.observe(document.documentElement,{childList:true,subtree:true});
-  addEventListener('hashchange',()=>setTimeout(()=>scan(),50));
+  observer.observe(document.documentElement,{childList:true,subtree:true});
+  addEventListener('hashchange',()=>setTimeout(scan,50));
 })();
