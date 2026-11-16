@@ -83,7 +83,16 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
  var validImg=function(s){try{var u=new URL(String(s||''),location.origin);return u.protocol==='https:'||u.protocol==='http:'?u.href:''}catch{return ''}};
  var safeLink=function(s){try{var u=new URL(String(s||''),location.origin);return (u.protocol==='https:'||u.protocol==='http:')?u.href:''}catch{return ''}};
  var fmt=function(s){try{return new Intl.DateTimeFormat('en-CA',{month:'short',day:'numeric',year:'numeric'}).format(new Date(s))}catch{return ''}};
- var cover=function(e,fallback){var url=validImg(e.cover_url);return url?'<img src="'+esc(url)+'" alt="'+esc(e.title)+'" loading="lazy" decoding="async" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><div class="cover-fallback" hidden><span>VYRDICT / THE EDIT</span><strong>'+esc(e.title)+'</strong><span>Explore the verdict &rarr;</span></div>':'<div class="cover-fallback"><span>VYRDICT / THE EDIT</span><strong>'+esc(e.title)+'</strong><span>Explore the verdict &rarr;</span></div>'};
+ var cover=function(e){
+  // Cover images must be real merchandise, not a VYRDICT editorial score-card placeholder.
+  var linked=(Array.isArray(e.products)?e.products:[]).map(function(p){return validImg(p.image_url)}).filter(Boolean);
+  var primary=linked[0]||validImg(e.cover_url);
+  var secondary=linked[0]?validImg(e.cover_url):'';
+  if(!primary)return '<span class="cover-photo-unavailable" aria-label="Product photography unavailable">Product photography unavailable</span>';
+  var retry='if(this.dataset.alternative&&this.dataset.retryDone!=="1"){this.dataset.retryDone="1";this.src=this.dataset.alternative}else{this.onerror=null;this.hidden=true}';
+  var display=primary.startsWith(location.origin+'/')?primary:'/vti-image?url='+encodeURIComponent(primary);
+  return '<img src="'+esc(display)+'" data-original="'+esc(primary)+'" data-alternative="'+esc(secondary)+'" alt="'+esc(e.title)+' — featured product photo" loading="lazy" decoding="async" onerror="'+esc(retry)+'">';
+};
  var categories=['All','Beauty','Fashion','Fitness','Wellness','Food & Drinks','Home','Tech','Gifts','Culture'];
  function filters(){el('filters').innerHTML=categories.map(function(c){return '<button type="button" class="chip" data-filter="'+esc(c)+'" aria-pressed="'+(active===c?'true':'false')+'">'+esc(c)+'</button>'}).join('');}
  function tile(e,i){return '<a class="tile" href="'+(e.curated_fallback||e.editorial_url?esc(safeLink(e.editorial_url)):'/shop-the-feed/'+encodeURIComponent(e.slug)+'/')+'"><div class="cover">'+cover(e)+'<span class="num">EDIT '+String(i+1).padStart(2,'0')+'</span></div><div class="tile-meta"><span>'+esc(e.category||'The Edit')+'</span><span>'+(e.curated_fallback?'SHOPPING GUIDE':fmt(e.published_at))+'</span></div><h3>'+esc(e.title)+'</h3><p>'+esc(e.dek||'See the products and their VYRDICT verdicts.')+'</p><span class="view">See the edit &rarr;</span></a>'}
@@ -100,7 +109,7 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
  function product(p,i){
   var score=Number.isFinite(Number(p.worth_score))?Math.round(Number(p.worth_score))+'/100':'Not scored';
   var url=validImg(p.image_url);
-  return '<a class="product" href="/product/'+encodeURIComponent(p.slug)+'/"><div class="product-visual">'+(url?'<img src="'+esc(url)+'" loading="lazy" decoding="async" alt="'+esc(p.brand+' '+p.name)+'">':'<span class="eyebrow">VYRDICT</span>')+'</div><div class="row"><span>'+esc(p.brand||'The Edit')+'</span><strong class="score">WORTH '+score+'</strong></div><h3>'+esc(p.name)+'</h3><p>'+esc(p.editor_note||p.verdict||'Read the complete product breakdown before buying.')+'</p><span class="go">See the verdict &rarr;</span></a>';
+  return '<a class="product" href="/product/'+encodeURIComponent(p.slug)+'/"><div class="product-visual">'+(url?'<img src="'+esc('/vti-image?url='+encodeURIComponent(url))+'" data-original="'+esc(url)+'" loading="lazy" decoding="async" alt="'+esc(p.brand+' '+p.name)+'" onerror="if(this.dataset.retryDone!==\'1\'){this.dataset.retryDone=\'1\';this.src=this.dataset.original}else{this.onerror=null;this.hidden=true}">':'')+'</div><div class="row"><span>'+esc(p.brand||'The Edit')+'</span><strong class="score">WORTH '+score+'</strong></div><h3>'+esc(p.name)+'</h3><p>'+esc(p.editor_note||p.verdict||'Read the complete product breakdown before buying.')+'</p><span class="go">See the verdict &rarr;</span></a>';
  }
  function renderDetail(e){
   el('feed-hero').hidden=true;el('feed-list').hidden=true;el('detail').hidden=false;
