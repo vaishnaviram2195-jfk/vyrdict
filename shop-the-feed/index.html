@@ -85,9 +85,11 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
  var fmt=function(s){try{return new Intl.DateTimeFormat('en-CA',{month:'short',day:'numeric',year:'numeric'}).format(new Date(s))}catch{return ''}};
  var cover=function(e){
   // Cover images must be real merchandise, not a VYRDICT editorial score-card placeholder.
-  var linked=(Array.isArray(e.products)?e.products:[]).map(function(p){return validImg(p.image_url)}).filter(Boolean);
-  var primary=linked[0]||validImg(e.cover_url);
-  var secondary=linked[0]?validImg(e.cover_url):'';
+  var realPhoto=function(url){return url&&!/vyrdict-social-preview|vyrdict[-_]fallback|verdict[-_]card|placeholder/i.test(url)};
+  var linked=(Array.isArray(e.products)?e.products:[]).map(function(p){return validImg(p.image_url)}).filter(realPhoto);
+  var editorial=validImg(e.cover_url);if(!realPhoto(editorial))editorial='';
+  var primary=linked[0]||editorial;
+  var secondary=linked[1]||(linked[0]?editorial:'');
   if(!primary)return '<span class="cover-photo-unavailable" aria-label="Product photography unavailable">Product photography unavailable</span>';
   var retry='if(this.dataset.retryDone!=="1"&&this.dataset.original){this.dataset.retryDone="1";this.src=this.dataset.original}else if(this.dataset.alternative&&this.dataset.retryDone!=="2"){this.dataset.retryDone="2";this.src=this.dataset.alternative}else{this.onerror=null;this.hidden=true}';
   var display=primary.startsWith(location.origin+'/')?primary:'/vti-image?url='+encodeURIComponent(primary);
