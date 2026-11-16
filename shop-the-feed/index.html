@@ -89,7 +89,7 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
   var primary=linked[0]||validImg(e.cover_url);
   var secondary=linked[0]?validImg(e.cover_url):'';
   if(!primary)return '<span class="cover-photo-unavailable" aria-label="Product photography unavailable">Product photography unavailable</span>';
-  var retry='if(this.dataset.alternative&&this.dataset.retryDone!=="1"){this.dataset.retryDone="1";this.src=this.dataset.alternative}else{this.onerror=null;this.hidden=true}';
+  var retry='if(this.dataset.retryDone!=="1"&&this.dataset.original){this.dataset.retryDone="1";this.src=this.dataset.original}else if(this.dataset.alternative&&this.dataset.retryDone!=="2"){this.dataset.retryDone="2";this.src=this.dataset.alternative}else{this.onerror=null;this.hidden=true}';
   var display=primary.startsWith(location.origin+'/')?primary:'/vti-image?url='+encodeURIComponent(primary);
   return '<img src="'+esc(display)+'" data-original="'+esc(primary)+'" data-alternative="'+esc(secondary)+'" alt="'+esc(e.title)+' — featured product photo" loading="lazy" decoding="async" onerror="'+esc(retry)+'">';
 };
