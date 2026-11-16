@@ -4,11 +4,11 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f6f4ef"><meta name="robots" content="index,follow,max-image-preview:large">
 <title>Shop the Feed — VYRDICT</title>
-<meta name="description" content="Seen it on VYRDICT Instagram? Find every edit, product Worth Score and retailer option in one shoppable destination.">
+<meta name="description" content="Shop products with fully verified VYRDICT Viral and Worth Scores, linked evidence, original product photos and retailer options.">
 <link rel="canonical" href="https://vyrdict.com/shop-the-feed/">
 <link rel="icon" href="/vyrdict-logo.svg" type="image/svg+xml">
 <meta property="og:type" content="website"><meta property="og:title" content="Shop the Feed — VYRDICT">
-<meta property="og:description" content="Every edit. Every verdict. One place to shop what you saw.">
+<meta property="og:description" content="Every verified product. Both VYRDICT scores. One place to shop.">
 <meta property="og:image" content="https://vyrdict.com/vyrdict-social-preview.jpg">
 <style>
 :root{--paper:#f6f4ef;--cream:#fffefb;--ink:#1e1d1b;--muted:#69645e;--line:#d8d2c9;--rose:#d95378;--serif:"Iowan Old Style",Baskerville,"Times New Roman",Georgia,serif;--sans:Arial,Helvetica,sans-serif}
@@ -24,6 +24,40 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
 [hidden]{display:none!important}
 @media(max-width:900px){.shell{width:calc(100% - 40px)}.hero{padding:66px 0 50px}.hero-inner{grid-template-columns:1fr;gap:22px}.hero-copy{max-width:620px}.detail-head{gap:30px}.products{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.shell{width:calc(100% - 28px)}.top{min-height:70px;flex-wrap:wrap;padding:12px 0}.logo{font-size:23px}.nav{gap:15px}.nav a{font-size:9px}.hero{padding:56px 0 38px}.hero h1{font-size:clamp(63px,16vw,93px)}.hero-copy p{font-size:14px}.content{padding:27px 0 60px}.bar h2{font-size:32px}.tools{flex-direction:column;align-items:stretch;gap:11px}.filters{flex-wrap:nowrap;overflow-x:auto;padding:0 0 6px}.chip{white-space:nowrap}.search{width:100%}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 11px}.tile-meta{margin-top:10px;font-size:8px}.tile h3{font-size:24px}.tile p{font-size:11px}.tile .view{font-size:9px}.cover-fallback{padding:13px}.cover-fallback strong{font-size:24px}.detail{padding:37px 0 55px}.detail-head{grid-template-columns:1fr;gap:28px;margin-top:28px}.detail-head .poster{max-height:450px}.detail-copy h1{font-size:58px}.products{grid-template-columns:1fr;gap:14px}.section-title h2{font-size:34px}.end{flex-direction:column;align-items:flex-start;padding:35px 0}.end h2{font-size:32px}.state{padding:48px 18px}footer{flex-wrap:wrap}}
+
+/* Verified-only Shop the Feed: editorial typography, genuine product photography */
+.sv-trust{display:flex;gap:20px;flex-wrap:wrap;justify-content:space-between;border-bottom:1px solid var(--line);padding:0 0 16px;margin:-6px 0 27px;color:#6a625e;font:800 9px/1.5 var(--sans);letter-spacing:.105em}
+.sv-card{display:flex;flex-direction:column;min-width:0;text-decoration:none;color:inherit;border:1px solid var(--line);background:var(--cream);padding:11px 11px 17px;transition:border-color .2s}
+.sv-card:hover{border-color:#b0a49a}.sv-image{position:relative;background:#eeeae3;aspect-ratio:4/5;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.sv-image img{width:100%;height:100%;object-fit:contain;padding:18px;transition:transform .28s}
+.sv-card:hover .sv-image img{transform:scale(1.045)}
+.sv-verified{position:absolute;top:11px;left:11px;z-index:1;background:#fffdf9;padding:8px 9px;font:800 9px/1 var(--sans);letter-spacing:.08em;color:#603437}
+.sv-meta{margin:17px 7px 0;font:800 9px/1.4 var(--sans);letter-spacing:.13em;text-transform:uppercase;color:#72685f}
+.sv-card h3{font:normal clamp(21px,2.7vw,30px)/1.08 var(--serif);letter-spacing:-.035em;margin:8px 7px 19px;min-height:2.16em}
+.sv-scores{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:auto 7px 0;border-top:1px solid var(--line);padding-top:14px}
+.sv-score{min-width:0}.sv-score-label{display:block;font:800 8px/1.4 var(--sans);letter-spacing:.12em;color:#675d58}
+.sv-score-value{display:block;font:600 clamp(25px,3vw,34px)/1.2 var(--serif);letter-spacing:-.035em;padding-top:2px}
+.sv-score-value small{font:400 12px/1.2 var(--sans);color:#756c64;margin-left:3px}
+.sv-track{height:3px;background:#e6ded5;overflow:hidden;margin-top:7px}.sv-track i{display:block;height:100%;background:#752a44}
+.sv-score:last-child .sv-track i{background:#37352f}
+.sv-evidence{border-bottom:1px solid var(--line);padding:13px 0;margin:0 7px;display:flex;justify-content:space-between;gap:7px;flex-wrap:wrap;color:#766b62;font:10px/1.45 var(--sans)}
+.sv-cta{display:inline-block;align-self:flex-start;margin:16px 7px 0;padding-bottom:5px;border-bottom:1px solid #25211f;font:800 10px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase}
+.sv-more-wrap{text-align:center;margin-top:35px}.sv-more-wrap button{min-width:225px}
+.sv-initial{grid-column:1/-1;font:13px/1.6 var(--sans);color:#7a7069;min-height:120px}
+#verified-edits{border-top:1px solid var(--line);padding-top:45px}
+#verified-edits .cover img{object-fit:contain;padding:22px}
+.sv-detail-photo{display:flex;align-items:center;justify-content:center;padding:20px}
+.sv-detail-photo img{max-width:100%;max-height:100%;object-fit:contain}
+@media(max-width:620px){
+ .sv-trust{gap:5px 15px;justify-content:flex-start;font-size:8px}
+ .sv-card{padding:6px 6px 12px}.sv-image img{padding:8px}
+ .sv-verified{font-size:7px;top:6px;left:6px;padding:6px 5px}
+ .sv-meta{margin:12px 5px 0;font-size:8px}
+ .sv-card h3{font-size:20px;min-height:2.1em;margin:7px 5px 13px}
+ .sv-scores{margin:0 5px;gap:7px}
+ .sv-score-label{font-size:7px}.sv-score-value{font-size:25px}.sv-score-value small{font-size:9px}
+ .sv-evidence{margin:0 5px;font-size:9px}.sv-cta{margin:13px 5px 0;font-size:9px;line-height:1.25}
+}
 </style>
 </head>
 <body>
@@ -31,110 +65,19 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
 <main id="main">
 <section class="hero" id="feed-hero"><div class="shell hero-inner">
  <div><div class="eyebrow">VYRDICT / THE SOCIAL EDIT</div><h1>Seen it.<br><em>Shop it.</em></h1></div>
- <div class="hero-copy"><p>That product from our carousel? It's here, with original product photos and shopping links. Evidence-backed Worth Scores appear once a VYRDICT review is complete.</p><div class="micro">Shop the products behind VYRDICT’s Instagram and editorial carousels.</div><p style="margin-top:18px"><a href="https://www.instagram.com/vyrdict_co/" target="_blank" rel="noopener noreferrer" style="display:inline-block;font-weight:800;font-size:12px;text-decoration:underline;text-underline-offset:4px">View our Instagram carousels ↗</a></p></div>
+ <div class="hero-copy"><p>Explore evidence-verified VYRDICT picks with real product photos, both Viral and Worth Scores, and a direct path to each full review and retailer options.</p><div class="micro">Only fully scored products appear here. Each score is backed by linked sources.</div><p style="margin-top:18px"><a href="https://www.instagram.com/vyrdict_co/" target="_blank" rel="noopener noreferrer" style="display:inline-block;font-weight:800;font-size:12px;text-decoration:underline;text-underline-offset:4px">View our Instagram carousels ↗</a></p></div>
 </div></section>
 <section id="feed-list" class="shell content" aria-label="Browse Instagram edits">
- <div class="bar"><h2>The latest edits.</h2><small id="count" aria-live="polite"></small></div>
- <div class="tools"><div class="filters" id="filters" aria-label="Filter by category"></div><input id="search" class="search" type="search" placeholder="Find an edit..." aria-label="Search edits"></div>
- <div id="grid" class="grid" aria-live="polite"></div>
+ <div class="bar"><h2>The verified edit.</h2><small id="count" aria-live="polite">Checking evidence…</small></div>
+ <div class="tools"><div class="filters" id="filters" aria-label="Filter by category"></div><input id="search" class="search" type="search" placeholder="Find a product or brand..." aria-label="Search verified products"></div>
+ <div class="sv-trust"><span>HIGH-CONFIDENCE VERIFIED</span><span>11 LINKED SCORE INPUTS</span><span>INDEPENDENT SOURCE CHECKS</span><span>RETAILER LINKS</span></div>
+ <div id="grid" class="grid sv-grid" aria-live="polite"><p class="sv-initial">Checking fully scored products…</p></div>
+ <div class="sv-more-wrap"><button type="button" id="shop-show-more" class="button light" hidden>Explore more verified scores</button></div>
  <div id="state" class="state" hidden></div>
 </section>
+<section id="verified-edits" class="shell content" hidden aria-label="Fully verified Instagram edits"><div class="bar"><h2>Every pick, verified.</h2><small>SCORING-COMPLETE SOCIAL EDITS</small></div><div id="verified-edits-grid" class="grid"></div></section>
 <section class="shell detail" id="detail" hidden aria-live="polite"></section>
-<section class="shell end"><div><h2>We score. You decide.</h2><p>Discover the products behind each edit. Explore editorial shopping guides, or open a fully verified VYRDICT review with its evidence and Worth Score.</p></div><a href="https://www.instagram.com/vyrdict_co/" target="_blank" rel="noopener noreferrer">Visit @vyrdict_co on Instagram &rarr;</a></section>
+<section class="shell end"><div><h2>We score. You decide.</h2><p>Every featured product has both VYRDICT scores and linked evidence. Open the full review to see the source checks and active retailer options.</p></div><a href="https://www.instagram.com/vyrdict_co/" target="_blank" rel="noopener noreferrer">Visit @vyrdict_co on Instagram &rarr;</a></section>
 </main><footer class="shell"><span>© 2026 VYRDICT. Product scoring for the viral economy.</span><span><a href="/">VYRDICT home</a> · <a href="/category/">Categories</a> · <a href="/creators/">Creators</a> · <a href="https://www.instagram.com/vyrdict_co/" target="_blank" rel="noopener noreferrer">Instagram</a></span></footer>
-<script>
-(function(){
- 'use strict';
- var feed=[],active='All',keyword='';
- // Existing VYRDICT shoppable editorial pages are fallback guides.
- // No exact Instagram post URL is invented for either collection.
- var editorialFallback=[
-{"slug": "advent-calendars", "title": "The Advent Edit", "dek": "SUKOSHI, Lush, DAVIDsTEA, Williams Sonoma and LEGO: five countdowns, our takes and official shopping links.", "category": "Gifts", "categories": ["Gifts", "Beauty", "Food & Drinks", "Culture"], "cover_url": "/edit/advent-calendars/images/sukoshi.jpg", "editorial_url": "/edit/advent-calendars/", "curated_fallback": true, "published_at": "2026-11-14T01:00:00Z"},
-{"slug": "indian-bags", "title": "Indian Bags", "dek": "Five bags and clutches to discover: intricate craft, our takes and official shopping links.", "category": "Fashion", "categories": ["Fashion"], "cover_url": "https://cdn.shopify.com/s/files/1/0508/9417/6444/files/Outhouse-2368_1.jpg?v=1777204757", "editorial_url": "/edit/indian-bags/", "curated_fallback": true, "published_at": "2026-11-12T18:00:00Z"},
-  {"slug": "holiday-collectibles", "title": "Holiday Collectibles", "dek": "Nespresso × Swarovski, Tim Hortons, Starbucks, Coca-Cola and McDonald’s: five festive finds, our takes and where to buy.", "category": "Gifts", "categories": ["Gifts", "Home"], "cover_url": "https://www.nespresso.com/shared_res/agility/global/campaigns/festive-2026/lifestyle-product-grid/nespresso-swarovski_ornament-vl.png", "editorial_url": "/edit/holiday-collectibles/", "curated_fallback": true, "published_at": "2026-11-12T08:00:00Z"},
-  {slug:'november-perfume-edit',title:'The Perfume Edit',dek:'Our top five perfume picks you might not know. Editorial ratings and places to shop.',category:'Beauty',cover_url:"https://kyliecosmetics.com/cdn/shop/files/v1_Mood-Stones_Velvet-Brew_50ml_PP_Closed_9016bcc4-666b-444c-b935-b5724cdecd5a.png",editorial_url:'/edit/november-perfume/',curated_fallback:true,published_at:'2026-11-06T18:00:00Z'},
-  {slug:'chic-gift-edit',title:'The Chic Gift Edit',dek:'Our editorial gift picks with product details and shopping links.',category:'Gifts',cover_url:'/edit/chic-gifts/images/cover.jpg',editorial_url:'/edit/chic-gifts/',curated_fallback:true,published_at:null},
-  {slug:'haunted-edit',title:'The Haunted Edit',dek:'Eight Halloween finds from VYRDICT’s editorial carousel, with product details and shopping links.',category:'Home',cover_url:'/edit/haunted-antiques/images/candle-photo.jpg',editorial_url:'/edit/haunted-antiques/',curated_fallback:true,published_at:null}
- ];
-
- var SB='https://shmbvkjzeqqxybweyowj.supabase.co/rest/v1/';
- var PUBLIC_KEY='sb_publishable_XEsFSPQsuq8AXxBVSnIKgQ_kbGegBtG';
- async function queryTable(table,query){
-   var r=await fetch(SB+table+'?'+query.toString(),{headers:{apikey:PUBLIC_KEY,Authorization:'Bearer '+PUBLIC_KEY,Accept:'application/json'}});
-   if(!r.ok)throw Error('feed-data-'+r.status);
-   var rows=await r.json();return Array.isArray(rows)?rows:[];
- }
- async function loadFeed(slug){
-   var p=new URLSearchParams({select:'id,slug,title,dek,category,cover_url,instagram_url,editorial_url,published_at',status:'eq.published',order:'published_at.desc',limit:slug?'1':'60'});
-   p.append('published_at','lte.'+new Date().toISOString());
-   if(slug)p.set('slug','eq.'+slug);
-   var edits=await queryTable('vyrdict_social_edits',p);
-   if(!edits.length)return {edits:[]};
-   var ids=edits.map(function(e){return Number(e.id)}).filter(Number.isFinite);
-   var links=await queryTable('vyrdict_social_edit_products',new URLSearchParams({select:'edit_id,product_id,sort_order,editor_note',edit_id:'in.('+ids.join(',')+')',order:'sort_order.asc',limit:'600'}));
-   var pids=[...new Set(links.map(function(x){return Number(x.product_id)}).filter(Number.isFinite))];
-   var products=pids.length?await queryTable('products',new URLSearchParams({select:'id,slug,brand,name,category,worth_score,viral_score,image_url,verdict',id:'in.('+pids.join(',')+')',is_active:'eq.true',evidence_status:'eq.verified',limit:'600'})):[];
-   var map=new Map(products.map(function(p){return [Number(p.id),p]}));
-   return {edits:edits.map(function(e){return Object.assign({},e,{products:links.filter(function(l){return Number(l.edit_id)===Number(e.id)&&map.has(Number(l.product_id))}).map(function(l){return Object.assign({},map.get(Number(l.product_id)),{editor_note:l.editor_note||''})})})})};
- }
-
- var el=function(id){return document.getElementById(id)};
- var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
- var validImg=function(s){try{var u=new URL(String(s||''),location.origin);return u.protocol==='https:'||u.protocol==='http:'?u.href:''}catch{return ''}};
- var safeLink=function(s){try{var u=new URL(String(s||''),location.origin);return (u.protocol==='https:'||u.protocol==='http:')?u.href:''}catch{return ''}};
- var fmt=function(s){try{return new Intl.DateTimeFormat('en-CA',{month:'short',day:'numeric',year:'numeric'}).format(new Date(s))}catch{return ''}};
- var cover=function(e){
-  // Cover images must be real merchandise, not a VYRDICT editorial score-card placeholder.
-  var realPhoto=function(url){return url&&!/vyrdict-social-preview|vyrdict[-_]fallback|verdict[-_]card|placeholder/i.test(url)};
-  var linked=(Array.isArray(e.products)?e.products:[]).map(function(p){return validImg(p.image_url)}).filter(realPhoto);
-  var editorial=validImg(e.cover_url);if(!realPhoto(editorial))editorial='';
-  var primary=linked[0]||editorial;
-  var secondary=linked[1]||(linked[0]?editorial:'');
-  if(!primary)return '<span class="cover-photo-unavailable" aria-label="Product photography unavailable">Product photography unavailable</span>';
-  var retry='if(this.dataset.retryDone!=="1"&&this.dataset.original){this.dataset.retryDone="1";this.src=this.dataset.original}else if(this.dataset.alternative&&this.dataset.retryDone!=="2"){this.dataset.retryDone="2";this.src=this.dataset.alternative}else{this.onerror=null;this.hidden=true}';
-  var display=primary.startsWith(location.origin+'/')?primary:'/vti-image?url='+encodeURIComponent(primary);
-  return '<img src="'+esc(display)+'" data-original="'+esc(primary)+'" data-alternative="'+esc(secondary)+'" alt="'+esc(e.title)+' — featured product photo" loading="lazy" decoding="async" onerror="'+esc(retry)+'">';
-};
- var categories=['All','Beauty','Fashion','Fitness','Wellness','Food & Drinks','Home','Tech','Gifts','Culture'];
- function filters(){el('filters').innerHTML=categories.map(function(c){return '<button type="button" class="chip" data-filter="'+esc(c)+'" aria-pressed="'+(active===c?'true':'false')+'">'+esc(c)+'</button>'}).join('');}
- function tile(e,i){return '<a class="tile" href="'+(e.curated_fallback||e.editorial_url?esc(safeLink(e.editorial_url)):'/shop-the-feed/'+encodeURIComponent(e.slug)+'/')+'"><div class="cover">'+cover(e)+'<span class="num">EDIT '+String(i+1).padStart(2,'0')+'</span></div><div class="tile-meta"><span>'+esc(e.category||'The Edit')+'</span><span>'+((e.curated_fallback||(e.editorial_url&&!(e.products||[]).length))?'EDITORIAL GUIDE':fmt(e.published_at))+'</span></div><h3>'+esc(e.title)+'</h3><p>'+esc(e.dek||'See the products and their VYRDICT verdicts.')+'</p><span class="view">See the edit &rarr;</span></a>'}
- function state(title,msg){el('state').hidden=false;el('state').innerHTML='<span class="eyebrow">VYRDICT / SHOP THE FEED</span><h2>'+esc(title)+'</h2><p>'+esc(msg)+'</p><a class="button" href="/category/">Explore scored products &rarr;</a>'}
- function renderList(){
-  el('feed-hero').hidden=false;el('feed-list').hidden=false;el('detail').hidden=true;document.title='Shop the Feed — VYRDICT';
-  filters();var term=keyword.toLowerCase().trim();
-  var items=feed.filter(function(e){return (active==='All'||(e.categories||[e.category||'']).some(function(c){return String(c).toLowerCase()===active.toLowerCase()}))&&(!term||(e.title+' '+e.dek+' '+e.category).toLowerCase().includes(term))});
-  el('count').textContent=items.length+' '+(items.length===1?'edit':'edits');el('grid').innerHTML=items.map(tile).join('');
-  el('state').hidden=true;
-  if(!feed.length)state('The first edit is on its way.','We’re preparing the first shoppable collection. Until then, explore VYRDICT’s existing Worth Scores and verified retailer options.');
-  else if(!items.length)state('No matching edits.','Try a different search or choose another category.');
- }
- function product(p,i){
-  var score=Number.isFinite(Number(p.worth_score))?Math.round(Number(p.worth_score))+'/100':'Not scored';
-  var url=validImg(p.image_url);
-  return '<a class="product" href="/product/'+encodeURIComponent(p.slug)+'/"><div class="product-visual">'+(url?'<img src="'+esc('/vti-image?url='+encodeURIComponent(url))+'" data-original="'+esc(url)+'" loading="lazy" decoding="async" alt="'+esc(p.brand+' '+p.name)+'" onerror="if(this.dataset.retryDone!==\'1\'){this.dataset.retryDone=\'1\';this.src=this.dataset.original}else{this.onerror=null;this.hidden=true}">':'')+'</div><div class="row"><span>'+esc(p.brand||'The Edit')+'</span><strong class="score">WORTH '+score+'</strong></div><h3>'+esc(p.name)+'</h3><p>'+esc(p.editor_note||p.verdict||'Read the complete product breakdown before buying.')+'</p><span class="go">See the verdict &rarr;</span></a>';
- }
- function renderDetail(e){
-  el('feed-hero').hidden=true;el('feed-list').hidden=true;el('detail').hidden=false;
-  document.title=e.title+' — Shop the Feed | VYRDICT';
-  var external=safeLink(e.instagram_url),editorial=safeLink(e.editorial_url);
-  var buttons=(external?'<a class="button light" href="'+esc(external)+'" target="_blank" rel="noopener noreferrer">See Instagram post ↗</a>':'')+(editorial?'<a class="button light" href="'+esc(editorial)+'">Read the story &rarr;</a>':'');
-  var prod=Array.isArray(e.products)?e.products:[];
-  el('detail').innerHTML='<a href="/shop-the-feed/" class="back">&larr; All edits</a><div class="detail-head"><div class="poster">'+cover(e)+'</div><div class="detail-copy"><div class="eyebrow">VYRDICT / THE SOCIAL EDIT</div><h1>'+esc(e.title)+'</h1><p>'+esc(e.dek||'Every product, scored. See what actually earned a place.')+'</p><p class="meta">'+esc(e.category||'The Edit')+' &nbsp; / &nbsp; '+fmt(e.published_at)+' &nbsp; / &nbsp; '+prod.length+' PRODUCTS</p><div class="detail-actions">'+buttons+'</div></div></div>'+(prod.length?'<div class="section-title"><h2>The product edit.</h2><span class="eyebrow">'+prod.length+' PRODUCTS</span></div><div class="products">'+prod.map(product).join('')+'</div><p class="note">Scores link to existing VYRDICT product pages, where current retailer options and paid-link disclosures are shown when applicable.</p>':'<div class="state"><span class="eyebrow">THE EDIT</span><h2>Explore the story.</h2><p>This edit does not have linked scored products yet. Browse the current product catalog or see the original post.</p><a class="button" href="/category/">Browse VYRDICT products &rarr;</a></div>');
- }
- function selectedSlug(){var m=(location.pathname||'').match(/^\/shop-the-feed\/([a-z0-9-]+)\/?$/);return m?m[1]:null}
- async function boot(){
-  var slug=selectedSlug();
-  try{
-   var data=await loadFeed(slug);feed=Array.isArray(data.edits)?data.edits:[];if(!slug){var seen=new Set(feed.map(function(e){return e.slug}));feed=feed.concat(editorialFallback.filter(function(e){return !seen.has(e.slug)}));}
-   if(slug&&feed.length){var destination=safeLink(feed[0].editorial_url);if(destination&&new URL(destination).origin===location.origin){location.replace(destination);return;}renderDetail(feed[0]);}
-   else if(slug&&editorialFallback.some(function(e){return e.slug===slug})){location.replace(editorialFallback.find(function(e){return e.slug===slug}).editorial_url);return;}
-   else if(slug){el('feed-hero').hidden=true;el('feed-list').hidden=true;el('detail').hidden=false;el('detail').innerHTML='<a href="/shop-the-feed/" class="back">&larr; All edits</a><div class="state" style="margin-top:35px"><h2>This edit isn’t published yet.</h2><p>Explore other VYRDICT edits and scored products.</p><a href="/shop-the-feed/" class="button">Back to the feed &rarr;</a></div>';document.title='Edit unavailable — VYRDICT'}
-   else renderList();
-  }catch(e){if(!slug){feed=editorialFallback.slice();renderList()}else{el('grid').innerHTML='';state('This edit is temporarily unavailable.','Return to the latest VYRDICT shopping edits.');el('count').textContent='';el('filters').innerHTML=''}}
- }
- el('filters').addEventListener('click',function(e){var b=e.target.closest('button[data-filter]');if(!b)return;active=b.dataset.filter;renderList()});
- el('search').addEventListener('input',function(e){keyword=e.target.value;renderList()});
- boot();
-})();
-</script><script src="/hub-analytics.js?v=3-shop-funnel-20261113" defer></script><script src="/analytics.js?v=shop-feed-20261113-tracking" defer></script>
+<script src="/shop-verified.js?v=20261115-scored-only-v1" defer></script><script src="/hub-analytics.js?v=3-shop-funnel-20261113" defer></script><script src="/analytics.js?v=shop-feed-20261113-tracking" defer></script>
 </body></html>
