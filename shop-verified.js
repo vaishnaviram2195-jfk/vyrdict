@@ -8,7 +8,7 @@ const el=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const imgUrl=s=>{try{const u=new URL(String(s||''));return u.protocol==='https:'?u.href:''}catch{return''}};
 const slugOK=s=>typeof s==='string'&&/^[a-z0-9-]+$/.test(s);
-const number=s=>Number.isFinite(Number(s))?Math.round(Number(s)):null;
+const number=s=>(s===null||s===undefined||s==='')?null:(Number.isFinite(Number(s))?Math.round(Number(s)):null);
 const day=s=>{const d=Date.parse(String(s||''));return Number.isFinite(d)?new Date(d).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'}):''};
 const valid=p=>p&&p.id&&slugOK(p.slug)&&p.brand&&p.name&&imgUrl(p.image_url)
   &&number(p.viral_score)!==null&&number(p.worth_score)!==null
