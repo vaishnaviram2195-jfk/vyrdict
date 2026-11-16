@@ -31,7 +31,7 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
 <main id="main">
 <section class="hero" id="feed-hero"><div class="shell hero-inner">
  <div><div class="eyebrow">VYRDICT / THE SOCIAL EDIT</div><h1>Seen it.<br><em>Shop it.</em></h1></div>
- <div class="hero-copy"><p>That product from our carousel? It's here. Every edit, every Worth Score, and the products worth a closer look—all in one place.</p><div class="micro">Shop the products behind VYRDICT’s Instagram and editorial carousels.</div><p style="margin-top:18px"><a href="https://www.instagram.com/vyrdict_co/" target="_blank" rel="noopener noreferrer" style="display:inline-block;font-weight:800;font-size:12px;text-decoration:underline;text-underline-offset:4px">View our Instagram carousels ↗</a></p></div>
+ <div class="hero-copy"><p>That product from our carousel? It's here, with original product photos and shopping links. Evidence-backed Worth Scores appear once a VYRDICT review is complete.</p><div class="micro">Shop the products behind VYRDICT’s Instagram and editorial carousels.</div><p style="margin-top:18px"><a href="https://www.instagram.com/vyrdict_co/" target="_blank" rel="noopener noreferrer" style="display:inline-block;font-weight:800;font-size:12px;text-decoration:underline;text-underline-offset:4px">View our Instagram carousels ↗</a></p></div>
 </div></section>
 <section id="feed-list" class="shell content" aria-label="Browse Instagram edits">
  <div class="bar"><h2>The latest edits.</h2><small id="count" aria-live="polite"></small></div>
@@ -40,7 +40,7 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
  <div id="state" class="state" hidden></div>
 </section>
 <section class="shell detail" id="detail" hidden aria-live="polite"></section>
-<section class="shell end"><div><h2>We score. You decide.</h2><p>Discover what has real value and what deserves a skip. Every product opens its VYRDICT verdict before you shop.</p></div><a href="https://www.instagram.com/vyrdict_co/" target="_blank" rel="noopener noreferrer">Visit @vyrdict_co on Instagram &rarr;</a></section>
+<section class="shell end"><div><h2>We score. You decide.</h2><p>Discover the products behind each edit. Explore editorial shopping guides, or open a fully verified VYRDICT review with its evidence and Worth Score.</p></div><a href="https://www.instagram.com/vyrdict_co/" target="_blank" rel="noopener noreferrer">Visit @vyrdict_co on Instagram &rarr;</a></section>
 </main><footer class="shell"><span>© 2026 VYRDICT. Product scoring for the viral economy.</span><span><a href="/">VYRDICT home</a> · <a href="/category/">Categories</a> · <a href="/creators/">Creators</a> · <a href="https://www.instagram.com/vyrdict_co/" target="_blank" rel="noopener noreferrer">Instagram</a></span></footer>
 <script>
 (function(){
@@ -97,7 +97,7 @@ footer{padding:25px 0 32px;border-top:1px solid var(--line);display:flex;justify
 };
  var categories=['All','Beauty','Fashion','Fitness','Wellness','Food & Drinks','Home','Tech','Gifts','Culture'];
  function filters(){el('filters').innerHTML=categories.map(function(c){return '<button type="button" class="chip" data-filter="'+esc(c)+'" aria-pressed="'+(active===c?'true':'false')+'">'+esc(c)+'</button>'}).join('');}
- function tile(e,i){return '<a class="tile" href="'+(e.curated_fallback||e.editorial_url?esc(safeLink(e.editorial_url)):'/shop-the-feed/'+encodeURIComponent(e.slug)+'/')+'"><div class="cover">'+cover(e)+'<span class="num">EDIT '+String(i+1).padStart(2,'0')+'</span></div><div class="tile-meta"><span>'+esc(e.category||'The Edit')+'</span><span>'+(e.curated_fallback?'SHOPPING GUIDE':fmt(e.published_at))+'</span></div><h3>'+esc(e.title)+'</h3><p>'+esc(e.dek||'See the products and their VYRDICT verdicts.')+'</p><span class="view">See the edit &rarr;</span></a>'}
+ function tile(e,i){return '<a class="tile" href="'+(e.curated_fallback||e.editorial_url?esc(safeLink(e.editorial_url)):'/shop-the-feed/'+encodeURIComponent(e.slug)+'/')+'"><div class="cover">'+cover(e)+'<span class="num">EDIT '+String(i+1).padStart(2,'0')+'</span></div><div class="tile-meta"><span>'+esc(e.category||'The Edit')+'</span><span>'+((e.curated_fallback||(e.editorial_url&&!(e.products||[]).length))?'EDITORIAL GUIDE':fmt(e.published_at))+'</span></div><h3>'+esc(e.title)+'</h3><p>'+esc(e.dek||'See the products and their VYRDICT verdicts.')+'</p><span class="view">See the edit &rarr;</span></a>'}
  function state(title,msg){el('state').hidden=false;el('state').innerHTML='<span class="eyebrow">VYRDICT / SHOP THE FEED</span><h2>'+esc(title)+'</h2><p>'+esc(msg)+'</p><a class="button" href="/category/">Explore scored products &rarr;</a>'}
  function renderList(){
   el('feed-hero').hidden=false;el('feed-list').hidden=false;el('detail').hidden=true;document.title='Shop the Feed — VYRDICT';
