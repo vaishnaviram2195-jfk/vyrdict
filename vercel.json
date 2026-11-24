@@ -98,6 +98,102 @@
       "dest": "/shop-the-feed/index.html"
     },
     {
+      "src": "^/shop-the-feed/chic-gift-edit/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/edit/chic-gifts/",
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/shop-the-feed/chic-gifts/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/edit/chic-gifts/",
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/shop-the-feed/november-perfume-edit/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/edit/november-perfume/",
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/shop-the-feed/november-perfume/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/edit/november-perfume/",
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/shop-the-feed/holiday-collectibles/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/edit/holiday-collectibles/",
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/shop-the-feed/advent-calendars/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/edit/advent-calendars/",
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/shop-the-feed/indian-bags/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/edit/indian-bags/",
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/shop-the-feed/haunted-edit/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/edit/haunted-antiques/",
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/shop-the-feed/haunted-antiques/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/edit/haunted-antiques/",
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/edit/chic-gifts/?$",
+      "dest": "/edit/chic-gifts/index.html"
+    },
+    {
+      "src": "^/edit/november-perfume/?$",
+      "dest": "/edit/november-perfume/index.html"
+    },
+    {
+      "src": "^/edit/holiday-collectibles/?$",
+      "dest": "/edit/holiday-collectibles/index.html"
+    },
+    {
+      "src": "^/edit/advent-calendars/?$",
+      "dest": "/edit/advent-calendars/index.html"
+    },
+    {
+      "src": "^/edit/indian-bags/?$",
+      "dest": "/edit/indian-bags/index.html"
+    },
+    {
+      "src": "^/edit/haunted-antiques/?$",
+      "dest": "/edit/haunted-antiques/index.html"
+    },
+    {
       "src": "^/shop-the-feed/(?<slug>[a-z0-9-]+)/?$",
       "dest": "/shop-the-feed/index.html"
     },
