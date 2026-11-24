@@ -36,11 +36,56 @@ async function fetchWindow(days){
   return r.json();
 }
 
+// A curated editorial companion to the Black Friday Instagram carousel.
+// Keep it separate from the homepage's strict "newly published within 30 days" feed.
+const BLACK_FRIDAY_SLUGS=Object.freeze([
+  'glow-recipe-fresh-slices-eye-mask',
+  'touchland-starbucks-seasonal-bearista-set',
+  'medicube-nad-egf-firming-multi-balm',
+  'shark-depuffi-fh220',
+  'oura-ring-5'
+]);
+
+async function fetchBlackFriday(){
+  const qs=new URLSearchParams({
+    select:'id,slug,brand,name,category,image_url,viral_score,worth_score,evidence_status,evidence_confidence,published_at,last_verified_at',
+    slug:'in.('+BLACK_FRIDAY_SLUGS.join(',')+')',
+    is_active:'eq.true',
+    evidence_status:'eq.verified',
+    limit:'5'
+  });
+  const r=await fetch(`${SB}?${qs}`,{headers:{apikey:KEY,Authorization:`Bearer ${KEY}`,accept:'application/json'}});
+  if(!r.ok)throw new Error('black_friday_verified_feed_'+r.status);
+  const rows=await r.json();
+  const bySlug=new Map(rows.map(p=>[p.slug,p]));
+  return BLACK_FRIDAY_SLUGS.map(slug=>bySlug.get(slug)).filter(p=>
+    p&&p.slug&&p.name&&p.image_url&&p.evidence_status==='verified'
+    && ['high','medium'].includes(p.evidence_confidence)
+    && p.last_verified_at
+    && p.viral_score!=null&&p.worth_score!=null
+    && Number.isFinite(Number(p.viral_score))&&Number.isFinite(Number(p.worth_score))
+    && Number(p.viral_score)>=0&&Number(p.viral_score)<=100
+    && Number(p.worth_score)>=0&&Number(p.worth_score)<=100
+  );
+}
+
 module.exports=async function handler(req,res){
   try{
     const requested=Number(req.query?.limit||12);
     const limit=Math.max(3,Math.min(Number.isFinite(requested)?requested:12,24));
     const now=Date.now();
+    if(String(req.query?.mode||'')==='black-friday'){
+      const products=await fetchBlackFriday();
+      res.setHeader('Cache-Control','public, max-age=0, s-maxage=60, stale-while-revalidate=30');
+      return res.status(200).json({
+        ok:true,
+        complete:products.length===BLACK_FRIDAY_SLUGS.length,
+        products,
+        series:'Black Friday / Your feed says buy. We have notes.',
+        policy:'curated_existing_verified_reviews; early_ratings_explicitly_labeled; not_a_promise_of_discounts',
+        generated_at:new Date().toISOString()
+      });
+    }
     // The homepage's newest reviewed products: all checks completed, with genuine publication dates.
     if(String(req.query?.mode||'')==='recent'){
       const rows=await fetchWindow(30);
