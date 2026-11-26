@@ -67,7 +67,40 @@
     .links{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}.links a{text-decoration:none;border:1px solid var(--ink);border-radius:999px;padding:12px 15px;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:var(--paper)}
     footer{border-top:1px solid var(--line);padding:34px 0 48px;color:var(--muted);font-size:12px}.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.foot a{text-decoration:none;font-weight:800}
     @media(max-width:760px){.nav a:not(.pill){display:none}.hero{padding-top:64px}.grid,.steps{grid-template-columns:1fr}.card h2{margin-top:22px}.section{padding:54px 0}}
-  </style>
+  
+/* VYRDICT gifting editorial visual system — presentation only. */
+:root{--bg:#f9f6f0;--paper:#fffdf8;--ink:#30251f;--muted:#61574f;--line:#d8cec4;--coral:#d57893;--wine:#680d20;--serif:"Iowan Old Style",Baskerville,Georgia,serif}
+body{background:var(--bg);color:var(--ink);overflow-x:clip}
+a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offset:4px}
+.top{background:var(--bg);padding:20px 0}
+.brand,.logo{font:400 clamp(25px,4vw,34px)/1 var(--serif);letter-spacing:.065em;color:var(--ink)}
+.brand-dot,.logo b{width:8px;height:8px;flex:0 0 auto;background:var(--coral);border-radius:0;transform:none;margin-left:2px;vertical-align:baseline}
+.top .brand{align-items:baseline}
+.top a,.nav a,.back{font-size:12px;letter-spacing:.04em;font-weight:600}
+.hero{position:relative;isolation:isolate;color:#f9f6f0;padding:clamp(44px,7vw,84px) 0}
+.hero::before{content:"";position:absolute;inset:0 50% 0 auto;width:100vw;transform:translateX(50%);background:var(--wine);z-index:-1;pointer-events:none}
+.hero .eyebrow{color:#f4c2cd;font-size:11px;letter-spacing:.18em;font-weight:600;margin:0 0 15px}
+.hero h1{font:400 clamp(42px,6.8vw,80px)/1.01 var(--serif);letter-spacing:-.045em;color:#f9f6f0;margin:0 0 18px;overflow-wrap:break-word}
+.hero p,.hero .lede{font:400 clamp(15px,1.7vw,19px)/1.65 Arial,Helvetica,sans-serif;color:#f1e5df;max-width:760px;margin:0}
+.card h2,.section h2,.aside h2{font:400 clamp(25px,3.2vw,37px)/1.15 var(--serif);letter-spacing:-.025em;color:var(--wine)}
+.card p,.section>div>p,.aside p,.aside ul{font-size:15px;line-height:1.75;color:var(--ink)}
+.card a,.section a{color:var(--wine);text-underline-offset:3px;font-weight:600}
+.card{box-shadow:none;border-radius:0}
+.footer,footer{color:var(--muted);font-size:12px;line-height:1.6}
+@media(max-width:760px){.hero{padding:42px 0}.hero h1{font-size:clamp(37px,9.5vw,56px)}.hero p,.hero .lede{font-size:15px}.card h2,.section h2,.aside h2{font-size:27px}.card p,.section>div>p,.aside p,.aside ul{font-size:15px}.top a,.nav a,.back{font-size:11px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+header{background:#f9f6f0;backdrop-filter:none}
+.hero .pronounce{background:transparent;border:1px solid #b9828c;color:#f9f6f0;font-size:11px;font-weight:600;margin-top:24px}
+.grid{padding-top:36px;padding-bottom:50px;gap:20px}
+.grid .card{border:0;border-top:1px solid var(--wine);background:transparent;padding:22px 0}
+.grid .card h2{margin:0 0 12px}
+.section{padding:50px 0}
+.section .eyebrow{color:var(--wine);font-weight:600}
+.links a{border-color:#680d20;border-radius:0;background:transparent;color:var(--wine);font-size:11px;font-weight:600}
+.links a:hover{background:var(--wine);color:#f9f6f0}
+@media(max-width:760px){.grid{padding-top:26px;padding-bottom:30px;gap:16px}.grid .card{padding:18px 0}.section{padding:35px 0}}
+</style>
 </head>
 <body>
   <header><div class="shell" style="display:flex;align-items:center;justify-content:space-between;width:min(1100px,calc(100% - 34px))"><a class="logo" href="/" aria-label="VYRDICT home">VYRDICT<b></b></a><nav class="nav"><a href="/editorial-policy.html">Editorial policy</a><a class="pill" href="/">Explore VYRDICT</a></nav></div></header>
