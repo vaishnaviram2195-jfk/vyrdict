@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Suggest a Viral Product — VYRDICT</title>
-<meta name="description" content="Tell VYRDICT what product is suddenly everywhere so we can investigate the hype.">
+<title>Suggest a Product — VYRDICT</title>
+<meta name="description" content="Share a unique or thoughtful gift find with VYRDICT.">
 <script src="/navigation-guard.js?v=1" defer></script>
 <style>
 :root{--ink:#171511;--muted:#6d675f;--paper:#fffdf8;--bg:#f4ede5;--blush:#efe4dc;--line:#d8cec4;--soft:#f8f3ed;--good:#edf4ec;--coral:#d94d73}
@@ -15,15 +15,15 @@
 <body>
 <header class="top"><div class="shell"><div class="brand"><span>VYRDICT</span><span class="brand-dot" aria-hidden="true"></span></div><a class="back" href="./">← Back to VYRDICT</a></div></header>
 <main>
-<section class="hero"><div class="shell"><div class="eyebrow">Help us spot the next thing</div><h1>What product is suddenly everywhere?</h1><p>If your feed keeps showing you the same product, send it our way. A suggestion does not automatically make the catalog — it gives VYRDICT something to investigate.</p></div></section>
+<section class="hero"><div class="shell"><div class="eyebrow">Good finds deserve to be shared</div><h1>Found something extraordinary?</h1><p>If you’ve discovered an unusual, thoughtful or beautifully designed gift, send it our way. We’ll consider it for our curated collections.</p></div></section>
 <section><div class="shell wrap">
-<aside class="aside"><h2>What happens next?</h2><p>Submissions go into VYRDICT’s private research queue. We check whether the product is genuinely trending, verify the exact item, review available evidence, and only then decide whether it belongs in the catalog.</p><ul><li>No login required.</li><li>No public comments or reviews.</li><li>No guaranteed placement.</li><li>If you opt in, we’ll email you if your requested product is added.</li></ul></aside>
+<aside class="aside"><h2>What happens next?</h2><p>Submissions go into VYRDICT’s private research queue. We review the exact item, its gifting appeal and available shopping information before deciding whether it belongs in a collection.</p><ul><li>No login required.</li><li>No public comments or reviews.</li><li>No guaranteed placement.</li><li>If you opt in, we’ll email you if your requested product is added.</li></ul></aside>
 <div class="formcard">
 <form id="suggest-form" novalidate>
 <div class="field"><label for="product_name">Product name <span class="req">*</span></label><input id="product_name" name="product_name" maxlength="160" required placeholder="e.g. Rhode Pocket Blush"><small>Use the exact product name if you know it.</small></div>
 <div class="row"><div class="field"><label for="brand">Brand</label><input id="brand" name="brand" maxlength="120" placeholder="e.g. Rhode"></div><div class="field"><label for="source_platform">Where are you seeing it?</label><select id="source_platform" name="source_platform"><option value="">Choose one</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>Pinterest</option><option>Reddit</option><option>In stores</option><option>Friends / word of mouth</option><option>Everywhere</option><option>Other</option></select></div></div>
-<div class="field"><label for="product_url">Product or post link</label><input id="product_url" name="product_url" maxlength="500" inputmode="url" placeholder="https://..."><small>Official product page or the viral post is ideal.</small></div>
-<div class="field"><label for="note">Why is it catching your attention?</label><textarea id="note" name="note" maxlength="800" placeholder="Optional — tell us what people are claiming, why it keeps showing up, or what you want VYRDICT to investigate."></textarea></div>
+<div class="field"><label for="product_url">Product or post link</label><input id="product_url" name="product_url" maxlength="500" inputmode="url" placeholder="https://..."><small>An official product page or a post showing the item is ideal.</small></div>
+<div class="field"><label for="note">What makes it a great gift?</label><textarea id="note" name="note" maxlength="800" placeholder="Optional — tell us what makes it special, or who would love it."></textarea></div>
 <div class="field"><label for="requester_email">Your email</label><input id="requester_email" name="requester_email" type="email" maxlength="254" autocomplete="email" placeholder="you@email.com"><small>Optional. Add it only if you want a one-time update about this request.</small></div>
 <div class="notify"><input id="notify_if_added" name="notify_if_added" type="checkbox"><label for="notify_if_added">Email me if VYRDICT adds this product.<small>This does not subscribe you to Weekly VYRDICT or any marketing list.</small></label></div>
 <div class="hp" aria-hidden="true"><label for="website">Website</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
@@ -34,7 +34,7 @@
 </div>
 </div></section>
 </main>
-<footer class="footer"><div class="shell"><span>VYRDICT. The verdict on what’s trending.</span><span>Research intake</span></div></footer>
+<footer class="footer"><div class="shell"><span>VYRDICT. Never give ordinary.</span><span>Gift suggestions</span></div></footer>
 <script>
 (()=>{
 const ENDPOINT='https://shmbvkjzeqqxybweyowj.supabase.co/functions/v1/vyrdict-suggest-product';
