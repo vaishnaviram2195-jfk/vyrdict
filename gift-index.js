@@ -2,7 +2,7 @@
 const by=id=>document.getElementById(id);
 const products=JSON.parse(by("gift-data").textContent),boards=JSON.parse(by("gift-boards").textContent);
 const params=new URLSearchParams(location.search);
-let board=params.get("board")||"all",sign=params.get("sign")||"",criteria=[];
+const route=location.pathname.match(/^\/gifts\/([a-z0-9-]+)\/?$/);let board=route?.[1]||params.get("board")||"all",sign=params.get("sign")||"",criteria=params.getAll("criteria").filter(t=>/^[a-z0-9-]+$/.test(t)&&t!=="all");const collectionView=document.documentElement.classList.contains("collection-view");
 let saved=new Set();try{const a=JSON.parse(localStorage.getItem("vyrdict-gift-saved-v1")||"[]");if(Array.isArray(a))saved=new Set(a.filter(x=>typeof x==="string"));}catch(e){}
 const boardLabels=Object.fromEntries(boards.map(b=>[b[0],b[1]]));
 Object.assign(boardLabels,{all:"All extraordinary finds.",saved:"Your saved gifts.",her:"For Her",parents:"For Parents",couple:"For Couples",family:"For Families",birthday:"Birthday gifts",anniversary:"Anniversary gifts",personal:"Make it personal.",wow:"Make them say WOW.",spoiled:"Make them feel spoiled.",laugh:"Make them laugh.",coffee:"The Coffee Obsessive",fashion:"The Fashion Girl",collector:"The Collector’s Corner",beauty:"Beauty discoveries",travel:"The Eternal Traveller",homebody:"The Homebody",foodie:"The Foodie",pets:"For Pet Lovers",colleagues:"For Colleagues","baby-shower":"Baby Shower","thank-you":"Thank You",graduation:"Graduation",vintage:"Vintage Treasures",tech:"Tech Enthusiast"});
@@ -31,12 +31,12 @@ by("catalogue-title").textContent=sign?sign+" — gift inspiration":criteria.len
 by("count").textContent=rows.length+" "+(rows.length===1?"find":"finds");
 const grid=by("product-grid");grid.replaceChildren();
 if(!rows.length){let msg=board==="saved"?"Your saved gifts will appear here. Tap the heart on a product to keep it.":budget!=="all"?"No gifts currently have a confirmed price matching this budget and currency. Choose Any budget to browse retailer prices.":"No matching published finds yet. Try a broader collection or clear your filters; we're growing the catalogue.";
-const b=element("div","empty",msg);const a=element("a",""," Browse all gifts ↗");a.href="/?board=all#catalogue";b.append(a);grid.append(b);}else rows.forEach(p=>grid.append(card(p)));
+const b=element("div","empty",msg);const a=element("a",""," Browse all gifts ↗");a.href="/gifts/all/";b.append(a);grid.append(b);}else rows.forEach(p=>grid.append(card(p)));
 }
 by("query").addEventListener("input",render);by("budget").addEventListener("change",render);by("currency").addEventListener("change",render);
-by("clear").addEventListener("click",()=>{board="all";sign="";criteria=[];by("query").value="";by("budget").value="all";history.replaceState(null,"","/?board=all#catalogue");render();});
-by("finder-form").addEventListener("submit",e=>{e.preventDefault();const f=new FormData(e.currentTarget);board="all";sign="";criteria=[f.get("recipient"),f.get("occasion"),f.get("vibe")].filter(x=>x&&x!=="all");by("budget").value=f.get("budget")||"all";by("query").value="";render();by("catalogue").scrollIntoView({block:"start"});});
-updateSaved();render();
+by("clear").addEventListener("click",()=>{criteria=[];by("query").value="";by("budget").value="all";const url="/gifts/"+encodeURIComponent(board)+"/"+(sign?"?sign="+encodeURIComponent(sign):"");history.replaceState(null,"",url);render();});
+by("finder-form").addEventListener("submit",e=>{e.preventDefault();const f=new FormData(e.currentTarget),q=new URLSearchParams();[f.get("recipient"),f.get("occasion"),f.get("vibe")].filter(x=>x&&x!=="all").forEach(t=>q.append("criteria",t));const budget=f.get("budget");if(budget&&budget!=="all")q.set("budget",budget);location.assign("/gifts/all/"+(q.size?"?"+q.toString():""));});
+updateSaved();if(collectionView){const requestedBudget=params.get("budget");if([...by("budget").options].some(o=>o.value===requestedBudget))by("budget").value=requestedBudget;render();document.title=by("catalogue-title").textContent+" | VYRDICT";const canonical=document.querySelector('link[rel="canonical"]');if(canonical)canonical.href="https://vyrdict.com/gifts/"+encodeURIComponent(board)+"/";}
 const legacyHash=location.hash.slice(1);
-if(legacyHash&&!document.getElementById(legacyHash)&&!params.has("board")&&/^[a-z0-9_-]+$/i.test(legacyHash)){location.replace("/research/"+location.hash);}
+if(legacyHash&&!document.getElementById(legacyHash)&&!collectionView&&!params.has("board")&&/^[a-z0-9_-]+$/i.test(legacyHash)){location.replace("/research/"+location.hash);}
 })();
