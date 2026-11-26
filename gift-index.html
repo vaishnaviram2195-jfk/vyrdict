@@ -131,14 +131,14 @@ html.zodiac-view .zodiac-page .signs{margin-top:28px}
 #discover .hero-copy h1{color:#fff3df}
 #discover .hero-copy h1 em{color:#ffe1c7}
 #discover .hero-sticker-field{width:47%;max-width:680px;flex:1 1 47%;min-width:0;height:clamp(360px,36vw,510px);position:relative;isolation:isolate;z-index:1;overflow:visible;margin-right:clamp(18px,4.3vw,70px)}
-#discover .hero-sticker{position:absolute;display:block;opacity:1;transform:rotate(var(--tilt));transform-origin:center;animation:sticker-arrive .8s cubic-bezier(.2,.85,.28,1.23) var(--delay) both,sticker-pop 8s ease-in-out calc(var(--delay) + 1.15s) infinite;will-change:transform}
+#discover .hero-sticker{position:absolute;display:block;opacity:1;transform:rotate(var(--tilt));transform-origin:center;animation:sticker-arrive .38s cubic-bezier(.2,.85,.28,1.23) var(--delay) both,sticker-pop 3.2s ease-in-out calc(var(--delay) + .48s) infinite;will-change:transform}
 #discover .hero-sticker img{display:block;width:100%;height:auto;filter:drop-shadow(1px 1px 0 rgba(255,243,221,.75)) drop-shadow(-1px -1px 0 rgba(255,243,221,.75)) drop-shadow(1px 5px 3px rgba(31,3,13,.28));pointer-events:none}
 #discover .sticker-cups{top:8%;left:8%;width:37%;max-width:215px;--tilt:-7deg;--delay:.15s}
 #discover .sticker-notebook{top:9%;left:59%;width:29%;max-width:180px;--tilt:9deg;--delay:.4s}
 #discover .sticker-bowl{top:64%;left:4%;width:47%;max-width:250px;--tilt:-4deg;--delay:.65s}
 #discover .sticker-candle{top:56%;left:66%;width:21%;max-width:128px;--tilt:7deg;--delay:.9s}
 @keyframes sticker-arrive{0%{opacity:0;transform:translateY(22px) rotate(calc(var(--tilt) - 11deg)) scale(.55)}70%{opacity:1;transform:translateY(-3px) rotate(var(--tilt)) scale(1.08)}100%{opacity:1;transform:rotate(var(--tilt)) scale(1)}}
-@keyframes sticker-pop{0%,10%,100%{transform:rotate(var(--tilt)) scale(1)}5%{transform:translateY(-10px) rotate(calc(var(--tilt) + 2deg)) scale(1.09)}}
+@keyframes sticker-pop{0%,20%,100%{transform:rotate(var(--tilt)) scale(1)}10%{transform:translateY(-8px) rotate(calc(var(--tilt) + 2deg)) scale(1.075)}}
 #discover.motion-paused .hero-sticker,#discover.is-paused .hero-sticker,#discover[data-motion="paused"] .hero-sticker{animation-play-state:paused!important;opacity:1}
 @media(max-width:900px){#discover .hero-copy{width:54%}#discover .hero-sticker-field{margin-right:18px;height:350px}#discover .sticker-cups{width:42%;left:2%;top:14%}#discover .sticker-notebook{width:33%;left:61%;top:13%}#discover .sticker-bowl{width:52%;left:0%;top:63%}#discover .sticker-candle{width:25%;left:67%;top:57%}}
 @media(max-width:600px){#discover.editorial-hero{flex-direction:column;align-items:stretch;justify-content:flex-start;min-height:0;gap:0}#discover .hero-copy{width:100%;max-width:none;flex:none;padding:40px 24px 8px}#discover .hero-sticker-field{width:100%;max-width:400px;flex:none;height:260px;align-self:center;margin:0 0 22px}#discover .sticker-cups{width:37%;left:10%;top:7%}#discover .sticker-notebook{width:28%;left:62%;top:7%}#discover .sticker-bowl{width:43%;left:6%;top:65%}#discover .sticker-candle{width:21%;left:67%;top:56%}}
@@ -155,11 +155,11 @@ html.zodiac-view .zodiac-page .signs{margin-top:28px}
 @media(max-width:600px){#discover .hero-sticker-field{height:285px;margin-bottom:27px}#discover .sticker-cups{left:8%;width:38%;max-width:150px;top:8%}#discover .sticker-shaker{left:56%;width:15%;max-width:60px;top:1%}#discover .sticker-blue{left:87%;width:7.2%;max-width:29px;top:3%}#discover .sticker-bowl{left:4%;width:52%;max-width:205px;top:66%}#discover .sticker-candle{left:61%;width:21%;max-width:80px;top:64%}}
 
 /* Five photographic stickers: journal, shaker, butterfly, bowl, handbag. */
-#discover .sticker-notebook{top:3%;left:2%;width:25%;max-width:145px;--tilt:-7deg;--delay:.12s}
-#discover .sticker-shaker{top:4%;left:38%;width:16%;max-width:87px;--tilt:6deg;--delay:.30s}
-#discover .sticker-butterfly{top:8%;left:63%;width:34%;max-width:200px;--tilt:8deg;--delay:.48s}
-#discover .sticker-bowl{top:72%;left:0%;width:53%;max-width:290px;--tilt:-3deg;--delay:.66s}
-#discover .sticker-handbag{top:47%;left:68%;width:20%;max-width:104px;--tilt:5deg;--delay:.84s}
+#discover .sticker-notebook{top:3%;left:2%;width:25%;max-width:145px;--tilt:-7deg;--delay:0s}
+#discover .sticker-shaker{top:4%;left:38%;width:16%;max-width:87px;--tilt:6deg;--delay:.07s}
+#discover .sticker-butterfly{top:8%;left:63%;width:34%;max-width:200px;--tilt:8deg;--delay:.14s}
+#discover .sticker-bowl{top:72%;left:0%;width:53%;max-width:290px;--tilt:-3deg;--delay:.21s}
+#discover .sticker-handbag{top:47%;left:68%;width:20%;max-width:104px;--tilt:5deg;--delay:.28s}
 #discover .hero-sticker img{image-rendering:auto;filter:drop-shadow(1px 1px 0 rgba(255,243,221,.55)) drop-shadow(-1px -1px 0 rgba(255,243,221,.55)) drop-shadow(1px 4px 3px rgba(31,3,13,.25))}
 @media(max-width:900px){#discover .sticker-notebook{width:25%;left:1%;top:6%}#discover .sticker-shaker{width:16%;left:39%;top:6%}#discover .sticker-butterfly{width:34%;left:64%;top:10%}#discover .sticker-bowl{top:72%;left:0%;width:55%}#discover .sticker-handbag{top:46%;left:69%;width:20%}}
 @media(max-width:600px){#discover .hero-sticker-field{height:285px;margin-bottom:29px}#discover .sticker-notebook{left:7%;top:4%;width:25%;max-width:92px}#discover .sticker-shaker{left:40%;top:4%;width:15%;max-width:58px}#discover .sticker-butterfly{left:64%;top:9%;width:32%;max-width:120px}#discover .sticker-bowl{left:3%;top:72%;width:53%;max-width:192px}#discover .sticker-handbag{left:71%;top:49%;width:18%;max-width:68px}}
