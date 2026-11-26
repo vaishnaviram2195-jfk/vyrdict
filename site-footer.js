@@ -1,4 +1,6 @@
 (()=>{
+  // Gift Index has its own footer and newsletter. Do not inject a legacy footer or handlers.
+  if(document.querySelector(".gift-site-footer"))return;
   if(window.__vyrdictCompanyFooterV2)return;
   window.__vyrdictCompanyFooterV2=1;
 
