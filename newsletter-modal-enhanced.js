@@ -86,7 +86,7 @@
       if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email)){status.classList.add('err');status.textContent='Enter a valid email address.';input.focus();return}
       button.disabled=true;button.textContent='Joining…';
       try{
-        const r=await fetch(ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,source:'primary_newsletter_nav',website:''})});
+        const r=await fetch(ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,source:'gifting_explicit_consent_20261126',website:''})});
         const out=await r.json().catch(()=>({}));
         if(!r.ok)throw new Error(out.error||'subscription_failed');
         window.VyrdictAnalytics?.send?.('newsletter_signup',{source:'primary_newsletter_nav'});

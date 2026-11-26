@@ -50,6 +50,14 @@
       "dest": "/gift-index.html"
     },
     {
+      "src": "^/gift-finder/?$",
+      "headers": {
+        "Cache-Control": "no-store, max-age=0, must-revalidate",
+        "CDN-Cache-Control": "no-store"
+      },
+      "dest": "/gift-index.html"
+    },
+    {
       "src": "^/gifts/[a-z0-9-]+/?$",
       "headers": {
         "Cache-Control": "no-store, max-age=0, must-revalidate",

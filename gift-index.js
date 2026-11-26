@@ -39,5 +39,5 @@ by("clear").addEventListener("click",()=>{criteria=[];by("query").value="";by("b
 by("finder-form").addEventListener("submit",e=>{e.preventDefault();const f=new FormData(e.currentTarget),q=new URLSearchParams();[f.get("recipient"),f.get("occasion"),f.get("vibe")].filter(x=>x&&x!=="all").forEach(t=>q.append("criteria",t));const budget=f.get("budget");if(budget&&budget!=="all")q.set("budget",budget);location.assign("/gifts/all/"+(q.size?"?"+q.toString():""));});
 updateSaved();if(collectionView){const requestedBudget=params.get("budget");if([...by("budget").options].some(o=>o.value===requestedBudget))by("budget").value=requestedBudget;render();document.title=by("catalogue-title").textContent+" | VYRDICT";const canonical=document.querySelector('link[rel="canonical"]');if(canonical)canonical.href="https://vyrdict.com/gifts/"+encodeURIComponent(board)+"/";}
 const legacyHash=location.hash.slice(1);
-if(legacyHash&&!document.getElementById(legacyHash)&&!collectionView&&!params.has("board")&&/^[a-z0-9_-]+$/i.test(legacyHash)){location.replace("/research/"+location.hash);}
+if(legacyHash&&!document.getElementById(legacyHash)&&!collectionView&&!document.documentElement.classList.contains("finder-view")&&!params.has("board")&&/^[a-z0-9_-]+$/i.test(legacyHash)){location.replace("/research/"+location.hash);}
 })();
