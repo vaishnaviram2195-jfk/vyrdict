@@ -1,4 +1,5 @@
 (()=>{
+  if(document.querySelector('.gift-main'))return;
   if(window.__vyrdictHeaderCategoriesMenuV5)return;
   window.__vyrdictHeaderCategoriesMenuV5=1;
 

@@ -1,4 +1,5 @@
 (()=>{
+  if(document.querySelector('.gift-main'))return;
   const STYLE_ID='vyrdict-header-brand-fix-style';
   window.__vyrdictDisableLegacyHeroMotion=1;
   if(!document.getElementById(STYLE_ID)){
