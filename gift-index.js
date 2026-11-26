@@ -9,7 +9,8 @@ Object.assign(boardLabels,{all:"All extraordinary finds.",saved:"Your saved gift
 const validSigns=["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
 if(!validSigns.includes(sign))sign="";
 const element=(tag,cls,txt)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(txt!=null)n.textContent=txt;return n};
-function match(p,t){return t==="all"||t==="saved"&&saved.has(p.id)||t==="chic"&&p.group==="chic"||p.tags.includes(t);}
+const mainBoards=new Set(boards.map(b=>b[0]));
+function match(p,t,curated=false){if(t==="all")return true;if(t==="saved")return saved.has(p.id);if(curated&&mainBoards.has(t))return p.boards.includes(t);return p.tags.includes(t)||p.boards.includes(t);}
 function price(p){const v=p.price?.[by("currency").value];return typeof v==="number"&&Number.isFinite(v)?v:null;}
 function updateSaved(){by("saved-nav").textContent="Saved ("+saved.size+")";try{localStorage.setItem("vyrdict-gift-saved-v1",JSON.stringify([...saved]));}catch(e){}}
 function card(p){
@@ -26,7 +27,7 @@ for(const link of p.links){const a=element("a","retailer",link.label+(link.paid?
 const source=element("a","source","Read the original edit ↗");source.href=p.source;n.append(source);return n;
 }
 function render(){const q=by("query").value.trim().toLowerCase(),budget=by("budget").value;
-let rows=products.filter(p=>match(p,board)&&criteria.every(t=>match(p,t))&&(!q||[p.name,p.brand,p.note,...p.tags].join(" ").toLowerCase().includes(q))&&(budget==="all"||price(p)!==null&&price(p)<Number(budget)));
+let rows=products.filter(p=>match(p,board,!sign)&&criteria.every(t=>match(p,t))&&(!q||[p.name,p.brand,p.note,...p.tags].join(" ").toLowerCase().includes(q))&&(budget==="all"||price(p)!==null&&price(p)<Number(budget)));
 by("catalogue-title").textContent=sign?sign+" — gift inspiration":criteria.length?"Your gift finder picks":boardLabels[board]||"Gift discoveries";
 by("count").textContent=rows.length+" "+(rows.length===1?"find":"finds");
 const grid=by("product-grid");grid.replaceChildren();
