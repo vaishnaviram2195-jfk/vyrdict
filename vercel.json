@@ -268,6 +268,22 @@
       "dest": "/analytics-dashboard.html"
     },
     {
+      "src": "^/editorial/japanese-art-of-wrapping/?$",
+      "dest": "/editorial/japanese-art-of-wrapping/index.html"
+    },
+    {
+      "src": "^/editorial/exceptional-taste/?$",
+      "dest": "/editorial/exceptional-taste/index.html"
+    },
+    {
+      "src": "^/editorial/psychology-of-thoughtful-gifts/?$",
+      "dest": "/editorial/psychology-of-thoughtful-gifts/index.html"
+    },
+    {
+      "src": "^/editorial/substack-reading-list/?$",
+      "dest": "/editorial/substack-reading-list/index.html"
+    },
+    {
       "handle": "filesystem"
     }
   ]
