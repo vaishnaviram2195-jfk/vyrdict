@@ -18,6 +18,30 @@
   ],
   "routes": [
     {
+      "src": "^/(?:research|product(?:/.*)?|category(?:/.*)?|collection(?:/.*)?|search|score-discovery|viral-10|creators(?:/.*)?|saved|studio(?:/.*)?|links(?:-preview)?/(?:studio|work)(?:/.*)?)/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/gifts/all/",
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/(?:index|stable-home|how-vyrdict-scores|shop|saved|viral-now|celebrity-effect|seen-on-screen|viral-around-the-world)\\.html$",
+      "status": 307,
+      "headers": {
+        "Location": "/gifts/all/",
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/(?:edit/(?:indian-bags|haunted-antiques)|shop-the-feed/(?:indian-bags|haunted-edit|haunted-antiques))(?:/.*)?$",
+      "status": 307,
+      "headers": {
+        "Location": "/shop-the-feed/",
+        "Cache-Control": "no-store"
+      }
+    },
+    {
       "src": "^/(?:studio/(?:how-scoring-works|scoring)|links(?:-preview)?/studio/scoring)(?:/.*)?$",
       "status": 307,
       "headers": {
