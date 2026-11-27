@@ -18,6 +18,14 @@
   ],
   "routes": [
     {
+      "src": "^/api/(?:home-stable|score-discovery|product-seo|category-seo)(?:/.*)?$",
+      "status": 307,
+      "headers": {
+        "Location": "/gifts/all/",
+        "Cache-Control": "no-store"
+      }
+    },
+    {
       "src": "^/(?:research|product(?:/.*)?|category(?:/.*)?|collection(?:/.*)?|search|score-discovery|viral-10|creators(?:/.*)?|saved|studio(?:/.*)?|links(?:-preview)?/(?:studio|work)(?:/.*)?)/?$",
       "status": 307,
       "headers": {
