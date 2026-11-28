@@ -31,7 +31,7 @@
  #objects-of-interest:has(.ooi-edition02)>.ooi-edition-label{margin:12px 0 10px;grid-row:2}
  #objects-of-interest:has(.ooi-edition02)>.ooi-edition-label:first-of-type{grid-column:1}
  #objects-of-interest:has(.ooi-edition02)>.ooi-edition-label:last-of-type{grid-column:2}
- #objects-of-interest:has(.ooi-edition02)>.ooi-cover{grid-column:1;grid-row:3;width:100%;max-width:none;height:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto;gap:6px;align-items:start;background:transparent}
+ #objects-of-interest:has(.ooi-edition02)>.ooi-cover{grid-column:1;grid-row:3;width:100%;max-width:none;height:auto;display:grid;grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr));grid-template-rows:auto;gap:6px;align-items:center;background:transparent}
  #objects-of-interest:has(.ooi-edition02)>.ooi-edition02{grid-column:2}
  #objects-of-interest:has(.ooi-edition02)>.ooi-cover>img{width:100%;height:auto;aspect-ratio:9/16;object-fit:contain;background:transparent}
  #objects-of-interest:has(.ooi-edition02) .ooi-desktop-preview{grid-column:2/4;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto;gap:6px;overflow:visible}
