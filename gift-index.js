@@ -119,5 +119,11 @@ by("clear").addEventListener("click",()=>{criteria=[];by("query").value="";by("b
 by("finder-form").addEventListener("submit",e=>{e.preventDefault();const f=new FormData(e.currentTarget),q=new URLSearchParams();[f.get("recipient"),f.get("occasion"),f.get("vibe")].filter(x=>x&&x!=="all").forEach(t=>q.append("criteria",t));q.set("currency",activeCurrency);const budget=f.get("budget");if(budget&&budget!=="all")q.set("budget",budget);location.assign("/gifts/all/"+(q.size?"?"+q.toString():""));});
 loadRates();updateSaved();if(collectionView){const requestedBudget=params.get("budget");if([...by("budget").options].some(o=>o.value===requestedBudget))by("budget").value=requestedBudget;render();document.title=by("catalogue-title").textContent+" | VYRDICT";const canonical=document.querySelector('link[rel="canonical"]');if(canonical)canonical.href="https://vyrdict.com/gifts/"+encodeURIComponent(board)+"/";}
 const legacyHash=location.hash.slice(1);
-if(legacyHash&&!document.getElementById(legacyHash)&&!collectionView&&!document.documentElement.classList.contains("finder-view")&&!params.has("board")&&/^[a-z0-9_-]+$/i.test(legacyHash)){location.replace("/research/"+location.hash);}
+// Old social links must not reopen retired research pages. The Reel section is inserted by a later script.
+const homeView=!collectionView&&!document.documentElement.classList.contains("finder-view")&&!document.documentElement.classList.contains("zodiac-view")&&!params.has("board");
+if(homeView&&legacyHash){
+ const reelAliases=new Set(["seen-it-shop-it","shop-the-feed","objects-of-interest","seen-on-screen"]);
+ if(reelAliases.has(legacyHash.toLowerCase())){if(legacyHash!=="objects-of-interest")history.replaceState(history.state,"",location.pathname+location.search+"#objects-of-interest");}
+ else if(!document.getElementById(legacyHash)){history.replaceState(history.state,"",location.pathname+location.search);}
+}
 })();

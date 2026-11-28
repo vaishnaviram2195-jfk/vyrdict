@@ -18,6 +18,77 @@
   ],
   "routes": [
     {
+      "src": "^/(?:links|links-preview|hub|link-in-bio|bio)(?:/index\\.html|\\.html)?/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/",
+        "Cache-Control": "no-store, max-age=0, must-revalidate",
+        "CDN-Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/(?:links|links-preview)/(?:shop-the-feed|seen-it-shop-it|objects-of-interest)(?:/.*)?$",
+      "status": 307,
+      "headers": {
+        "Location": "/#objects-of-interest",
+        "Cache-Control": "no-store, max-age=0, must-revalidate",
+        "CDN-Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/(?:shop-the-feed|edit)/(?:chic-gift-edit|chic-gifts)(?:/index\\.html)?/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/gifts/chic/",
+        "Cache-Control": "no-store, max-age=0, must-revalidate",
+        "CDN-Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/(?:shop-the-feed|edit)/(?:november-perfume-edit|november-perfume)(?:/index\\.html)?/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/gifts/fragrance/",
+        "Cache-Control": "no-store, max-age=0, must-revalidate",
+        "CDN-Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/(?:shop-the-feed|edit)/(?:holiday-collectibles|advent-calendars)(?:/index\\.html)?/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/gifts/holiday/",
+        "Cache-Control": "no-store, max-age=0, must-revalidate",
+        "CDN-Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/(?:shop-the-feed(?:/.*|\\.html)?|edit/(?:indian-bags|haunted-antiques|nightstand-essentials)(?:/.*)?|seen-it-shop-it(?:/index\\.html|\\.html)?|objects-of-interest)/?$",
+      "status": 307,
+      "headers": {
+        "Location": "/#objects-of-interest",
+        "Cache-Control": "no-store, max-age=0, must-revalidate",
+        "CDN-Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/(?:stable-home|index)\\.html$",
+      "status": 307,
+      "headers": {
+        "Location": "/",
+        "Cache-Control": "no-store, max-age=0, must-revalidate",
+        "CDN-Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "^/gift-index\\.html$",
+      "headers": {
+        "Cache-Control": "no-store, max-age=0, must-revalidate",
+        "CDN-Cache-Control": "no-store"
+      },
+      "dest": "/gift-index.html"
+    },
+    {
       "src": "^/api/(?:home-stable|score-discovery|product-seo|category-seo)(?:/.*)?$",
       "status": 307,
       "headers": {
