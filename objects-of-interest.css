@@ -23,3 +23,17 @@
  .ooi-desktop-nav button:disabled{opacity:.3;cursor:default}
  .ooi-dialog.recording .ooi-track{height:100dvh}
 }
+
+/* Compact desktop display: two editions, each cover + two selected product images. Full dialogs are unchanged. */
+@media(min-width:901px){
+ #objects-of-interest:has(.ooi-edition02){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto auto auto;column-gap:clamp(18px,3vw,38px);row-gap:0;align-items:start}
+ #objects-of-interest:has(.ooi-edition02)>.section-head{grid-column:1/-1;grid-row:1}
+ #objects-of-interest:has(.ooi-edition02)>.ooi-edition-label{margin:12px 0 10px;grid-row:2}
+ #objects-of-interest:has(.ooi-edition02)>.ooi-edition-label:first-of-type{grid-column:1}
+ #objects-of-interest:has(.ooi-edition02)>.ooi-edition-label:last-of-type{grid-column:2}
+ #objects-of-interest:has(.ooi-edition02)>.ooi-cover{grid-column:1;grid-row:3;width:100%;max-width:none;height:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto;gap:6px;align-items:start;background:transparent}
+ #objects-of-interest:has(.ooi-edition02)>.ooi-edition02{grid-column:2}
+ #objects-of-interest:has(.ooi-edition02)>.ooi-cover>img{width:100%;height:auto;aspect-ratio:9/16;object-fit:contain;background:transparent}
+ #objects-of-interest:has(.ooi-edition02) .ooi-desktop-preview{grid-column:2/4;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto;gap:6px;overflow:visible}
+ #objects-of-interest:has(.ooi-edition02) .ooi-desktop-preview>img{width:100%;height:auto;aspect-ratio:9/16;object-fit:contain}
+}
